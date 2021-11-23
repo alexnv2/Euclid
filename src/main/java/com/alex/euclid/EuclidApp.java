@@ -12,7 +12,7 @@ public class EuclidApp extends Application {
     public void start(Stage stage) throws IOException {
         FXMLLoader fxmlLoader = new FXMLLoader(EuclidApp.class.getResource("Euclid-view.fxml"));
         Scene scene = new Scene(fxmlLoader.load(), 900, 600);
-        stage.setTitle("Геометрия!");
+        stage.setTitle("Геометрия");
         stage.setScene(scene);
         stage.show();
     }

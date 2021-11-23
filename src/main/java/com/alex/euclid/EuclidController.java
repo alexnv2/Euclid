@@ -8,6 +8,7 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
@@ -187,24 +188,35 @@ public class EuclidController extends View {
         if (model.isShowGrid()) {
             gridViews.gridCartesian();//Вывод сетки
         }
-
         //Добавить изображение к кнопкам
-
-        btnPoind.setStyle("-fx-background-image: url(/Images/point.png);" + "-fx-background-repeat: no-repeat;" + "-fx-background-position:center center");
-        btnSegment.setStyle("-fx-background-image: url(/Images/point&line.png);" + "-fx-background-repeat: no-repeat;" + "-fx-background-position:center center");
-        btnAngle.setStyle("-fx-background-image: url(/Images/angle.png);" + "-fx-background-repeat: no-repeat;" + "-fx-background-position:center center");
-        btnVertical.setStyle("-fx-background-image: url(/Images/vertical.png);" + "-fx-background-repeat: no-repeat;" + "-fx-background-position:center center");
-        btnDelete.setStyle("-fx-background-image: url(/Images/delete.png);" + "-fx-background-repeat: no-repeat;" + "-fx-background-position:center center");
-        btnLine.setStyle("-fx-background-image: url(/Images/line.png);" + "-fx-background-repeat: no-repeat;" + "-fx-background-position:center center");
-        btnRay.setStyle("-fx-background-image: url(/Images/ray.png);" + "-fx-background-repeat: no-repeat;" + "-fx-background-position:center center");
-        btnTreangle.setStyle("-fx-background-image: url(/Images/triangle.png);" + "-fx-background-repeat: no-repeat;" + "-fx-background-position:center center");
-        btnHeight.setStyle("-fx-background-image: url(/Images/triangle_height.png);" + "-fx-background-repeat: no-repeat;" + "-fx-background-position:center center");
-        btnMediana.setStyle("-fx-background-image: url(/Images/mediana.png);" + "-fx-background-repeat: no-repeat;" + "-fx-background-position:center center");
-        btnBisector.setStyle("-fx-background-image: url(/Images/bisector.png);" + "-fx-background-repeat: no-repeat;" + "-fx-background-position:center center");
-        btnParallelLines.setStyle("-fx-background-image: url(/Images/parallel.png);" + "-fx-background-repeat: no-repeat;" + "-fx-background-position:center center");
-        btnCircle.setStyle("-fx-background-image: url(circle.png);" + "-fx-background-repeat: no-repeat;" + "-fx-background-position:center center");
-        btnMiddleSegment.setStyle("-fx-background-image: url(../../../../resources/com/alex/euclid/Images/middle.png);" + "-fx-background-repeat: no-repeat;" + "-fx-background-position:center center");
-
+        Image imPoind = new Image(Objects.requireNonNull(getClass().getResourceAsStream("Images/point.png")));
+        btnPoind.graphicProperty().setValue(new ImageView(imPoind));
+        Image imSegment=new Image(Objects.requireNonNull(getClass().getResourceAsStream("Images/point&line.png")));
+        btnSegment.graphicProperty().setValue(new ImageView(imSegment));
+        Image imAngle=new Image(Objects.requireNonNull(getClass().getResourceAsStream("Images/angle.png")));
+        btnAngle.graphicProperty().setValue(new ImageView(imAngle));
+        Image imVertical=new Image(Objects.requireNonNull(getClass().getResourceAsStream("Images/vertical.png")));
+        btnVertical.graphicProperty().setValue(new ImageView(imVertical));
+        Image imDelete=new Image(Objects.requireNonNull(getClass().getResourceAsStream("Images/delete.png")));
+        btnDelete.graphicProperty().setValue(new ImageView(imDelete));
+        Image imLine=new Image(Objects.requireNonNull(getClass().getResourceAsStream("Images/line.png")));
+        btnLine.graphicProperty().setValue(new ImageView(imLine));
+        Image imRay=new Image(Objects.requireNonNull(getClass().getResourceAsStream("Images/ray.png")));
+        btnRay.graphicProperty().setValue(new ImageView(imRay));
+        Image imTreangle=new Image(Objects.requireNonNull(getClass().getResourceAsStream("Images/triangle.png")));
+        btnTreangle.graphicProperty().setValue(new ImageView(imTreangle));
+        Image imHeight=new Image(Objects.requireNonNull(getClass().getResourceAsStream("Images/triangle_height.png")));
+        btnHeight.graphicProperty().setValue(new ImageView(imHeight));
+        Image imMediana=new Image(Objects.requireNonNull(getClass().getResourceAsStream("Images/mediana.png")));
+        btnMediana.graphicProperty().setValue(new ImageView(imMediana));
+        Image imBisector=new Image(Objects.requireNonNull(getClass().getResourceAsStream("Images/bisector.png")));
+        btnBisector.graphicProperty().setValue(new ImageView(imBisector));
+        Image imParallelLines=new Image(Objects.requireNonNull(getClass().getResourceAsStream("Images/parallel.png")));
+        btnParallelLines.graphicProperty().setValue(new ImageView(imParallelLines));
+        Image imCircle=new Image(Objects.requireNonNull(getClass().getResourceAsStream("Images/circle.png")));
+        btnCircle.graphicProperty().setValue(new ImageView(imCircle));
+        Image imMiddleSegment=new Image(Objects.requireNonNull(getClass().getResourceAsStream("Images/middle.png")));
+        btnMiddleSegment.graphicProperty().setValue(new ImageView(imMiddleSegment));
     }
 
     /**

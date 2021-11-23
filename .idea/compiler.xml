@@ -14,7 +14,7 @@
       </profile>
     </annotationProcessing>
     <bytecodeTargetLevel>
-      <module name="Euclid" target="14" />
+      <module name="Euclid" target="15" />
     </bytecodeTargetLevel>
   </component>
 </project>
