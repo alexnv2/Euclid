@@ -1681,7 +1681,7 @@ public class EuclidController extends View {
      */
     private void TwofxmlLoader() {
         try {
-            Parent root1 = FXMLLoader.load(Objects.requireNonNull(getClass().getResource("equality.fxml")));
+            Parent root1 = FXMLLoader.load(Objects.requireNonNull(EuclidApp.class.getResource("Equality-view.fxml")));
             Stage stage = new Stage();
             stage.setScene(new Scene(root1));
             stage.setTitle("Признаки равенства треугольников");
