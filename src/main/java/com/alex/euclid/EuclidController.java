@@ -13,9 +13,7 @@ import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.input.ScrollEvent;
-import javafx.scene.layout.Pane;
-import javafx.scene.layout.StackPane;
-import javafx.scene.layout.VBox;
+import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Arc;
 import javafx.scene.shape.Circle;
@@ -1259,12 +1257,11 @@ public class EuclidController extends View {
         window.initModality(Modality.APPLICATION_MODAL);//Блокирует все окна приложения
         window.initStyle(StageStyle.UTILITY);//Только кнопка закрыть
         VBox root = new VBox();
-        root.setStyle(
-                "-fx-background-image: url(/Images/About.png); " +
-                        "-fx-background-repeat: no-repeat;"
-        );
+        Image imAbout = new Image(Objects.requireNonNull(getClass().getResourceAsStream("Images/About.png")));
+        root.setBackground(new Background(new BackgroundImage(imAbout, BackgroundRepeat.REPEAT,
+                        BackgroundRepeat.REPEAT, BackgroundPosition.DEFAULT,
+                        BackgroundSize.DEFAULT)));
         root.setAlignment(Pos.TOP_CENTER);
-
         Label label2 = new Label("МБОУ \"Центр образования Опочецкого района\"\nСтруктурное подразделение \"Средняя школа № 4\"\n\n\n ");
         label2.setFont(Font.font("Verdana", FontWeight.BOLD, 24.0));
         label2.setTextFill(Color.SANDYBROWN);
