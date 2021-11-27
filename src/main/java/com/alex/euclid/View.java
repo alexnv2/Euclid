@@ -130,10 +130,10 @@ class View implements Observer {
      * @param ray - объект Линия
      */
     private void rayGo(Line ray) {
-        ray.setStartX(model.getRayEndX());
-        ray.setStartY(model.getRayEndY());
-        ray.setEndX(model.getRayStartX());
-        ray.setEndY(model.getRayStartY());
+        ray.setStartX(model.getRayStartX());
+        ray.setStartY(model.getRayStartY());
+        ray.setEndX(model.getRayEndX());
+        ray.setEndY(model. getRayEndY());
     }
 
 
