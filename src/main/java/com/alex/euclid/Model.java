@@ -386,7 +386,7 @@ class Model implements Observable {
      * Переменная createGeometric - определяет режим построения
      * 0-сбросить режим, 1- точка, 2- отрезок, 3-прямая, 4-луч, 5-угол
      * 6- перпендикуляр, 7 - параллельные прямые, 8-треугольник
-     * 9-высота, 10-биссектриса, 11-середина отрезка, 14-окружность
+     * 9- медиага 10-высота, 11-биссектриса, 12-середина отрезка, 14-окружность
      */
     public void createGeometrics() {
         switch (createGeometric) {
@@ -423,8 +423,33 @@ class Model implements Observable {
             case 8 -> System.out.println("Треугольник");
             case 9 -> System.out.println("Медиана");
             case 10 -> System.out.println("Высота");
-            case 11 -> System.out.println("Биссектриса");
-            case 12 -> System.out.println("Середина отрезка");
+            case 11 -> System.out.println("Середина отрезка");
+            case 12 -> {
+                // Построение середины отрезка
+                Line l = getTimeLine();//получаем отрезок, для которого надо построить середину
+                //проверить, является ли данная линия отрезком, исключаем прямые и лучи
+                if (findTypeLine(l) == 0) {
+                    String[] namePoind = findID(l).split("_");//получить имена точек отрезка
+                    Circle c1 = findCircle(namePoind[0]);
+                    Circle c2 = findCircle(namePoind[1]);
+                    Point2D p1 = new Point2D(c1.getCenterX(), c1.getCenterY());
+                    Point2D p2 = new Point2D(c2.getCenterX(), c2.getCenterY());
+                    Point2D poindMiddle = midPoindAB(p1, p2);//получили координаты середины отрезка
+                    Circle с = createPoindAdd(false);
+                    setScreenX(poindMiddle.getX());
+                    setScreenY(poindMiddle.getY());
+                    notifyObservers("VertexGo");//вывести на экран
+                    //Связать полученную точку с линией
+                    middleBindSegment(с, l);
+
+                } else {
+                    setStringLeftStatus(STA_32);
+                    notifyObservers("LeftStatusGo");
+                }
+                createGeometric = 0;
+             }
+
+
             case 13 -> System.out.println("Удалить");
             case 14 -> System.out.println("Окружность");
 
@@ -821,7 +846,7 @@ class Model implements Observable {
 
 
         //Если точка на линии
-        if (lineOldAdd) {
+        if (lineOldAdd && createGeometric!=12) {
             System.out.println("yes");
             double t = (vertex.getCenterX() - timeLine.getStartX()) / (timeLine.getEndX() - timeLine.getStartX());
             for (PoindCircle p : poindCircles) {
