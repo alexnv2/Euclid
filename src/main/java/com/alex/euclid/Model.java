@@ -391,111 +391,28 @@ class Model implements Observable {
     public void createGeometrics() {
         switch (createGeometric) {
             case 1 -> {
-                Circle c = createPoindAdd(true);
+                createPoindAdd(true);
                 createGeometric = 0;
             }
             case 2 -> {
-                //Взять существующую или создать новую точку для отрезка
-                Circle c1 = newCirclePoind();
-                setSegmentStartX(c1.getCenterX());
-                setSegmentStartY(c1.getCenterY());
-                setPoindOne(true);
-                newSegment.append(c1.getId());
-                newSegment.append("_");
+                newPoindShape();
                 if (isPoindTwo()) {
-                    newLine.setVisible(false);
-                    newSegment.delete(3, 4);//удалить последнее _
-                    String[] nameP = newSegment.toString().split("_");
-                    Line l = createLineAdd(0);
-                    l.toBack();
-                    //Вывести на доску
-                    setSegmentStartX(newLine.getStartX());
-                    setSegmentStartY(newLine.getStartY());
-                    setScreenX(newLine.getEndX());
-                    setScreenY(newLine.getEndY());
-                    setLine(l);
-                    notifyObservers("SideGo");
-                    //обновить имя
-                    findNameId(newSegment.toString(), l.getId());
-                    //связать линию с точками
-                    lineBindCircles(findCircle(nameP[0]), findCircle(nameP[1]), l);
-                    //закончить построение
-                    newSegment.delete(0, 3);//очистить строку
-                    createGeometric = 0;
-                    setPoindOne(false);
-                    setPoindTwo(false);
+                    newPoindTwoShape(0);
+                    newPoindShapeEnd();
                 }
             }
             case 3 -> {
-                //Взять существующую или создать новую точку для прямой
-                Circle c1 = newCirclePoind();
-                setSegmentStartX(c1.getCenterX());
-                setSegmentStartY(c1.getCenterY());
-                setPoindOne(true);
-                newSegment.append(c1.getId());
-                newSegment.append("_");
+                newPoindShape();
                 if (isPoindTwo()) {
-                    newLine.setVisible(false);
-                    newSegment.delete(3, 4);//удалить последнее _
-                    String[] nameP = newSegment.toString().split("_");
-                    Line l = createLineAdd(2);
-                    l.toBack();
-                    //Вывести на доску
-                    setRayStartX(newLine.getStartX());
-                    setRayStartY(newLine.getStartY());
-                    setRayEndX(newLine.getEndX());
-                    setRayEndY(newLine.getEndY());
-                    setLine(l);
-                    notifyObservers("RayGo");
-                    //Обновить мировые координаты
-                    findLinesUpdateXY(l.getId());
-                    //обновить имя
-                    findNameId(newSegment.toString(), l.getId());
-                    //связать линию с точками
-                    circlesBindLine(findCircle(nameP[0]), findCircle(nameP[1]), l);
-                    //связать линию с её именем
-                    nameLineAdd(l);
-                    //закончить построение
-                    newSegment.delete(0, 3);//очистить строку
-                    createGeometric = 0;
-                    setPoindOne(false);
-                    setPoindTwo(false);
+                    newPoindTwoShape(2);
+                    newPoindShapeEnd();
                 }
             }
             case 4 -> {
-                //Взять существующую или создать новую точку для прямой
-                Circle c1 = newCirclePoind();
-                setSegmentStartX(c1.getCenterX());
-                setSegmentStartY(c1.getCenterY());
-                setPoindOne(true);
-                newSegment.append(c1.getId());
-                newSegment.append("_");
+                newPoindShape();
                 if (isPoindTwo()) {
-                    newLine.setVisible(false);
-                    newSegment.delete(3, 4);//удалить последнее _
-                    String[] nameP = newSegment.toString().split("_");
-                    Line l = createLineAdd(1);
-                    l.toBack();
-                    //Вывести на доску
-                    setRayStartX(newLine.getStartX());
-                    setRayStartY(newLine.getStartY());
-                    setRayEndX(newLine.getEndX());
-                    setRayEndY(newLine.getEndY());
-                    setLine(l);
-                    notifyObservers("RayGo");
-                    //Обновить мировые координаты
-                    findLinesUpdateXY(l.getId());
-                    //обновить имя
-                    findNameId(newSegment.toString(), l.getId());
-                    //связать линию с точками
-                    rayBindCircles(findCircle(nameP[0]), findCircle(nameP[1]), l);
-                    //связать линию с её именем
-                    nameLineAdd(l);
-                    //закончить построение
-                    newSegment.delete(0, 3);//очистить строку
-                    createGeometric = 0;
-                    setPoindOne(false);
-                    setPoindTwo(false);
+                    newPoindTwoShape(1);
+                    newPoindShapeEnd();
                 }
             }
 
@@ -513,6 +430,56 @@ class Model implements Observable {
 
 
         }
+    }
+
+    private void newPoindShape() {
+        //Взять существующую или создать новую точку для прямой
+        Circle c1 = newCirclePoind();
+        setSegmentStartX(c1.getCenterX());
+        setSegmentStartY(c1.getCenterY());
+        setPoindOne(true);
+        newSegment.append(c1.getId());
+        newSegment.append("_");
+    }
+
+    private void newPoindTwoShape(int segment) {
+        newLine.setVisible(false);
+        newSegment.delete(3, 4);//удалить последнее _
+        String[] nameP = newSegment.toString().split("_");
+        Line l = createLineAdd(segment);
+        l.toBack();
+        //Вывести на доску
+        setSegmentStartX(newLine.getStartX());
+        setSegmentStartY(newLine.getStartY());
+        setScreenX(newLine.getEndX());
+        setScreenY(newLine.getEndY());
+        setLine(l);
+        //обновить имя
+        findNameId(newSegment.toString(), l.getId());
+        if (segment == 0) {
+            notifyObservers("SideGo");
+        } else {
+            notifyObservers("RayGo");
+            //Обновить мировые координаты
+            findLinesUpdateXY(l.getId());
+        }
+        //связать линию с точками
+        switch (segment) {
+            case 0 -> lineBindCircles(findCircle(nameP[0]), findCircle(nameP[1]), l);
+            case 1 -> rayBindCircles(findCircle(nameP[0]), findCircle(nameP[1]), l);
+            case 2 -> circlesBindLine(findCircle(nameP[0]), findCircle(nameP[1]), l);
+        }
+        if (segment != 0) {
+            nameLineAdd(l);
+        }
+    }
+
+    private void newPoindShapeEnd() {
+        //закончить построение
+        newSegment.delete(0, 3);//очистить строку
+        createGeometric = 0;
+        setPoindOne(false);
+        setPoindTwo(false);
     }
 
     /**
@@ -956,9 +923,6 @@ class Model implements Observable {
             setStringLeftStatus(STA_9 + newPoind.getId());
             notifyObservers("LeftStatusGo");
         });
-        //Отпускание кнопки
-        newPoind.setOnMouseReleased(e -> {
-        });
         //Уход с точки
         newPoind.setOnMouseExited(e -> {
             newPoind.setCursor(Cursor.DEFAULT);
@@ -978,12 +942,8 @@ class Model implements Observable {
      * @param vertex - ссылка на точку
      */
     private void poindBindUpdateXY(Circle vertex) {
-        vertex.centerXProperty().addListener((obj, oldValue, newValue) -> {
-            poindUpdateXY(vertex);
-        });
-        vertex.centerYProperty().addListener((obj, oldValue, newValue) -> {
-            poindUpdateXY(vertex);
-        });
+        vertex.centerXProperty().addListener((obj, oldValue, newValue) -> poindUpdateXY(vertex));
+        vertex.centerYProperty().addListener((obj, oldValue, newValue) -> poindUpdateXY(vertex));
     }
 
     /**
@@ -1077,22 +1037,6 @@ class Model implements Observable {
         return false;//всегда запрещено
     }
 
-
-    /**
-     * Метод indexAdd(Circle c)
-     * Метод для увелечения счетчика, когда точка принадлежит разным геометрическим фигурам.
-     *
-     * @param circle - объект точка
-     */
-    public void indexAdd(Circle circle) {
-        for (PoindCircle c : poindCircles) {
-            if (c != null) {
-                if (c.getId().equals(circle.getId())) {
-                    c.setIndex(c.getIndex() + 1);
-                }
-            }
-        }
-    }
 
     /**
      * Метод createCircle().
@@ -1302,14 +1246,14 @@ class Model implements Observable {
                     Circle A = findCircle(nameId[0]);
                     Circle B = findCircle(nameId[1]);
                     //Проверить, принадлежит ли точка линии
-                    if (findPoindMove(nameId[0])){
-                        Point2D A1 = new Point2D(e.getX() , e.getY());
+                    if (findPoindMove(nameId[0])) {
+                        Point2D A1 = new Point2D(e.getX(), e.getY());
                         Point2D B1 = new Point2D(Objects.requireNonNull(findLineForPoind(nameId[0])).getStartX(), Objects.requireNonNull(findLineForPoind(nameId[0])).getStartY());
                         Point2D C1 = new Point2D(Objects.requireNonNull(findLineForPoind(nameId[0])).getEndX(), Objects.requireNonNull(findLineForPoind(nameId[0])).getEndY());
                         Point2D D1 = heightPoind(A1, B1, C1);//координаты точки пересечения
                         A.setCenterX(D1.getX());
                         A.setCenterY(D1.getY());
-                        if(!findPoindMove(nameId[1])) {
+                        if (!findPoindMove(nameId[1])) {
                             B.setCenterX(e.getX() + getDXEnd());
                             B.setCenterY(e.getY() + getDYEnd());
                         }
@@ -1327,32 +1271,32 @@ class Model implements Observable {
                         //Сохранить параметрический параметр t для прямой в коллекции
                         updateT(Objects.requireNonNull(findLineForPoind(nameId[0])), A);
                     }
-                    if(findPoindMove(nameId[1])) {
-                        Point2D A1 = new Point2D(e.getX() , e.getY());
+                    if (findPoindMove(nameId[1])) {
+                        Point2D A1 = new Point2D(e.getX(), e.getY());
                         Point2D B1 = new Point2D(Objects.requireNonNull(findLineForPoind(nameId[1])).getStartX(), Objects.requireNonNull(findLineForPoind(nameId[1])).getStartY());
                         Point2D C1 = new Point2D(Objects.requireNonNull(findLineForPoind(nameId[1])).getEndX(), Objects.requireNonNull(findLineForPoind(nameId[1])).getEndY());
                         Point2D D1 = heightPoind(A1, B1, C1);//координаты точки пересечения
                         B.setCenterX(D1.getX());
                         B.setCenterY(D1.getY());
-                        if(!findPoindMove(nameId[0])) {
+                        if (!findPoindMove(nameId[0])) {
                             A.setCenterX(e.getX() + getDXStart());
                             A.setCenterY(e.getY() + getDYStart());
                         }
-                        double t = (D1.getX() - findLineForPoind(nameId[1]).getStartX()) / (findLineForPoind(nameId[1]).getEndX() - findLineForPoind(nameId[1]).getStartX());
+                        double t = (D1.getX() - Objects.requireNonNull(findLineForPoind(nameId[1])).getStartX()) / (Objects.requireNonNull(findLineForPoind(nameId[1])).getEndX() - Objects.requireNonNull(findLineForPoind(nameId[1])).getStartX());
                         //Проверить дошла ли точка до начала линии
                         if (t <= 0) {
-                            B.setCenterX(findLineForPoind(nameId[1]).getStartX());
-                            B.setCenterY(findLineForPoind(nameId[1]).getStartY());
+                            B.setCenterX(Objects.requireNonNull(findLineForPoind(nameId[1])).getStartX());
+                            B.setCenterY(Objects.requireNonNull(findLineForPoind(nameId[1])).getStartY());
                         }
                         //Проверить достигла ли точка конца линии
                         if (t >= 1) {
-                            B.setCenterX(findLineForPoind(nameId[1]).getEndX());
-                            B.setCenterY(findLineForPoind(nameId[1]).getEndY());
+                            B.setCenterX(Objects.requireNonNull(findLineForPoind(nameId[1])).getEndX());
+                            B.setCenterY(Objects.requireNonNull(findLineForPoind(nameId[1])).getEndY());
                         }
                         //Сохранить параметрический параметр t для прямой в коллекции
-                        updateT(findLineForPoind(nameId[1]), B);
+                        updateT(Objects.requireNonNull(findLineForPoind(nameId[1])), B);
                     }
-                    if(!findPoindMove(nameId[0]) && !findPoindMove(nameId[1]))  {
+                    if (!findPoindMove(nameId[0]) && !findPoindMove(nameId[1])) {
                         //Если не расчетная, пересчитать координаты.
                         A.setCenterX(e.getX() + getDXStart());
                         A.setCenterY(e.getY() + getDYStart());
@@ -1440,35 +1384,14 @@ class Model implements Observable {
     /**
      * Метод findPoindMove(String vertex).
      * Предназначен для поиска принадлежности точки линии
+     *
      * @param vertex - ссылка на линию
      * @return - true-точка принадлежит линии
      */
     private boolean findPoindMove(String vertex) {
-        return poindCircles.stream().filter(p -> p.getId().equals(vertex)).filter(Objects::nonNull).findFirst().filter(PoindCircle::isBLine).isPresent();
+        return poindCircles.stream().filter(p -> p.getId().equals(vertex)).findFirst().filter(PoindCircle::isBLine).isPresent();
     }
 
-    /**
-     * Метод updatePoindLine(Line line).
-     * Предназначен для обновления мировых координат при перемещении линии
-     *
-     * @param line - ссылка на линию
-     */
-    private void updatePoindLine(Line line) {
-        for (PoindLine p : poindLines) {
-            if (p != null) {
-                if (line.getId().equals(p.getLine().getId())) {
-                    String[] namePoind = p.getId().split("_");
-                    Circle a = findCircle(namePoind[0]);
-                    Circle b = findCircle(namePoind[1]);
-                    findCirclesUpdateXY(a.getId(), gridViews.revAccessX(a.getCenterX()), gridViews.revAccessY(a.getCenterY()));
-                    findCirclesUpdateXY(b.getId(), gridViews.revAccessX(b.getCenterX()), gridViews.revAccessY(b.getCenterY()));
-                 //   findLineUpdateXY(a.getId());
-                 //   findLineUpdateXY(b.getId());
-                }
-            }
-        }
-
-    }
 
     /**
      * Метод indLineMove(Line line).
@@ -1488,40 +1411,6 @@ class Model implements Observable {
         return false;
     }
 
-    /**
-     * Метод  rayAddLine(Line newLine, int seg).
-     * Предназначен для расчета окончания луча.
-     *
-     * @param newLine - ссылка на линию
-     * @param seg     - тип линии
-     */
-    public void rayAddLine(Line newLine, int seg) {
-        //Расчитать координаты окончания луча
-        double x, y, x1, y1;
-        x = getRayEndX() + (getScreenX() - getRayEndX()) * 3;
-        y = getRayEndY() + (getScreenY() - getRayEndY()) * 3;
-        x1 = getRayEndX() + (getScreenX() - getRayEndX()) * -3;
-        y1 = getRayEndY() + (getScreenY() - getRayEndY()) * -3;
-        //Добавить координаты пересчета в коллекцию
-        setRayStartX(x);
-        setRayStartY(y);
-        //Пересчет координат в мировые
-        setVerLineStartX(gridViews.revAccessX(x));
-        setVerLineStartY(gridViews.revAccessY(y));
-        if (seg == 2) {
-            setRayEndX(x1);
-            setRayEndY(y1);
-            setVerLineEndX(gridViews.revAccessX(x1));
-            setVerLineEndY(gridViews.revAccessY(y1));
-        } else {
-            setVerLineEndX(gridViews.revAccessX(getRayEndX()));
-            setVerLineEndY(gridViews.revAccessY(getRayEndY()));
-        }
-        //Передать в View для вывода
-        setLine(newLine);
-        notifyObservers("RayGo");
-        findLinesUpdateXY(newLine.getId());//обновляем мировые координаты
-    }
 
     /**
      * Метод createLineAdd(int segment).
@@ -1627,7 +1516,7 @@ class Model implements Observable {
      * Метод findNameId(String name, String linaA)
      * Предназначен для поиска по коллекции PoindLine для замены имени отрезка в коллекции
      *
-     * @param name  - имя отрезка (a) для замены (на А_В)
+     * @param name  - имя отрезка (а) для замены (на А_В)
      * @param linaA - линия а
      */
     public void findNameId(String name, String linaA) {
@@ -1698,7 +1587,6 @@ class Model implements Observable {
         }
     }
 
-
     /**
      * Метод findLinesUpdateXY(String id).
      * Предназначен для замены мировых координат при построении отрезков, лучей и прямых
@@ -1720,8 +1608,6 @@ class Model implements Observable {
         }
 
     }
-
-
 
     /**
      * Метод findPoindCircleMove(String id).
@@ -1934,18 +1820,10 @@ class Model implements Observable {
         l.startYProperty().bindBidirectional(c1.centerYProperty());
         l.endXProperty().bindBidirectional(c2.centerXProperty());
         l.endYProperty().bindBidirectional(c2.centerYProperty());
-        c1.centerXProperty().addListener((obj, oldValue, newValue) -> {
-            findLinesUpdateXY(l.getId());
-        });
-        c1.centerYProperty().addListener((obj, oldValue, newValue) -> {
-            findLinesUpdateXY(l.getId());
-        });
-        c2.centerXProperty().addListener((obj, oldValue, newValue) -> {
-            findLinesUpdateXY(l.getId());
-        });
-        c2.centerYProperty().addListener((obj, oldValue, newValue) -> {
-            findLinesUpdateXY(l.getId());
-        });
+        c1.centerXProperty().addListener((obj, oldValue, newValue) -> findLinesUpdateXY(l.getId()));
+        c1.centerYProperty().addListener((obj, oldValue, newValue) -> findLinesUpdateXY(l.getId()));
+        c2.centerXProperty().addListener((obj, oldValue, newValue) -> findLinesUpdateXY(l.getId()));
+        c2.centerYProperty().addListener((obj, oldValue, newValue) -> findLinesUpdateXY(l.getId()));
     }
 
     /**
@@ -2107,22 +1985,22 @@ class Model implements Observable {
         ray.startXProperty().bindBidirectional(cStart.centerXProperty());
         ray.startYProperty().bindBidirectional(cStart.centerYProperty());
         //Расчет конца луча
-        ray.startYProperty().addListener((obj, oldValue, newValue) ->{
+        ray.startYProperty().addListener((obj, oldValue, newValue) -> {
             ray.setEndY(rayLineY(cStart, cEnd));
-            findLinesUpdateXY(line.getId());
+            findLinesUpdateXY(ray.getId());
         });
         ray.startXProperty().addListener((obj, oldValue, newValue) -> {
             ray.setEndX(rayLineX(cStart, cEnd));
-            findLinesUpdateXY(line.getId());
+            findLinesUpdateXY(ray.getId());
         });
         //Точка на луче
         cEnd.centerXProperty().addListener((obj, oldValue, newValue) -> {
             ray.setEndX(rayLineX(cStart, cEnd));
-            findLinesUpdateXY(line.getId());
+            findLinesUpdateXY(ray.getId());
         });
         cEnd.centerYProperty().addListener((obj, oldValue, newValue) -> {
             ray.setEndY(rayLineY(cStart, cEnd));
-            findLinesUpdateXY(line.getId());
+            findLinesUpdateXY(ray.getId());
         });
     }
 
