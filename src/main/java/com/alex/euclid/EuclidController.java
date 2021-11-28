@@ -255,6 +255,22 @@ public class EuclidController extends View {
             model.notifyObservers("RayGo");
             model.setPoindTwo(true);//разрешение для постройки 2 точки
         }
+        //построение луча
+        if (model.getCreateGeometric()==4 && model.isPoindOne()){
+            newLine.setVisible(true);
+            //расчитать концов прямой по уравнению прямой
+            double x = model.getSegmentStartX()+ (model.getScreenX() - model.getSegmentStartX()) * 3;
+            double y = model.getSegmentStartY() + (model.getScreenY() - model.getSegmentStartY()) * 3;
+                       //задать координаты прямой
+            model.setRayStartX(model.getSegmentStartX());
+            model.setRayStartY(model.getSegmentStartY());
+            model.setRayEndX(x);
+            model.setRayEndY(y);
+            //Передать в View для вывода
+            model.setLine(newLine);
+            model.notifyObservers("RayGo");
+            model.setPoindTwo(true);//разрешение для постройки 2 точки
+        }
     }
 
 
