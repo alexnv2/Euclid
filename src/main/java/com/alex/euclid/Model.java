@@ -107,6 +107,9 @@ class Model implements Observable {
 
     private boolean createLine = false;//true - режим добавления отрезка, луча, прямой (необходима для перемещения линий)
 
+    boolean poindAddVertical = false;
+    boolean lineAddVertical = false;
+
     //режимы создания
     //Режим создания: 0- выход, 1- точка, 2-отрезок, 3- прямая, 4-луч, 5-угол, 6-перпендикуляр
     //7-параллельная прямая, 8-треугольник, 9-медиана, 10-высота, 11-биссектриса, 12-середина отрезка
@@ -386,7 +389,7 @@ class Model implements Observable {
      * Переменная createGeometric - определяет режим построения
      * 0-сбросить режим, 1- точка, 2- отрезок, 3-прямая, 4-луч, 5-угол
      * 6- перпендикуляр, 7 - параллельные прямые, 8-треугольник
-     * 9- медиага 10-высота, 11-биссектриса, 12-середина отрезка, 14-окружность
+     * 9- медиана 10-высота, 11-биссектриса, 12-середина отрезка, 14-окружность
      */
     public void createGeometrics() {
         switch (createGeometric) {
@@ -418,7 +421,62 @@ class Model implements Observable {
 
 
             case 5 -> System.out.println("Угол");
-            case 6 -> System.out.println("Перпендикуляр");
+            case 6 -> {
+
+                if (isPoindOldAdd()) {
+                    circle = getTimeVer();//получаем точку из которой надо опустить перпендикуляр
+                    poindAddVertical = true;
+                    newSegment.append(circle.getId());
+                    newSegment.append("_");
+                }
+                if (isLineOldAdd()) {
+                    line = getTimeLine();//получаем прямую к которой надо опустить перпендикуляр
+                    lineAddVertical = true;
+                }
+                //Опускаем перпендикуляр, не важно что выбрано первым
+                if (poindAddVertical && lineAddVertical) {
+                    String[] nameLine = findID(line).split("_");//получить имя отрезка по имени прямой
+                    Point2D A1 = new Point2D(circle.getCenterX(), circle.getCenterY());
+                    Point2D B1 = new Point2D(line.getStartX(), line.getStartY());
+                    Point2D C1 = new Point2D(line.getEndX(), line.getEndY());
+                    Point2D D1 = heightPoind(A1, B1, C1);//координаты точки пересечения
+                    Line lP = createLineAdd(7);//Создание перпендикуляра
+                    //Задаем координаты
+                    setSegmentStartX(circle.getCenterX());
+                    setSegmentStartY(circle.getCenterY());
+                    setScreenX(D1.getX());
+                    setScreenY(D1.getY());
+                    closeLine(lP);//запрет на перемещение
+                    //Передать в View для вывода
+                    setLine(lP);
+                    notifyObservers("SideGo");
+                    //Привязать события мыши
+                    mouseLine(lP);
+                    //Переводим координаты линии в мировые
+                    findLinesUpdateXY(newLine.getId());
+                    //Переводим в мировые координаты точки
+                    setDecartX(gridViews.revAccessX(D1.getX()));
+                    setDecartY(gridViews.revAccessY(D1.getY()));
+                    //Создаем расчетную точку не перемещаемую
+                    Circle newPoind = createPoindAdd(false);//создать точку
+                    newSegment.append(newPoind.getId());
+                    //Обновить мировые координаты коллекции
+                    findCirclesUpdateXY(newPoind.getId(), gridViews.revAccessX(newPoind.getCenterX()), gridViews.revAccessY(newPoind.getCenterY()));
+                    //Заменить имя прямой на имя отрезка
+                    findNameId(newSegment.toString(), lP.getId());
+                    setTxtShape("");
+                    txtAreaOutput();
+                    //getChildren().add(newPoind);//добавить на доску
+                    //связать точки и перпендикуляр для перемещения
+                    verticalBindCircles(circle, findCircle(nameLine[0]), findCircle(nameLine[1]), newPoind, lP);
+
+                    poindAddVertical = false;
+                    lineAddVertical = false;
+
+                    //закрыть режим создания перпендикуляра
+                    createGeometric = 0;
+                }
+            }
             case 7 -> System.out.println(" || прямые");
             case 8 -> System.out.println("Треугольник");
             case 9 -> System.out.println("Медиана");
@@ -846,7 +904,7 @@ class Model implements Observable {
 
 
         //Если точка на линии
-        if (lineOldAdd && createGeometric!=12) {
+        if (lineOldAdd && createGeometric!=12 && createGeometric!=6) {
             System.out.println("yes");
             double t = (vertex.getCenterX() - timeLine.getStartX()) / (timeLine.getEndX() - timeLine.getStartX());
             for (PoindCircle p : poindCircles) {
