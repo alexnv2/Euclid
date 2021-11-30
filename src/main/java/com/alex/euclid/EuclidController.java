@@ -112,7 +112,7 @@ public class EuclidController extends View {
     private CheckMenuItem menuAngleName;
 
 
-    private boolean treangleVisibly = false;//true - кнопки построить биссектрису, медиану, высоту видимы, т.к. есть уже треугольник
+
     private String infoStatus;//Вершины угла и вершины треугольника при создании.
 
     /**
@@ -209,7 +209,7 @@ public class EuclidController extends View {
         btnParallelLines.setDisable(b);
         btnTreangle.setDisable(b);
         btnDelete.setDisable(b);
-        if (treangleVisibly) {
+        if (model.isTreangleVisibly()) {
             btnBisector.setDisable(b);
             btnMediana.setDisable(b);
             btnHeight.setDisable(b);
@@ -230,13 +230,15 @@ public class EuclidController extends View {
         model.setDecartX(gridViews.revAccessX(mouseEvent.getX()));
         model.setDecartY(gridViews.revAccessY(mouseEvent.getY()));
         rightStatus.setText("Координаты доски x: " + gridViews.revAccessX(mouseEvent.getX()) + " y: " + gridViews.revAccessY(mouseEvent.getY()));
-        //Построение отрезка
-        if (model.getCreateGeometric() == 2 && model.isPoindOne()) {
+        //Построение отрезка и треугольника
+        if ((model.getCreateGeometric() == 2 || model.getCreateGeometric()==8) && model.isPoindOne()) {
             newLine.setVisible(true);
             model.setLine(newLine);
             model.notifyObservers("SideGo");
             model.setPoindTwo(true);
         }
+
+
         //построение прямой
         if (model.getCreateGeometric()==3 && model.isPoindOne()){
             newLine.setVisible(true);
@@ -270,6 +272,17 @@ public class EuclidController extends View {
             model.setLine(newLine);
             model.notifyObservers("RayGo");
             model.setPoindTwo(true);//разрешение для постройки 2 точки
+        }
+        //Построение окружности
+        if (model.getCreateGeometric()==14 && model.isPoindOne()){
+            //Расчитать радиус
+            double r = model.distance(model.getSegmentStartX(), model.getScreenY(), model.getScreenX(), model.getScreenY());
+            double rw = model.distance(gridViews.revAccessX(model.getSegmentStartX()), gridViews.revAccessY(model.getSegmentStartY()), model.getDecartX(), model.getDecartY());
+            model.setRadiusCircle(Math.round(r));
+            model.setRadiusCircleW(Math.round(rw));
+            model.setPoindTwo(true);
+            model.circleView(model.getCircle());//вывести на доску
+
         }
     }
 
@@ -329,6 +342,9 @@ public class EuclidController extends View {
         if (model.getCreateGeometric() == 0) {
             disableButton(false);
             model.setCreateShape(false);
+            //Добавить в правую часть доски
+            model.setTxtShape("");
+            model.txtAreaOutput();
         }
 
         event.consume();
@@ -1024,6 +1040,7 @@ public class EuclidController extends View {
         disableButton(true);//блокировать кнопки
         model.setCreateGeometric(8);//Установить режим добавления треугольника
         model.setCreateShape(true);//Установить режим создания фигуры
+        model.setColVertex(3);//задать количество вершин для треугольника
     }
 
     /**
@@ -1127,7 +1144,7 @@ public class EuclidController extends View {
             model.initIndex();//инициализация индексов
             model.setTxtShape("");
             model.txtAreaOutput();
-            treangleVisibly = false;//режим блокировки кнопок медиана, биссектриса, высота
+            model.setTreangleVisibly(false);//режим блокировки кнопок медиана, биссектриса, высота
             disableButton(false);//сбросить режим блокировки
             btnHeight.setDisable(true);//заблокировать
             btnMediana.setDisable(true);//заблокировать

@@ -17,10 +17,7 @@ import lombok.Data;
 
 import java.io.File;
 import java.text.MessageFormat;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.LinkedList;
-import java.util.Objects;
+import java.util.*;
 
 import static ContstantString.StringStatus.*;
 import static java.lang.StrictMath.pow;
@@ -61,6 +58,11 @@ class Model implements Observable {
     private String stringLeftStatus;//для хранения и передачи в View статусных сообщений
     private String leftHTML;//хранит адрес файла HTML из папки Web для передачи в View
     private String txtShape = "";//хранит строку о геометрической фигуре на доске
+    //Вершины треугольника при построении
+    private Circle vertexTr1;
+    private Circle vertexTr2;
+    private Circle vertexTr3;
+    private int colVertex;//Количество вершин для многоугольника, 3-для треугольника, 4- для четырехугольника
 
     //координаты
     private double screenX;//координата экрана Х от мышки
@@ -101,14 +103,19 @@ class Model implements Observable {
     //  private boolean poindAdd = false;//true- режим добавления точки
     private boolean poindLineAdd1 = false;//true - добавление точки на линию
     private boolean poindLineAdd2 = false;//true - добавление точки на линию
+    private boolean treangleVisibly = false;//true - кнопки построить биссектрису, медиану, высоту видимы, т.к. есть уже треугольник
 
     private boolean poindOne = false;//true - первая точка отрезка построена
     private boolean poindTwo = false;//true - построение второй точки
+    private boolean poindThree=false;//true - построение третьей точки
 
     private boolean createLine = false;//true - режим добавления отрезка, луча, прямой (необходима для перемещения линий)
 
-    boolean poindAddVertical = false;
-    boolean lineAddVertical = false;
+    boolean poindAddVertical = false;//для  построения перпендикуляра, выбор точки
+    boolean lineAddVertical = false;//выбор линии
+    private boolean poindAddVParallel;//для построения параллельных прямых, выбор точки
+    private boolean lineAddParallel;//выбор линии
+
 
     //режимы создания
     //Режим создания: 0- выход, 1- точка, 2-отрезок, 3- прямая, 4-луч, 5-угол, 6-перпендикуляр
@@ -116,6 +123,7 @@ class Model implements Observable {
     private int createGeometric = 0;
 
     StringBuilder newSegment = new StringBuilder();
+    private int segmentLength =0;
 
 
     //Свойства углов
@@ -166,6 +174,7 @@ class Model implements Observable {
     private LinkedList<NamePoindLine> namePoindLines = new LinkedList<>();//коллекция для имен
     private LinkedList<TreangleName> treangleNames = new LinkedList<>();//коллекция треугольников
     private LinkedList<CircleLine> circleLines = new LinkedList<>();//коллекция окружностей
+    private Stack<Circle> circleStack=new Stack<Circle>();//стек для точек
 
     //Определяем связанный список для регистрации классов слушателей
     private LinkedList<Observer> observers = new LinkedList<>();
@@ -174,7 +183,6 @@ class Model implements Observable {
     public void setWindShow(int w) {
         WIND_SHOW = w;
     }
-
     public int getWindShow() {
         return WIND_SHOW;
     }
@@ -418,11 +426,8 @@ class Model implements Observable {
                     newPoindShapeEnd();
                 }
             }
-
-
             case 5 -> System.out.println("Угол");
             case 6 -> {
-
                 if (isPoindOldAdd()) {
                     circle = getTimeVer();//получаем точку из которой надо опустить перпендикуляр
                     poindAddVertical = true;
@@ -474,14 +479,150 @@ class Model implements Observable {
                     lineAddVertical = false;
 
                     //закрыть режим создания перпендикуляра
+                    newSegment.delete(0, newSegment.length());//очистить строку
                     createGeometric = 0;
                 }
             }
-            case 7 -> System.out.println(" || прямые");
-            case 8 -> System.out.println("Треугольник");
-            case 9 -> System.out.println("Медиана");
-            case 10 -> System.out.println("Высота");
-            case 11 -> System.out.println("Середина отрезка");
+            case 7 -> {
+                if (isPoindOldAdd()) {
+                    circle = getTimeVer();//получаем точку через которую надо провести параллельную прямую
+                    newSegment.append(circle.getId());
+                    newSegment.append("_");
+                    poindAddVParallel = true;
+                }
+                if (isLineOldAdd()) {
+                    line = getTimeLine();//получаем прямую к которой надо построить параллельную прямую
+                    lineAddParallel = true;
+                }
+                if (poindAddVParallel && lineAddParallel) {
+                    //получить имя отрезка по имени прямой
+                    String[] nameLine = findID(line).split("_");
+                    //Расчитать координаты новой точки
+                    setScreenX(findCircle(nameLine[1]).getCenterX() + (circle.getCenterX() - findCircle(nameLine[0]).getCenterX()));
+                    setScreenY(findCircle(nameLine[1]).getCenterY() + (circle.getCenterY() - findCircle(nameLine[0]).getCenterY()));
+                    //Создать новую точку
+                    Circle newPoind = createPoindAdd(true);
+                    newSegment.append(newPoind.getId());
+                    //Обновить мировые координаты коллекции
+                    findCirclesUpdateXY(newPoind.getId(), gridViews.revAccessX(newPoind.getCenterX()), gridViews.revAccessY(newPoind.getCenterY()));
+                    //Вывести на доску
+                    setVertex(newPoind);
+                    notifyObservers("VertexGo");
+                    //Создать параллельную прямую
+                    Line parallelLine = createLineAdd(2);
+                    //задать координаты прямой
+                    setRayStartX(circle.getCenterX() + (newPoind.getCenterX() - circle.getCenterX()) * 3);
+                    setRayStartY(circle.getCenterY() + (newPoind.getCenterY() - circle.getCenterY()) * 3);
+                    setRayEndX(circle.getCenterX() + (newPoind.getCenterX() - circle.getCenterX()) * -3);
+                    setRayEndY(circle.getCenterY() + (newPoind.getCenterY() - circle.getCenterY()) * -3);
+                    //Передать в View для вывода
+                    setLine(parallelLine);
+                    notifyObservers("RayGo");
+                    parallelLine.toBack();
+                    //Обновить мировые координаты
+                    findLinesUpdateXY(parallelLine.getId());
+                    //Привязка свойств мышки
+                    mouseLine(parallelLine);
+                    //Заменить имя
+                    findNameId(newSegment.toString(), parallelLine.getId());
+                    //Добавить имя
+                    nameLineAdd(parallelLine);
+                    //Связать параллельные прямые
+                    parallelBindLine(findCircle(nameLine[0]), findCircle(nameLine[1]), circle, newPoind);
+                    //Связать точки с прямой
+                    circlesBindLine(circle, newPoind, parallelLine);
+                    //Вывод информации об объектах в правую часть доски
+                    setTxtShape("");
+                    txtAreaOutput();
+                    //закрыть режим создания параллельных прямых
+                    newSegment.delete(0, newSegment.length());//очистить строку
+                    poindAddVParallel = false;
+                    lineAddParallel = false;
+                    createGeometric = 0;
+                }
+            }
+            case 8 ->{
+                vertexTr1=newCirclePoind();
+                setSegmentStartX(vertexTr1.getCenterX());
+                setSegmentStartY(vertexTr1.getCenterY());
+                setPoindOne(true);
+                newSegment.append(vertexTr1.getId());
+                newSegment.append("_");
+                circleStack.push(vertexTr1);
+                if (poindTwo){
+                    Line l1 = createLineAdd(3);
+                    setSegmentStartX(newLine.getStartX());
+                    setSegmentStartY(newLine.getStartY());
+                    setScreenX(newLine.getEndX());
+                    setScreenY(newLine.getEndY());
+                    setLine(l1);
+                    l1.toBack();
+                    //заменить имя отрезка
+                    findNameId(newSegment.substring(segmentLength,segmentLength+3).toString(),l1.getId());
+                    segmentLength+=2;
+                    notifyObservers("SideGo");
+                    setPoindTwo(false);
+                    setColVertex(getColVertex()-1);
+                    setSegmentStartX(newLine.getEndX());
+                    setSegmentStartY(newLine.getEndY() );
+                }
+                if (getColVertex()==1){
+                    vertexTr3=circleStack.pop();
+                    vertexTr2=circleStack.pop();
+                    vertexTr1=circleStack.pop();
+                    Line l1 = createLineAdd(3);
+                    setSegmentStartX(vertexTr1.getCenterX());
+                    setSegmentStartY(vertexTr1.getCenterY());
+                    setScreenX(newLine.getEndX());
+                    setScreenY(newLine.getEndY());
+                    newLine.setVisible(false);
+                    setLine(l1);
+                    l1.toBack();
+                    //заменить имя отрезка
+                    findNameId(vertexTr1.getId()+"_"+vertexTr3.getId(),l1.getId());
+                    notifyObservers("SideGo");
+                    newSegment.delete(newSegment.length()-1,newSegment.length());//удалить последнее _
+                    //связать имена вершин с линиями
+                    lineBindCircles(vertexTr1,vertexTr2,findLineVertex(vertexTr1.getId()+"_"+vertexTr2.getId()));
+                    lineBindCircles(vertexTr2,vertexTr3,findLineVertex(vertexTr2.getId()+"_"+vertexTr3.getId()));
+                    lineBindCircles(vertexTr1,vertexTr3,findLineVertex(vertexTr1.getId()+"_"+vertexTr3.getId()));
+                    //Добавить многоугольник в форме треугольника
+                    Polygon t = treangleAdd(vertexTr1,vertexTr2, vertexTr3,newSegment.toString());
+                    paneBoards.getChildren().add(t);
+                    t.toBack();
+                    //закончить построение
+                    newSegment.delete(0, newSegment.length());//очистить строку
+                    setCreateGeometric(0);
+                    setSegmentLength(0);
+                    setPoindThree(false);
+                    setPoindOne(false);
+                    setPoindTwo(false);
+                    setTreangleVisibly(true);//разблокировать кнопки высота, медиана, биссектриса
+
+
+                }
+            }
+            case 9 -> {
+                vertex = getTimeVer();
+                newLine = mbhLineAdd(vertex, 4);
+                mouseLine(newLine);//привязка событий мыши
+                closeLine(newLine);//запрет на перемещение
+                createGeometric = 0;
+            }
+            case 10 -> {
+                vertex = getTimeVer();
+                newLine = mbhLineAdd(vertex, 6);
+                mouseLine(newLine);//привязка событий мыши
+                closeLine(newLine);//запрет на перемещение
+                createGeometric = 0;
+            }
+            case 11 -> {
+                vertex = getTimeVer();
+                newLine = mbhLineAdd(vertex, 5);
+                mouseLine(newLine);//привязка событий мыши
+                closeLine(newLine);//запрет на перемещение
+                createGeometric = 0;
+            }
             case 12 -> {
                 // Построение середины отрезка
                 Line l = getTimeLine();//получаем отрезок, для которого надо построить середину
@@ -505,11 +646,27 @@ class Model implements Observable {
                     notifyObservers("LeftStatusGo");
                 }
                 createGeometric = 0;
-             }
-
-
+            }
             case 13 -> System.out.println("Удалить");
-            case 14 -> System.out.println("Окружность");
+            case 14 -> {
+                //Взять существующую или создать новую точку для прямой
+                if (!isPoindTwo()) {
+                    Circle c1 = newCirclePoind();
+                    //Сохранить координаты центра окружности
+                    setSegmentStartX(c1.getCenterX());
+                    setSegmentStartY(c1.getCenterY());
+                    //создать новую окружность
+                    circle = createCircleAdd(c1);
+                    setPoindOne(true);
+                }
+                    if (isPoindTwo()) {
+                        createGeometric = 0;
+                        setPoindOne(false);
+                        setPoindTwo(false);
+                    }
+
+                }
+
 
 
         }
@@ -559,7 +716,7 @@ class Model implements Observable {
 
     private void newPoindShapeEnd() {
         //закончить построение
-        newSegment.delete(0, 3);//очистить строку
+        newSegment.delete(0, newSegment.length());//очистить строку
         createGeometric = 0;
         setPoindOne(false);
         setPoindTwo(false);
@@ -904,7 +1061,7 @@ class Model implements Observable {
 
 
         //Если точка на линии
-        if (lineOldAdd && createGeometric!=12 && createGeometric!=6) {
+        if (lineOldAdd && createGeometric != 12 && createGeometric != 6 && createGeometric != 7) {
             System.out.println("yes");
             double t = (vertex.getCenterX() - timeLine.getStartX()) / (timeLine.getEndX() - timeLine.getStartX());
             for (PoindCircle p : poindCircles) {
@@ -1154,9 +1311,7 @@ class Model implements Observable {
                 setRadiusCircleW(Math.round(distance(gridViews.revAccessX(c.getCenterX()), gridViews.revAccessY(c.getCenterY()), getDecartX(), getDecartY())));
                 updateCircle(newCircle);
                 circleView(newCircle);
-                //Добавить в правую часть доски
-                setTxtShape("");
-                txtAreaOutput();
+
             }
         });
         return newCircle;
@@ -1571,16 +1726,13 @@ class Model implements Observable {
      * @param v2 - вершина В
      * @param v3 - вершина С
      */
-    public Polygon treangleAdd(Point2D v1, Point2D v2, Point2D v3, String nameTr) {
+    public Polygon treangleAdd(Circle v1, Circle v2, Circle v3, String nameTr) {
         Polygon treangle = new Polygon();
-        treangle.getPoints().addAll(v1.getX(), v1.getY(), v2.getX(), v2.getY(), v3.getX(), v3.getY());
+        treangle.getPoints().addAll(v1.getCenterX(), v1.getCenterY(), v2.getCenterX(), v2.getCenterY(),
+                v3.getCenterX(), v3.getCenterY());
         treangle.setFill(Color.CHOCOLATE);
         treangle.setOpacity(0.2);
-        String[] vertex = nameTr.split("_");
-        Circle c1 = findCircle(vertex[0]);
-        Circle c2 = findCircle(vertex[1]);
-        Circle c3 = findCircle(vertex[2]);
-        polygonBindCircles(c1, c2, c3, treangle);
+        polygonBindCircles(v1, v2, v3, treangle);
         treangleNames.add(new TreangleName(treangle, nameTr));
         //привязать событие мыши
         treangle.setOnMouseEntered(e -> {
@@ -1650,6 +1802,22 @@ class Model implements Observable {
         return null;
     }
 
+    /**
+     * Метод  findLineVertex(String s).
+     * Предназначен для поиска в коллекции линии по названию вершин (А_В)
+     * @param s - имя вершин типа А_В
+     * @return - возвращает ссылку на линию
+     */
+    Line findLineVertex(String s){
+        for (PoindLine p : poindLines){
+            if (p!=null) {
+                if (p.getId().equals(s)) {
+                    return p.getLine();
+                }
+            }
+        }
+        return null;
+    }
     /**
      * Метод findCirclesUpdateXY(String id).
      * Предназначен для поиска объектов в коллекции PoindCircle по имени и
@@ -2283,9 +2451,9 @@ class Model implements Observable {
         line = newLineTreangle;
         notifyObservers("SideGo");
         findLinesUpdateXY(newLineTreangle.getId());
-        paneBoards.getChildren().addAll(newLineTreangle, newPoindTreangle);//добавить на доску
-        newLineTreangle.toFront();
-        // findNameId(c.getId(), newPoindTreangle.getId(), newLineTreangle.getId());
+        //paneBoards.getChildren().addAll(newLineTreangle, newPoindTreangle);//добавить на доску
+        newLineTreangle.toBack();
+         findNameId(c.getId()+"_"+newPoindTreangle.getId(), newLineTreangle.getId());
         //Связывание созданных отрезков и точки с вершинами треугольника
         switch (i) {
             case 4 -> mbhBindCircles(c, c1, c2, newPoindTreangle, newLineTreangle, 4);
