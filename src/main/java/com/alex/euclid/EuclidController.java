@@ -48,6 +48,7 @@ public class EuclidController extends View {
     public MenuItem menuSecondTr;
     public Font x3;
     public Line newLine;
+
     //Связать переменные с шаблоном FXML
     /**
      * paneShape - контейнер для геометрических фигур
@@ -111,9 +112,6 @@ public class EuclidController extends View {
     @FXML
     private CheckMenuItem menuAngleName;
 
-
-
-    private String infoStatus;//Вершины угла и вершины треугольника при создании.
 
     /**
      * Метод инициализации для класса Controller
@@ -230,15 +228,15 @@ public class EuclidController extends View {
         model.setDecartX(gridViews.revAccessX(mouseEvent.getX()));
         model.setDecartY(gridViews.revAccessY(mouseEvent.getY()));
         rightStatus.setText("Координаты доски x: " + gridViews.revAccessX(mouseEvent.getX()) + " y: " + gridViews.revAccessY(mouseEvent.getY()));
+
         //Построение отрезка и треугольника
         if ((model.getCreateGeometric() == 2 || model.getCreateGeometric()==8) && model.isPoindOne()) {
             newLine.setVisible(true);
             model.setLine(newLine);
             model.notifyObservers("SideGo");
             model.setPoindTwo(true);
+            model.lineAddPoind(newLine);
         }
-
-
         //построение прямой
         if (model.getCreateGeometric()==3 && model.isPoindOne()){
             newLine.setVisible(true);
@@ -400,12 +398,12 @@ public class EuclidController extends View {
             for (VertexArc va : model.getVertexArcs()) {
                 if (va != null) {
                     Arc a = va.getArc();
-                    a.setCenterX(gridViews.accessX(va.getCenterX()));
-                    a.setCenterY(gridViews.accessY(va.getCenterY()));
-                    a.setRadiusX(va.getRadiusX());
-                    a.setRadiusY(va.getRadiusY());
-                    a.setStartAngle(va.getStartAngle());
-                    a.setLength(va.getLengthAngle());
+                    model.setScreenX(gridViews.accessX(va.getCenterX()));
+                    model.setScreenY(gridViews.accessY(va.getCenterY()));
+                    model.setAngleStart(va.getStartAngle());
+                    model.setAngleLength(va.getLengthAngle());
+                    model.setArcGo(a);
+                    model.notifyObservers("ArcGo");
                 }
             }
             //Обновление окружности
@@ -937,9 +935,9 @@ public class EuclidController extends View {
         //Установить статус
         model.setStringLeftStatus(STA_14);
         model.notifyObservers("LeftStatusGo");
-        infoStatus = "";//Сбросить переменную для новой записи вершин угла
         disableButton(true);//блокировать кнопки
         model.setCreateGeometric(5);//Установить режим добавления угла
+        model.setColVertex(3);//Количество вершин для угла
         model.setCreateShape(true);//Установить режим создания фигуры
     }
 
@@ -1036,7 +1034,6 @@ public class EuclidController extends View {
     public void btnTreangle() {
         model.setStringLeftStatus(STA_5);
         model.notifyObservers("LeftStatusGo");
-        infoStatus = "";//Сбросить переменную для новой записи вершин треугольника
         disableButton(true);//блокировать кнопки
         model.setCreateGeometric(8);//Установить режим добавления треугольника
         model.setCreateShape(true);//Установить режим создания фигуры
@@ -1149,6 +1146,9 @@ public class EuclidController extends View {
             btnHeight.setDisable(true);//заблокировать
             btnMediana.setDisable(true);//заблокировать
             btnBisector.setDisable(true);//заблокировать
+            //Необходима для построения отрезков, лучей и прямых.
+            //Определена fxml.
+            paneShape.getChildren().add(newLine);//необходима для построения отрезков, лучей и прямых
         }
     }
 
@@ -1193,7 +1193,6 @@ public class EuclidController extends View {
             e.printStackTrace();
         }
     }
-
 
     //Тестовая кнопка вывод информации по всем коллекциям для тестирования системы
     public void btnTest() {
