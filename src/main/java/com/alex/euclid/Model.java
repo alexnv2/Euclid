@@ -101,7 +101,6 @@ class Model implements Observable {
     private boolean poindOldAdd = false;//true - Берем существующие точки для построения фигур
     private boolean poindOld = false;//true - Если точка на дистанции 25рх от конца линии
     private boolean lineOldAdd = false;//true - Берем существующую линию для построения фигур
-    //  private boolean poindAdd = false;//true- режим добавления точки
     private boolean poindLineAdd1 = false;//true - добавление точки на линию
     private boolean poindLineAdd2 = false;//true - добавление точки на линию
     private boolean treangleVisibly = false;//true - кнопки построить биссектрису, медиану, высоту видимы, т.к. есть уже треугольник
@@ -183,7 +182,6 @@ class Model implements Observable {
     public void setWindShow(int w) {
         WIND_SHOW = w;
     }
-
     public int getWindShow() {
         return WIND_SHOW;
     }
@@ -342,10 +340,8 @@ class Model implements Observable {
                 double s2 = p.getX();
                 double s3 = p.getY();
                 txtShape = MessageFormat.format("{0}Точка: {1} ({2}, {3})\n", txtShape, s1, s2, s3);
-
             }
         }
-
         //Информация об отрезках, лучах и прямых
         for (PoindLine p : poindLines) {
             if (p.getLine() != null) {
@@ -376,7 +372,6 @@ class Model implements Observable {
                 txtShape = MessageFormat.format("{0}Угол {1}= {2} гр. \n", txtShape, nameSplitRemove(v.getId()), v.getLengthAngle());
             }
         }
-
         //Информация об треугольниках
         for (TreangleName t : treangleNames) {
             if (t != null) {
@@ -447,7 +442,6 @@ class Model implements Observable {
                     setCreateGeometric(0);
                     setSegmentLength(0);
                     newSegment.delete(0, newSegment.length());//очистить строку
-
                 }
             }
             case 6 -> {
@@ -682,10 +676,7 @@ class Model implements Observable {
                     setPoindOne(false);
                     setPoindTwo(false);
                 }
-
             }
-
-
         }
     }
 
@@ -852,7 +843,6 @@ class Model implements Observable {
                     }
                 }
             }
-
         }
     }
 
@@ -928,7 +918,6 @@ class Model implements Observable {
      * @return - объект Text
      */
     private Text findNameText(Circle circle) {
-
         for (NamePoindLine np : namePoindLines) {
             if (np != null) {
                 if (np.getId().equals(circle.getId())) {
@@ -1046,7 +1035,6 @@ class Model implements Observable {
             double cordY = vertexA.getCenterY() + (vertexB.getCenterY() - vertexA.getCenterY()) * findT(poindC);
             poindC.setCenterY(cordY);
         });
-
     }
 
     /**
@@ -1103,7 +1091,6 @@ class Model implements Observable {
             }
             //Связать точку с линией
             circlesBindOnLine(vertex, timeLine);
-
         }
         return vertex;//возвращает точку
     }
@@ -1121,7 +1108,6 @@ class Model implements Observable {
         newPoind.setFill(circleColorFill);//Цвет
         newPoind.setStroke(circleColorStroke);//Цвет линий
         newPoind.setId(indexPoindAdd());//Индификатор узла
-
         //Обработка событий
         //Перемещение с нажатой клавишей
         newPoind.setOnMouseDragged(e -> {
@@ -1334,11 +1320,13 @@ class Model implements Observable {
         //При перемещении с нажатой кнопкой
         newCircle.setOnMouseDragged(e -> {
             if (!createShape) {
-                Circle c = findCircle(findNameCircle(newCircle));
-                setRadiusCircle(Math.round(distance(c.getCenterX(), c.getCenterY(), getScreenX(), getScreenY())));
-                setRadiusCircleW(Math.round(distance(gridViews.revAccessX(c.getCenterX()), gridViews.revAccessY(c.getCenterY()), getDecartX(), getDecartY())));
-                updateCircle(newCircle);
-                circleView(newCircle);
+                setRadiusCircle(Math.round(distance(newCircle.getCenterX(), newCircle.getCenterY(), getScreenX(), getScreenY())));
+                setRadiusCircleW(Math.round(distance(gridViews.revAccessX(newCircle.getCenterX()), gridViews.revAccessY(newCircle.getCenterY()), getDecartX(), getDecartY())));
+                updateCircle(newCircle, findCircle(findNameCenterCircle(newCircle)));
+                setCircle(newCircle);
+                setSegmentStartX(newCircle.getCenterX());
+                setSegmentStartY(newCircle.getCenterY());
+                notifyObservers("CircleGo");
             }
         });
         return newCircle;
@@ -1351,14 +1339,14 @@ class Model implements Observable {
      *
      * @param c - ссылка на окружность
      */
-    public void updateCircle(Circle c) {
+    public void updateCircle(Circle c, Circle c0) {
         for (CircleLine p : circleLines) {
             if (p != null) {
                 if (p.getId().equals(c.getId())) {
                     p.setRadius(getRadiusCircleW());
                     p.setCircle(c);
-                    p.setX(gridViews.revAccessX(c.getCenterX()));
-                    p.setY(gridViews.revAccessY(c.getCenterY()));
+                    p.setX(gridViews.revAccessX(c0.getCenterX()));
+                    p.setY(gridViews.revAccessY(c0.getCenterY()));
                 }
             }
         }
@@ -1400,24 +1388,21 @@ class Model implements Observable {
         return 0;
     }
 
+
     /**
-     * Метод indNameCircle(Circle c).
-     * Возвращает имя окружности
-     *
+     * Метод findNameCenterCircle(Circle c).
+     * Возвращает имя центра окружности.
      * @param c - ссылка на окружность
-     * @return - имя окружности
+     * @return - возвращает имя центра окружности
      */
-    String findNameCircle(Circle c) {
-        for (CircleLine p : circleLines) {
-            if (p != null) {
-                if (p.getId().equals(c.getId())) {
-                    return p.getPoindID();
-                }
+    String findNameCenterCircle(Circle c){
+        for (CircleLine p : circleLines){
+            if(p.getId().equals(c.getId())){
+                return p.getPoindID();
             }
         }
         return null;
     }
-
     /**
      * Метод bindPoindCircle(Circle poind, Circle circle).
      * Предназначен для связывания центра окружности с окружностью для перемещения
@@ -1431,26 +1416,17 @@ class Model implements Observable {
             circle.setCenterX(poind.getCenterX());
             circle.setCenterY(poind.getCenterY());
             circle.setRadius(getRadiusCircle());
-            updateCircle(circle);//обновить коллекцию
+            updateCircle(circle,poind);//обновить коллекцию
         });
         poind.centerYProperty().addListener((obj, oldValue, newValue) -> {
             setRadiusCircle(findCircleRadiusW(circle));
             circle.setCenterX(poind.getCenterX());
             circle.setCenterY(poind.getCenterY());
             circle.setRadius(getRadiusCircle());
-            updateCircle(circle);//обновить коллекцию
+            updateCircle(circle, poind);//обновить коллекцию
         });
     }
 
-    /**
-     * Метод circleView().
-     * Предназначен для передачи на вывод окружности классу View.
-     */
-    public void circleView(Circle c) {
-        circle = c;
-        notifyObservers("CircleGo");
-
-    }
 
     /**
      * Метод createCircleAdd(Circle name).
@@ -1464,7 +1440,7 @@ class Model implements Observable {
         circleLines.add(new CircleLine(circle, gridViews.revAccessX(circle.getCenterX()), gridViews.revAccessY(circle.getCenterY()), circle.getId(), circle.getRadius(), name.getId()));
         paneBoards.getChildren().add(circle);//добавить окружность на доску
         circle.toBack();
-        bindPoindCircle(findCircle(findNameCircle(circle)), circle);
+        bindPoindCircle(findCircle(findNameCenterCircle(circle)), circle);
         return circle;
     }
 

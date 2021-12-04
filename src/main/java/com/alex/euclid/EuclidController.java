@@ -262,8 +262,7 @@ public class EuclidController extends View {
             model.setRadiusCircle(Math.round(r));
             model.setRadiusCircleW(Math.round(rw));
             model.setPoindTwo(true);
-            model.circleView(model.getCircle());//вывести на доску
-
+            model.notifyObservers("CircleGo");
         }
     }
 
