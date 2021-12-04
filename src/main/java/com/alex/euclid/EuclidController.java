@@ -14,7 +14,6 @@ import javafx.scene.input.MouseEvent;
 import javafx.scene.input.ScrollEvent;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
-import javafx.scene.shape.Arc;
 import javafx.scene.shape.Circle;
 import javafx.scene.shape.Line;
 import javafx.scene.text.Font;
@@ -48,6 +47,7 @@ public class EuclidController extends View {
     public MenuItem menuSecondTr;
     public Font x3;
     public Line newLine;
+
 
     //Связать переменные с шаблоном FXML
     /**
@@ -223,52 +223,35 @@ public class EuclidController extends View {
      * @param mouseEvent - координаты мыши
      */
     public void onMouseMoved(MouseEvent mouseEvent) {
+        //Координаты мышки экрана
         model.setScreenX(mouseEvent.getX());
         model.setScreenY(mouseEvent.getY());
+        //Координаты мышки пересчитанные в декартовые
         model.setDecartX(gridViews.revAccessX(mouseEvent.getX()));
         model.setDecartY(gridViews.revAccessY(mouseEvent.getY()));
+        //Вывод координат в окно уведомлений
         rightStatus.setText("Координаты доски x: " + gridViews.revAccessX(mouseEvent.getX()) + " y: " + gridViews.revAccessY(mouseEvent.getY()));
 
         //Построение отрезка и треугольника
         if ((model.getCreateGeometric() == 2 || model.getCreateGeometric()==8) && model.isPoindOne()) {
-            newLine.setVisible(true);
-            model.setLine(newLine);
+            newLine.setVisible(true);//вспомогательная линия, сделать видимой
+            model.setLine(newLine);//вывод на доску
             model.notifyObservers("SideGo");
-            model.setPoindTwo(true);
-            model.lineAddPoind(newLine);
+            model.setPoindTwo(true);//построение второй точки
+            model.lineAddPoind(newLine);//приклеить к ближайшей точке
         }
         //построение прямой
         if (model.getCreateGeometric()==3 && model.isPoindOne()){
             newLine.setVisible(true);
-            //расчитать концов прямой по уравнению прямой
-            double x = model.getSegmentStartX()+ (model.getScreenX() - model.getSegmentStartX()) * 3;
-            double y = model.getSegmentStartY() + (model.getScreenY() - model.getSegmentStartY()) * 3;
-            double x1 = model.getSegmentStartX() + (model.getScreenX() - model.getSegmentStartX()) * -3;
-            double y1 = model.getSegmentStartY() + (model.getScreenY() - model.getSegmentStartY()) * -3;
-            //задать координаты прямой
-            model.setRayStartX(x);
-            model.setRayStartY(y);
-            model.setRayEndX(x1);
-            model.setRayEndY(y1);
-            //Передать в View для вывода
-            model.setLine(newLine);
-            model.notifyObservers("RayGo");
+            //расчитать концы прямой по уравнению прямой
+            model.createMoveLine(newLine, 3);
             model.setPoindTwo(true);//разрешение для постройки 2 точки
         }
         //построение луча
         if (model.getCreateGeometric()==4 && model.isPoindOne()){
             newLine.setVisible(true);
-            //расчитать концов прямой по уравнению прямой
-            double x = model.getSegmentStartX()+ (model.getScreenX() - model.getSegmentStartX()) * 3;
-            double y = model.getSegmentStartY() + (model.getScreenY() - model.getSegmentStartY()) * 3;
-                       //задать координаты прямой
-            model.setRayStartX(model.getSegmentStartX());
-            model.setRayStartY(model.getSegmentStartY());
-            model.setRayEndX(x);
-            model.setRayEndY(y);
-            //Передать в View для вывода
-            model.setLine(newLine);
-            model.notifyObservers("RayGo");
+            //расчитать конец луча по уравнению прямой
+            model.createMoveLine(newLine, 4);
             model.setPoindTwo(true);//разрешение для постройки 2 точки
         }
         //Построение окружности
@@ -334,17 +317,16 @@ public class EuclidController extends View {
             gridViews.setVPx(event.getX());
             gridViews.setVPy(event.getY());
         }
-        //Вызвать режим построения
+        //Вызвать режим построения геометрических фигур
         model.createGeometrics();
         //Сбросить режим построения
         if (model.getCreateGeometric() == 0) {
-            disableButton(false);
-            model.setCreateShape(false);
+            disableButton(false);//сделать доступными кнопки
+            model.setCreateShape(false);//сбросить переменную построения
             //Добавить в правую часть доски
             model.setTxtShape("");
             model.txtAreaOutput();
         }
-
         event.consume();
     }//End onMousePressed()
 
@@ -366,9 +348,8 @@ public class EuclidController extends View {
 
     /**
      * Метод updateShape()
-     * Метод перемещения всех геометрических объектов на доске при
-     * перемещении координатной сетки или изменения масштаба.
-     * Для перемещения используются мировые координаты фигур из коллекций.
+     * Метод перемещения точек при перемещении координатной сетки или изменения масштаба.
+     * Для перемещения используются мировые координаты из коллекции.
      */
     private void updateShape() {
         if (!model.isCreateShape()) {
@@ -382,42 +363,7 @@ public class EuclidController extends View {
                     model.notifyObservers("VertexGo");
                 }
             });
-            //Обновление всех линий
-            for (PoindLine pl : model.getPoindLines()) {
-                if (pl != null) {
-                    //Обновляем отрезки
-                    Line l = pl.getLine();
-                    l.setStartX(gridViews.accessX(pl.getStX()));
-                    l.setStartY(gridViews.accessY(pl.getStY()));
-                    l.setEndX(gridViews.accessX(pl.getEnX()));
-                    l.setEndY(gridViews.accessY(pl.getEnY()));
-                }
-            }
-
-            //Обновление дуг углов
-            for (VertexArc va : model.getVertexArcs()) {
-                if (va != null) {
-                    Arc a = va.getArc();
-                    model.setScreenX(gridViews.accessX(va.getCenterX()));
-                    model.setScreenY(gridViews.accessY(va.getCenterY()));
-                    model.setAngleStart(va.getStartAngle());
-                    model.setAngleLength(va.getLengthAngle());
-                    model.setArcGo(a);
-                    model.notifyObservers("ArcGo");
-                }
-            }
-            //Обновление окружности
-            for (CircleLine cp : model.getCircleLines()) {
-                if (cp != null) {
-                    Circle c = cp.getCircle();
-                    c.setCenterX(gridViews.accessX(cp.getX()));
-                    c.setCenterY(gridViews.accessY(cp.getY()));
-                    double d = model.distance(gridViews.accessX(cp.getX()), gridViews.accessY(cp.getY()), gridViews.accessX(cp.getX() + cp.getRadius()), gridViews.accessY(cp.getY()));
-                    c.setRadius(d);
-                }
-            }
         }
-
     }
 
 
@@ -1176,7 +1122,6 @@ public class EuclidController extends View {
         }
     }
 
-
     /**
      * Метод TwofxmlLoader().
      * Предназначен для загрузки шаблона для признаков равенства треугольников
@@ -1198,8 +1143,6 @@ public class EuclidController extends View {
     public void btnTest() {
         model.ColTest();
     }
-
-
 }
 
 

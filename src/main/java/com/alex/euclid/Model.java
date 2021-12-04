@@ -623,23 +623,23 @@ class Model implements Observable {
             }
             case 9 -> {
                 vertex = getTimeVer();
-                newLine = mbhLineAdd(vertex, 4);
-                mouseLine(newLine);//привязка событий мыши
-                closeLine(newLine);//запрет на перемещение
+                line = mbhLineAdd(vertex, 4);
+                mouseLine(line);//привязка событий мыши
+                closeLine(line);//запрет на перемещение
                 createGeometric = 0;
             }
             case 10 -> {
                 vertex = getTimeVer();
-                newLine = mbhLineAdd(vertex, 6);
-                mouseLine(newLine);//привязка событий мыши
-                closeLine(newLine);//запрет на перемещение
+                line = mbhLineAdd(vertex, 6);
+                mouseLine(line);//привязка событий мыши
+                closeLine(line);//запрет на перемещение
                 createGeometric = 0;
             }
             case 11 -> {
                 vertex = getTimeVer();
-                newLine = mbhLineAdd(vertex, 5);
-                mouseLine(newLine);//привязка событий мыши
-                closeLine(newLine);//запрет на перемещение
+                line = mbhLineAdd(vertex, 5);
+                mouseLine(line);//привязка событий мыши
+                closeLine(line);//запрет на перемещение
                 createGeometric = 0;
             }
             case 12 -> {
@@ -1712,7 +1712,7 @@ class Model implements Observable {
                     setPoindOld(true);
                     setTimeVer(pCl);
                     break;
-                } else if (d > 35) {
+                } else if (d > 40) {
                     setPoindOld(false);
                 }
 
@@ -1720,6 +1720,29 @@ class Model implements Observable {
         }
     }
 
+    /**
+     * Метод createMoveLine(Line line).
+     * Предназначен для расчета и построения прямых и лучей.
+     * @param line - ссылка на линию
+     * @param rayLine - 4-прямая, 3-луч
+     */
+    public void createMoveLine(Line line, int rayLine){
+        if (rayLine==3) {
+            setRayStartX(getSegmentStartX() + (getScreenX() - getSegmentStartX()) * 3);
+            setRayStartY(getSegmentStartY() + (getScreenY() - getSegmentStartY()) * 3);
+            setRayEndX(getSegmentStartX() + (getScreenX() - getSegmentStartX()) * -3);
+            setRayEndY(getSegmentStartY() + (getScreenY() - getSegmentStartY()) * -3);
+        }
+        if (rayLine==4){
+            setRayStartX(getSegmentStartX());
+            setRayStartY(getSegmentStartY());
+            setRayEndX(getSegmentStartX() + (getScreenX() - getSegmentStartX()) * 3);
+            setRayEndY(getSegmentStartY() + (getScreenY() - getSegmentStartY()) * 3);
+        }
+        //Передать в View для вывода
+        setLine(line);
+        notifyObservers("RayGo");
+    }
     /**
      * Метод distance(double x1, double y1, double x2, double y2).
      * Предназначен для расчета расстояния между двумя вершинами, заданные координатами.

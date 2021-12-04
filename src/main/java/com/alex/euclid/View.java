@@ -204,6 +204,8 @@ class View implements Observer {
      * @param c объект окружность
      */
     private void CircleGo(Circle c) {
+        c.setCenterX(model.getSegmentStartX());
+        c.setCenterY(model.getSegmentStartY());
         c.setRadius(model.getRadiusCircle());
     }
 }
