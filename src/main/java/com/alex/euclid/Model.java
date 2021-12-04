@@ -2152,11 +2152,11 @@ class Model implements Observable {
     }
 
     /**
-     * Метод parallelBindLine(Circle c, Circle d, int dx, int dy).
+     * Метод parallelBindLine(Circle b, Circle c, Circle a, Circle d).
      * Предназначен для связывания прямой с параллельной прямой.
      *
      * @param b - точка на прямой начало
-     * @param c - точка на прямой, конец вс-прямая относительно которой построена параллельная прямая
+     * @param c - точка на прямой, конец с-прямая относительно которой построена параллельная прямая
      * @param a - точка через которую проходит параллельная прямая
      * @param d - точка на параллельной прямой расчетная
      */
@@ -2166,63 +2166,49 @@ class Model implements Observable {
             double Dy = a.getCenterY() - b.getCenterY();
             d.setCenterX(c.getCenterX() + Dx);
             d.setCenterY(c.getCenterY() + Dy);
-            findCirclesUpdateXY(d.getId(), gridViews.revAccessX(d.centerXProperty().get()), gridViews.revAccessY(d.centerYProperty().get()));
-
         });
         c.centerYProperty().addListener((obj, OldValue, newValue) -> {
             double Dx = a.getCenterX() - b.getCenterX();
             double Dy = a.getCenterY() - b.getCenterY();
             d.setCenterX(c.getCenterX() + Dx);
             d.setCenterY(c.getCenterY() + Dy);
-            findCirclesUpdateXY(d.getId(), gridViews.revAccessX(d.centerXProperty().get()), gridViews.revAccessY(d.centerYProperty().get()));
-
         });
         b.centerXProperty().addListener((obj, OldValue, newValue) -> {
             double Dx = a.getCenterX() - b.getCenterX();
             double Dy = a.getCenterY() - b.getCenterY();
             d.setCenterX(c.getCenterX() + Dx);
             d.setCenterY(c.getCenterY() + Dy);
-            findCirclesUpdateXY(d.getId(), gridViews.revAccessX(d.centerXProperty().get()), gridViews.revAccessY(d.centerYProperty().get()));
-
         });
         b.centerYProperty().addListener((obj, OldValue, newValue) -> {
             double Dx = a.getCenterX() - b.getCenterX();
             double Dy = a.getCenterY() - b.getCenterY();
             d.setCenterX(c.getCenterX() + Dx);
             d.setCenterY(c.getCenterY() + Dy);
-            findCirclesUpdateXY(d.getId(), gridViews.revAccessX(d.centerXProperty().get()), gridViews.revAccessY(d.centerYProperty().get()));
-        });
+         });
         a.centerXProperty().addListener((obj, OldValue, newValue) -> {
             double Dx = a.getCenterX() - b.getCenterX();
             double Dy = a.getCenterY() - b.getCenterY();
             d.setCenterX(c.getCenterX() + Dx);
             d.setCenterY(c.getCenterY() + Dy);
-            findCirclesUpdateXY(d.getId(), gridViews.revAccessX(d.centerXProperty().get()), gridViews.revAccessY(d.centerYProperty().get()));
-
         });
         a.centerYProperty().addListener((obj, OldValue, newValue) -> {
             double Dx = a.getCenterX() - b.getCenterX();
             double Dy = a.getCenterY() - b.getCenterY();
             d.setCenterX(c.getCenterX() + Dx);
             d.setCenterY(c.getCenterY() + Dy);
-            findCirclesUpdateXY(d.getId(), gridViews.revAccessX(d.centerXProperty().get()), gridViews.revAccessY(d.centerYProperty().get()));
         });
         d.centerXProperty().addListener((obj, OldValue, newValue) -> {
             double Dx = d.getCenterX() - c.getCenterX();
             double Dy = d.getCenterY() - c.getCenterY();
             a.setCenterX(b.getCenterX() + Dx);
             a.setCenterY(c.getCenterY() + Dy);
-            findCirclesUpdateXY(d.getId(), gridViews.revAccessX(a.centerXProperty().get()), gridViews.revAccessY(a.centerYProperty().get()));
-
         });
         d.centerYProperty().addListener((obj, OldValue, newValue) -> {
             double Dx = d.getCenterX() - c.getCenterX();
             double Dy = d.getCenterY() - c.getCenterY();
             a.setCenterX(b.getCenterX() + Dx);
             a.setCenterY(b.getCenterY() + Dy);
-            findCirclesUpdateXY(d.getId(), gridViews.revAccessX(a.centerXProperty().get()), gridViews.revAccessY(a.centerYProperty().get()));
         });
-
     }
 
     /**
