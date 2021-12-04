@@ -132,7 +132,7 @@
             <Pane fx:id="paneGrid"/>
             <Pane fx:id="paneShape" accessibleRole="NODE" onMouseDragged="#onMouseDraggen" onMouseMoved="#onMouseMoved"
                   onMousePressed="#onMousePressed" onScroll="#onScroll">
-                <Line fx:id="newLine" visible="true"  disable="true" stroke="DARKSLATEBLUE" strokeWidth="2"/>
+                <Line fx:id="newLine"  disable="true" stroke="DARKSLATEBLUE" strokeWidth="2"/>
 
             </Pane>
         </StackPane>
