@@ -23,7 +23,6 @@ public class WView {
     private int k2 = 0;//Степень для масштаба
     private double k3 = 5;//Коэффициент масштабирования
     private double VPx, VPy;//Координаты мыши при нажатии кнопки
-    private double Ko = 100;//Коэффициент округления координат
 
     //Конструктор с параметрами
     WView(double Wt, double Wb, double Wl, double Wr, double Vt, double Vb, double Vl, double Vr) {
@@ -50,18 +49,16 @@ public class WView {
         Vl = 0;
         Vr = 800;
         rate();
-
-
     }
 
     //Сетка х
     double gridShowX(double tx) {
-        return Math.round((A * tx * M) + C);
+        return ((A * tx * M) + C);
     } //Без масштабирования
 
     //Сетка Y
     double gridShowY(double ty) {
-        return Math.round((B * ty * M) + D);
+        return ((B * ty * M) + D);
     }
 
     /**
@@ -72,8 +69,8 @@ public class WView {
      * @return - возвращает координаты экрана
      */
     double accessX(double tx) {
-        return Math.round((A * tx * M) / (k0 * k3) + C);
-    } //С масштабом
+        return ((A * tx * M) / k3 + C);
+    }
 
     /**
      * Метод accessY(double ty).
@@ -83,7 +80,7 @@ public class WView {
      * @return - возвращает координаты экрана
      */
     double accessY(double ty) {
-        return Math.round((B * ty * M) / (k0 * k3) + D);
+        return ((B * ty * M) / k3 + D);
     }
 
     /**
@@ -95,9 +92,7 @@ public class WView {
      */
 
     double revAccessX(double wx) {
-        double x = Math.round((wx - C) / A) / M * k0 * k3;
-        x = Math.round(x * Ko);
-        return x / Ko;
+        return ((wx - C) / A) / M *  k3;
     }
 
     /**
@@ -108,9 +103,7 @@ public class WView {
      * @return - возвращает мировые координаты по оси y
      */
     double revAccessY(double wy) {
-        double y = Math.round((wy - D) / B) / M * k0 * k3;
-        y = Math.round(y * Ko);
-        return y / Ko;
+        return ((wy - D) / B) / M * k3;
     }
 
     /**

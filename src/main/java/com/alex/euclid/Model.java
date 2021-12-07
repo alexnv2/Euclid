@@ -1156,12 +1156,11 @@ class Model implements Observable {
         });
         //Нажатие клавиши
         newPoind.setOnMousePressed(e -> {
-            selectCircle(newPoind);
+          //  selectCircle(newPoind);
             //Проверить разрешено ли взять эту точку. Если расчетная, то запрещено
             if (findPoindAddMove(newPoind)) {
                 poindOldAdd = true;//взять эту точку для отрезка
                 timeVer = newPoind;//сохранить выбранную точку для построения
-                //Вызвать метод для увелечения счетчика index в коллекции PoindCircles
             }
         });
         //Наведение на точку
