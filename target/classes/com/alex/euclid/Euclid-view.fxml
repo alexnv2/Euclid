@@ -83,6 +83,7 @@
         </Menu>
         <Menu mnemonicParsing="false" text="Помощь">
             <MenuItem fx:id="menuAbout" mnemonicParsing="false" onAction="#menuAbout" text="О программе"/>
+            <MenuItem fx:id="menuHelp_1" mnemonicParsing="false" onAction="#menuHelp_1" text="Работа с программой"/>
         </Menu>
     </MenuBar>
     <HBox prefHeight="25.0" prefWidth="900.0">
@@ -114,7 +115,7 @@
                 onMouseEntered="#onMouseEnteredBisector" prefHeight="20.0" prefWidth="40.0" disable="true"/>
         <Button fx:id="btnDelete" mnemonicParsing="false" onAction="#btnDelete" onMouseEntered="#onMouseEnteredDelete"
                 prefHeight="20.0" prefWidth="40.0"/>
-        <Button mnemonicParsing="false" onAction="#btnTest" text="Тест" visible="true"/>
+        <Button mnemonicParsing="false" onAction="#btnTest" text="Тест" visible="false"/>
     </HBox>
     <SplitPane dividerPositions="0.25, 0.85" focusTraversable="true"
                VBox.vgrow="ALWAYS">

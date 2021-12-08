@@ -1,5 +1,6 @@
 package com.alex.euclid;
 
+import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.geometry.Pos;
@@ -746,6 +747,9 @@ public class EuclidController extends View {
 
     }
 
+    public void menuHelp_1() {model.webHTML(webViewLeft, "help_1.html");
+    }
+
     /**
      * Метод btnPoindClick().
      * Cобытие нажатия кнопки "Добавить точку".
@@ -1141,6 +1145,8 @@ public class EuclidController extends View {
     public void btnTest() {
         model.ColTest();
     }
+
+
 }
 
 

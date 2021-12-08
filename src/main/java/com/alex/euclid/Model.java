@@ -348,13 +348,13 @@ class Model implements Observable {
                 int l = p.getSegment();
                 switch (l) {
                     case 0 -> {
-                        double lengthSegment = Math.round(distance(p.getStX(), p.getStY(), p.getEnX(), p.getEnY()) * 100);
+                        double lengthSegment = Math.round(distance(p.getStX(), p.getStY(), p.getEnX(), p.getEnY()) * 100)/gridViews.getK3();
                         txtShape = MessageFormat.format("{0}{1}{2} Длина:{3}\n", txtShape, STA_10, nameSplitRemove(p.getId()), lengthSegment / 100);
                     }
                     case 1 -> txtShape = txtShape + STA_11 + p.getLine().getId() + " или " + nameSplitRemove(p.getId()) + "\n";
                     case 2 -> txtShape = txtShape + STA_12 + p.getLine().getId() + " или " + nameSplitRemove(p.getId()) + "\n";
                     case 3 -> {
-                        double lengthSegment = Math.round(distance(p.getStX(), p.getStY(), p.getEnX(), p.getEnY()) * 100);
+                        double lengthSegment = Math.round(distance(p.getStX(), p.getStY(), p.getEnX(), p.getEnY()) * 100)/gridViews.getK3();
                         txtShape = txtShape + STA_17 + nameSplitRemove(p.getId()) + " Длина:" + lengthSegment / 100 + "\n";
                     }
                     case 4 -> txtShape = txtShape + STA_20 + nameSplitRemove(p.getId()) + "\n";
@@ -381,7 +381,7 @@ class Model implements Observable {
         //Информация об окружностях
         for (CircleLine p : circleLines)
             if (p != null) {
-                txtShape = MessageFormat.format("{0}{1}{2} \n", txtShape, STA_29, p.getRadius());
+                txtShape = MessageFormat.format("{0}{1}{2} \n", txtShape, STA_29, p.getRadius()/gridViews.getK3());
             }
         //Передать в View для вывода
         notifyObservers("TextShapeGo");
@@ -488,7 +488,6 @@ class Model implements Observable {
                     findNameId(newSegment.toString(), lP.getId());
                     setTxtShape("");
                     txtAreaOutput();
-                    //getChildren().add(newPoind);//добавить на доску
                     //связать точки и перпендикуляр для перемещения
                     verticalBindCircles(circle, findCircle(nameLine[0]), findCircle(nameLine[1]), newPoind, lP);
                     poindAddVertical = false;
@@ -670,11 +669,14 @@ class Model implements Observable {
                     //создать новую окружность
                     circle = createCircleAdd(c1);
                     setPoindOne(true);
+                    setTxtShape("");
+                    txtAreaOutput();
                 }
                 if (isPoindTwo()) {
                     createGeometric = 0;
                     setPoindOne(false);
                     setPoindTwo(false);
+                    System.out.println(circle.getRadius());
                 }
             }
         }
@@ -1156,7 +1158,6 @@ class Model implements Observable {
         });
         //Нажатие клавиши
         newPoind.setOnMousePressed(e -> {
-          //  selectCircle(newPoind);
             //Проверить разрешено ли взять эту точку. Если расчетная, то запрещено
             if (findPoindAddMove(newPoind)) {
                 poindOldAdd = true;//взять эту точку для отрезка
@@ -1326,6 +1327,8 @@ class Model implements Observable {
                 setSegmentStartX(newCircle.getCenterX());
                 setSegmentStartY(newCircle.getCenterY());
                 notifyObservers("CircleGo");
+                setTxtShape("");
+                txtAreaOutput();
             }
         });
         return newCircle;
@@ -1440,6 +1443,8 @@ class Model implements Observable {
         paneBoards.getChildren().add(circle);//добавить окружность на доску
         circle.toBack();
         bindPoindCircle(findCircle(findNameCenterCircle(circle)), circle);
+        setTxtShape("");
+        txtAreaOutput();
         return circle;
     }
 
@@ -2413,19 +2418,6 @@ class Model implements Observable {
      */
     double rayLineY(Circle c1, Circle c2) {
         return c1.getCenterY() + (c2.getCenterY() - c1.getCenterY()) * 3;
-    }
-
-    private void selectCircle(Circle dot) {
-        //Если выбран существующий объект
-        if (selected == dot) return;
-        //Создан новый объект, для старого поменять цвет
-        if (selected != null) selected.setFill(Color.DARKSLATEBLUE);
-        selected = dot;//и установить выбранный круг
-        //Если объект существует
-        if (selected != null) {
-            selected.requestFocus(); //установить на него фокус
-            selected.setFill(Color.RED);//поменять цвет
-        }
     }
 
     /**
