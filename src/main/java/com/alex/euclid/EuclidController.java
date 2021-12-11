@@ -1,6 +1,5 @@
 package com.alex.euclid;
 
-import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.geometry.Pos;
@@ -15,7 +14,6 @@ import javafx.scene.input.MouseEvent;
 import javafx.scene.input.ScrollEvent;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
-import javafx.scene.shape.Circle;
 import javafx.scene.shape.Line;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
@@ -569,7 +567,6 @@ public class EuclidController extends View {
      * Нажат пункт меню "Теоремы и свойства-> Свойства равнобедренного треугольника->Теорема 1".
      */
     public void menuIsosceles_1() {
-        // model.webViewLeftString(webViewLeft, 1);
         model.webHTML(webViewLeft, "isosceles_1.html");
     }
 
@@ -747,6 +744,10 @@ public class EuclidController extends View {
 
     }
 
+    /**
+     * Метод menuHelp_1()
+     * Для вывода видео о работе с программой.
+     */
     public void menuHelp_1() {model.webHTML(webViewLeft, "help_1.html");
     }
 
@@ -830,7 +831,6 @@ public class EuclidController extends View {
      * Устанавливает режим добавления луча.
      */
     public void btnRay() {
-        //Установить статус
         model.setStringLeftStatus(STA_3);
         model.notifyObservers("LeftStatusGo");
         disableButton(true);//блокировать кнопки
@@ -855,7 +855,6 @@ public class EuclidController extends View {
      * Устанавливает режим добавления прямой.
      */
     public void btnLine() {
-        //Установить статус
         model.setStringLeftStatus(STA_4);
         model.notifyObservers("LeftStatusGo");
         disableButton(true);//блокировать кнопки
@@ -1118,9 +1117,9 @@ public class EuclidController extends View {
      * @param key - нажата кнопка ESC
      */
     public void onKeyPressed(KeyEvent key) {
-        if (key.getCode() == KeyCode.ESCAPE) {
-            disableButton(false);//разблокировать кнопки
-            // visibleCreate();//сбросить все режимы
+        if (KeyCode.ESCAPE == key.getCode()) {
+            //разблокировать кнопки
+            disableButton(false);
         }
     }
 
