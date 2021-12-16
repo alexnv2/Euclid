@@ -676,7 +676,6 @@ class Model implements Observable {
                     createGeometric = 0;
                     setPoindOne(false);
                     setPoindTwo(false);
-                    System.out.println(circle.getRadius());
                 }
             }
         }
@@ -1073,7 +1072,9 @@ class Model implements Observable {
         //Добавить имя на доску
         nameCircleAdd(vertex);
         //добавить в коллекцию точек
-        poindCircles.add(new PoindCircle(vertex, vertex.getId(), decartX, decartY, bMove, false, 0, null, 0.0, false));
+        PoindCircle pc=new PoindCircle.Builder(vertex, vertex.getId()).x(decartX) .y(decartY). bMove(bMove).build();
+        poindCircles.add(pc);
+       // poindCircles.add(new PoindCircle(vertex, vertex.getId(), decartX, decartY, bMove, false, 0, null, 0.0, false));
         //Связать изменение координат с перерасчетом мировых координат
         poindBindUpdateXY(vertex);
         //Добавить в правую часть доски
@@ -1398,12 +1399,7 @@ class Model implements Observable {
      * @return - возвращает имя центра окружности
      */
     String findNameCenterCircle(Circle c){
-        for (CircleLine p : circleLines){
-            if(p.getId().equals(c.getId())){
-                return p.getPoindID();
-            }
-        }
-        return null;
+        return circleLines.stream().filter(p -> p.getId().equals(c.getId())).findFirst().map(CircleLine::getPoindID).orElse(null);
     }
     /**
      * Метод bindPoindCircle(Circle poind, Circle circle).
@@ -2723,7 +2719,10 @@ class Model implements Observable {
         //Глава 2. Пакет java.util.function
         // стр.40 Пример 2.3
         System.out.println("Коллекция PoindCircle");
-        poindCircles.forEach(System.out::println);//ссылка на метод
+        //ссылка на метод
+        for (PoindCircle poindCircle : poindCircles) {
+            System.out.println(poindCircle);
+        }
 
         System.out.println("Коллекция PoindLine");
         poindLines.forEach(System.out::println);//лямбда выражение

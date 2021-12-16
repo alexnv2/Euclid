@@ -68,10 +68,7 @@ public class WView {
      * @param tx - мировые координаты по оси X
      * @return - возвращает координаты экрана
      */
-    double accessX(double tx) {
-        return ((A * tx * M) / k3 + C);
-    }
-
+    double accessX(double tx) {return Math.round((A*tx*M)/(k0*k3)+C);}
     /**
      * Метод accessY(double ty).
      * Предназначен для пересчета мировых координат по оси Y в координаты экрана в масштабе.
@@ -79,9 +76,7 @@ public class WView {
      * @param ty - мировые координаты по оси Y
      * @return - возвращает координаты экрана
      */
-    double accessY(double ty) {
-        return ((B * ty * M) / k3 + D);
-    }
+    double accessY(double ty) {return Math.round((B*ty*M)/(k0*k3)+D);}
 
     /**
      * Метод revAccessX(double wx).
@@ -91,9 +86,7 @@ public class WView {
      * @return - возвращает мировые координаты экрана по оси х.
      */
 
-    double revAccessX(double wx) {
-        return ((wx - C) / A) / M *  k3;
-    }
+     double revAccessX(double wx) {return Math.round((wx-C)/A)/M*k0*k3;}
 
     /**
      * Метод revAccessY(double wy).
@@ -102,9 +95,7 @@ public class WView {
      * @param wy - координаты экрана по оси y
      * @return - возвращает мировые координаты по оси y
      */
-    double revAccessY(double wy) {
-        return ((wy - D) / B) / M * k3;
-    }
+      double revAccessY(double wy) {return Math.round((wy-D)/B)/M*k0*k3;}
 
     /**
      * Метод rate().
