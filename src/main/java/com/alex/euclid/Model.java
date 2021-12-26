@@ -348,13 +348,13 @@ class Model implements Observable {
                 int l = p.getSegment();
                 switch (l) {
                     case 0 -> {
-                        double lengthSegment = Math.round(distance(p.getStX(), p.getStY(), p.getEnX(), p.getEnY()) * 100)/gridViews.getK3();
-                        txtShape = MessageFormat.format("{0}{1}{2} Длина:{3}\n", txtShape, STA_10, nameSplitRemove(p.getId()), lengthSegment / 100);
+                        double lengthSegment = distance(p.getStX(), p.getStY(), p.getEnX(), p.getEnY());
+                        txtShape = MessageFormat.format("{0}{1}{2} Длина:{3}\n", txtShape, STA_10, nameSplitRemove(p.getId()), lengthSegment);
                     }
                     case 1 -> txtShape = txtShape + STA_11 + p.getLine().getId() + " или " + nameSplitRemove(p.getId()) + "\n";
                     case 2 -> txtShape = txtShape + STA_12 + p.getLine().getId() + " или " + nameSplitRemove(p.getId()) + "\n";
                     case 3 -> {
-                        double lengthSegment = Math.round(distance(p.getStX(), p.getStY(), p.getEnX(), p.getEnY()) * 100)/gridViews.getK3();
+                        double lengthSegment = Math.round(distance(p.getStX(), p.getStY(), p.getEnX(), p.getEnY()) * 100);
                         txtShape = txtShape + STA_17 + nameSplitRemove(p.getId()) + " Длина:" + lengthSegment / 100 + "\n";
                     }
                     case 4 -> txtShape = txtShape + STA_20 + nameSplitRemove(p.getId()) + "\n";
@@ -381,7 +381,7 @@ class Model implements Observable {
         //Информация об окружностях
         for (CircleLine p : circleLines)
             if (p != null) {
-                txtShape = MessageFormat.format("{0}{1}{2} \n", txtShape, STA_29, p.getRadius()/gridViews.getK3());
+                txtShape = MessageFormat.format("{0}{1}{2} \n", txtShape, STA_29, p.getRadius());
             }
         //Передать в View для вывода
         notifyObservers("TextShapeGo");
@@ -662,17 +662,18 @@ class Model implements Observable {
             case 14 -> {
                 //Взять существующую или создать новую точку для прямой
                 if (!isPoindTwo()) {
-                    Circle c1 = newCirclePoind();
+                    vertex = newCirclePoind();
                     //Сохранить координаты центра окружности
-                    setSegmentStartX(c1.getCenterX());
-                    setSegmentStartY(c1.getCenterY());
+                    setSegmentStartX(vertex.getCenterX());
+                    setSegmentStartY(vertex.getCenterY());
                     //создать новую окружность
-                    circle = createCircleAdd(c1);
+                    circle = createCircleAdd(vertex);
                     setPoindOne(true);
-                    setTxtShape("");
-                    txtAreaOutput();
                 }
                 if (isPoindTwo()) {
+                    updateCircle(circle,vertex);
+                    setTxtShape("");
+                    txtAreaOutput();
                     createGeometric = 0;
                     setPoindOne(false);
                     setPoindTwo(false);
@@ -717,6 +718,7 @@ class Model implements Observable {
         findNameId(newSegment.toString(), l.getId());
         if (segment == 0) {
             notifyObservers("SideGo");
+            findLinesUpdateXY(l.getId());
         } else {
             notifyObservers("RayGo");
             //Обновить мировые координаты
@@ -1021,19 +1023,19 @@ class Model implements Observable {
         Circle vertexA = findCircle(namePoind[0]);
         Circle vertexB = findCircle(namePoind[1]);
         vertexA.centerXProperty().addListener((obj, ojdValue, newValue) -> {
-            double cordX = vertexA.getCenterX() + (vertexB.getCenterX() - vertexA.getCenterX()) * findT(poindC);
+            double cordX =lineA.getStartX() + (lineA.getEndX() -lineA.getStartX()) * findT(poindC);
             poindC.setCenterX(cordX);
         });
         vertexA.centerYProperty().addListener((obj, ojdValue, newValue) -> {
-            double cordY = vertexA.getCenterY() + (vertexB.getCenterY() - vertexA.getCenterY()) * findT(poindC);
+            double cordY =lineA.getStartY() + (lineA.getEndY() -lineA.getStartY()) * findT(poindC);
             poindC.setCenterY(cordY);
         });
         vertexB.centerXProperty().addListener((obj, ojdValue, newValue) -> {
-            double cordX = vertexA.getCenterX() + (vertexB.getCenterX() - vertexA.getCenterX()) * findT(poindC);
+            double cordX =lineA.getStartX() + (lineA.getEndX() -lineA.getStartX()) * findT(poindC);
             poindC.setCenterX(cordX);
         });
         vertexB.centerYProperty().addListener((obj, ojdValue, newValue) -> {
-            double cordY = vertexA.getCenterY() + (vertexB.getCenterY() - vertexA.getCenterY()) * findT(poindC);
+            double cordY =lineA.getStartY() + (lineA.getEndY() -lineA.getStartY()) * findT(poindC);
             poindC.setCenterY(cordY);
         });
     }
@@ -1080,7 +1082,7 @@ class Model implements Observable {
         txtAreaOutput();
         //Если точка на линии
         if (lineOldAdd && createGeometric != 12 && createGeometric != 6 && createGeometric != 7) {
-            double t = (vertex.getCenterX() - timeLine.getStartX()) / (timeLine.getEndX() - timeLine.getStartX());
+            t = (vertex.getCenterX() - timeLine.getStartX()) / (timeLine.getEndX() - timeLine.getStartX());
             for (PoindCircle p : poindCircles) {
                 if (p != null) {
                     if (p.getCircle().getId().equals(vertex.getId())) {
@@ -1127,18 +1129,20 @@ class Model implements Observable {
                             Point2D B1 = new Point2D(l.getStartX(), l.getStartY());
                             Point2D C1 = new Point2D(l.getEndX(), l.getEndY());
                             Point2D D1 = heightPoind(A1, B1, C1);//координаты точки пересечения
+                            t = (D1.getX() - l.getStartX()) / (l.getEndX() - l.getStartX());
                             setScreenX(D1.getX());
                             setScreenY(D1.getY());
-                            double t = (D1.getX() - l.getStartX()) / (l.getEndX() - l.getStartX());
                             //Проверить дошла ли точка до начала линии
                             if (t <= 0) {
                                 setScreenX(l.getStartX());
                                 setScreenY(l.getStartY());
+                                t=0;
                             }
                             //Проверить достигла ли точка конца линии
                             if (t >= 1) {
                                 setScreenX(l.getEndX());
                                 setScreenY(l.getEndY());
+                                t=1;
                             }
                             //Сохранить параметрический параметр t для прямой в коллекции
                             updateT(l, newPoind);
@@ -1319,8 +1323,8 @@ class Model implements Observable {
         //При перемещении с нажатой кнопкой
         newCircle.setOnMouseDragged(e -> {
             if (!createShape) {
-                setRadiusCircle(Math.round(distance(newCircle.getCenterX(), newCircle.getCenterY(), getScreenX(), getScreenY())));
-                setRadiusCircleW(Math.round(distance(gridViews.revAccessX(newCircle.getCenterX()), gridViews.revAccessY(newCircle.getCenterY()), getDecartX(), getDecartY())));
+                setRadiusCircle(distance(newCircle.getCenterX(), newCircle.getCenterY(), getScreenX(), getScreenY()));
+                setRadiusCircleW(distance(gridViews.revAccessX(newCircle.getCenterX()), gridViews.revAccessY(newCircle.getCenterY()), getDecartX(), getDecartY()));
                 updateCircle(newCircle, findCircle(findNameCenterCircle(newCircle)));
                 setCircle(newCircle);
                 setSegmentStartX(newCircle.getCenterX());

@@ -258,8 +258,8 @@ public class EuclidController extends View {
             //Расчитать радиус
             double r = model.distance(model.getSegmentStartX(), model.getScreenY(), model.getScreenX(), model.getScreenY());
             double rw = model.distance(gridViews.revAccessX(model.getSegmentStartX()), gridViews.revAccessY(model.getSegmentStartY()), model.getDecartX(), model.getDecartY());
-            model.setRadiusCircle(Math.round(r));
-            model.setRadiusCircleW(Math.round(rw));
+            model.setRadiusCircle(r);
+            model.setRadiusCircleW(rw);
             model.setPoindTwo(true);
             model.notifyObservers("CircleGo");
         }
