@@ -1072,9 +1072,7 @@ class Model implements Observable {
         //Добавить имя на доску
         nameCircleAdd(vertex);
         //добавить в коллекцию точек
-        PoindCircle pc=new PoindCircle.Builder(vertex, vertex.getId()).x(decartX) .y(decartY). bMove(bMove).build();
-        poindCircles.add(pc);
-       // poindCircles.add(new PoindCircle(vertex, vertex.getId(), decartX, decartY, bMove, false, 0, null, 0.0, false));
+        poindCircles.add(new PoindCircle(vertex, vertex.getId(), decartX, decartY, bMove, false, 0, null, 0.0, false));
         //Связать изменение координат с перерасчетом мировых координат
         poindBindUpdateXY(vertex);
         //Добавить в правую часть доски
