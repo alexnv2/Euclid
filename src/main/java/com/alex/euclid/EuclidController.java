@@ -360,10 +360,18 @@ public class EuclidController extends View {
                     model.notifyObservers("VertexGo");
                 }
             });
+            model.getCircleLines().forEach(p->{
+                if(p!=null){
+                    model.setSegmentStartX(gridViews.accessX(p.getX()));
+                    model.setSegmentStartY(gridViews.accessY(p.getY()));
+                    double rad=model.distance(gridViews.accessX(p.getX()),gridViews.accessY(p.getY()),gridViews.accessX(p.getX()+p.getRadius()),gridViews.accessY(p.getY()));
+                    model.setRadiusCircle(rad);
+                    model.setCircle(p.getCircle());
+                    model.notifyObservers("CircleGo");
+                }
+            });
         }
     }
-
-
     /**
      * Метод menuPoindClick().
      * Предназначен для вывода определения точки, прямой, отрезка.
