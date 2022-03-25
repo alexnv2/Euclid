@@ -1,3 +1,9 @@
 Manifest-Version: 1.0
 Main-Class: com.alex.euclid.EuclidApp
+Class-Path: javafx-media-17.0.0.1.jar javafx-fxml-17.0.0.1-win.jar javaf
+ x-fxml-17.0.0.1.jar lombok.jar javafx-media-17.0.0.1-win.jar javafx-bas
+ e-17.0.0.1.jar javafx-web-17.0.0.1-win.jar javafx-graphics-17.0.0.1.jar
+  javafx-graphics-17.0.0.1-win.jar javafx-web-17.0.0.1.jar javafx-contro
+ ls-17.0.0.1-win.jar javafx-base-17.0.0.1-win.jar javafx-controls-17.0.0
+ .1.jar
 
