@@ -242,20 +242,20 @@ public class EuclidController extends View {
         //построение прямой
         if (model.getCreateGeometric()==3 && model.isPoindOne()){
             newLine.setVisible(true);
-            //расчитать концы прямой по уравнению прямой
+            //рассчитать концы прямой по уравнению прямой
             model.createMoveLine(newLine, 3);
             model.setPoindTwo(true);//разрешение для постройки 2 точки
         }
         //построение луча
         if (model.getCreateGeometric()==4 && model.isPoindOne()){
             newLine.setVisible(true);
-            //расчитать конец луча по уравнению прямой
+            //рассчитать конец луча по уравнению прямой
             model.createMoveLine(newLine, 4);
             model.setPoindTwo(true);//разрешение для постройки 2 точки
         }
         //Построение окружности
         if (model.getCreateGeometric()==14 && model.isPoindOne()){
-            //Расчитать радиус
+            //Насчитать радиус
             double r = model.distance(model.getSegmentStartX(), model.getScreenY(), model.getScreenX(), model.getScreenY());
             double rw = model.distance(gridViews.revAccessX(model.getSegmentStartX()), gridViews.revAccessY(model.getSegmentStartY()), model.getDecartX(), model.getDecartY());
             model.setRadiusCircle(r);
@@ -267,13 +267,13 @@ public class EuclidController extends View {
 
 
     /**
-     * Метод onMouseDraggen()
+     * Метод onMouseDragged()
      * Отслеживает события перемещения мышки с нажатой левой кнопкой
      * Используется для перемещения сетки и координатных осей по доске.
      *
      * @param event - свойство мыши.
      */
-    public void onMouseDraggen(MouseEvent event) {
+    public void onMouseDragged(MouseEvent event) {
         //координаты, нужны для перемещения объектов на доске
         model.setScreenX(event.getX());
         model.setScreenY(event.getY());
@@ -465,11 +465,11 @@ public class EuclidController extends View {
     }
 
     /**
-     * Метод menuAcsiomy1Click().
+     * Метод menuAcxiom1Click().
      * Предназначен для вывода аксиом принадлежности из пункта
      * меню Аксиомы и следствие->Аксиомы принадлежности
      */
-    public void menuAcsiomy1Click() {
+    public void menuAcxiom1Click() {
         model.webHTML(webViewLeft, "acsiomy_1.html");//Вывод в браузер файла html
     }
 
@@ -587,10 +587,10 @@ public class EuclidController extends View {
     }
 
     /**
-     * Метод menuEquil()
+     * Метод menuEqual()
      * Нажат пункт меню "Теоремы и свойства-> Первый признак равенства треугольников"
      */
-    public void menuEquil() {
+    public void menuEqual() {
         model.setWindShow(0);
         TwofxmlLoader();
     }

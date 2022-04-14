@@ -511,7 +511,7 @@ class Model implements Observable {
                 if (poindAddVParallel && lineAddParallel) {
                     //получить имя отрезка по имени прямой
                     String[] nameLine = findID(line).split("_");
-                    //Расчитать координаты новой точки
+                    //Рассчитать координаты новой точки
                     setScreenX(findCircle(nameLine[1]).getCenterX() + (circle.getCenterX() - findCircle(nameLine[0]).getCenterX()));
                     setScreenY(findCircle(nameLine[1]).getCenterY() + (circle.getCenterY() - findCircle(nameLine[0]).getCenterY()));
                     //Создать новую точку
@@ -885,7 +885,7 @@ class Model implements Observable {
         Text textAngle = createNameShapes(s);//создать объект текст (имя угла)
         //Добавить в коллекцию NamePoindLine
         textAngle.setText(s);//Имя для вывода на доску
-        Point2D arcXY = nameArcShow(circle, arc, textAngle);//расчитать место буквы
+        Point2D arcXY = nameArcShow(circle, arc, textAngle);//рассчитать место буквы
         namePoindLines.add(new NamePoindLine(textAngle, circle.getId(), arcXY.getX(), arcXY.getY(), gridViews.revAccessX(circle.getCenterX()), gridViews.revAccessY(circle.getCenterY()), showPoindName, showLineName, showAngleName, "arc"));
         //Добавить в коллекцию объектов на доске
         paneBoards.getChildren().add(textAngle);
@@ -985,7 +985,7 @@ class Model implements Observable {
         Point2D mP = midPoindAB(new Point2D(aX, aY), new Point2D(bX, bY));
         double cX = mP.getX();
         double cY = mP.getY();
-        //Расчитать координаты перпендикуляр от середины линии на растоянии 15рх
+        //Рассчитать координаты перпендикуляр от середины линии на расстоянии 15рх
         double dlina = sqrt((pow((aX - bX), 2)) + (pow((aY - bY), 2)));
         textX = cX - 15 * ((aY - bY) / dlina);//место вывода Х при создании
         textY = cY + 15 * ((aX - bX) / dlina);//место вывода Y при создании
@@ -1993,7 +1993,7 @@ class Model implements Observable {
      * @param arc - угол АВС
      */
     public void arcVertexGo(Circle o1, Circle o2, Circle o3, Arc arc) {
-        arcVertex(o1, o2, o3);//расчитать угол
+        arcVertex(o1, o2, o3);//рассчитать угол
         //Запомнить текущие координаты мышки
         double stX = screenX;
         double stY = screenY;
