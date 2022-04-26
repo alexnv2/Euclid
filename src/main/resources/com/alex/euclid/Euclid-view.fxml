@@ -78,8 +78,10 @@
                            onAction="#menuShowLineName"/>
             <CheckMenuItem fx:id="menuAngleName" mnemonicParsing="false" text="Показывать имена углов"
                            onAction="#menuAngleName"/>
-            <CheckMenuItem fx:id="menuGrid" mnemonicParsing="false" text="Показывать сетку и координатную ось" selected="true"
-                           onAction="#menuGrid"/>
+            <CheckMenuItem fx:id="menuShowGrid" mnemonicParsing="false" text="Показывать сетку" selected="true"
+                           onAction="#menuShowGrid"/>
+            <CheckMenuItem fx:id="menuShowLine" mnemonicParsing="false" text="Показывать координатные оси" selected="true"
+                           onAction="#menuShowLine"/>
         </Menu>
         <Menu mnemonicParsing="false" text="Помощь">
             <MenuItem fx:id="menuAbout" mnemonicParsing="false" onAction="#menuAbout" text="О программе"/>

@@ -30,7 +30,7 @@
         <Menu mnemonicParsing="false" text="Теоремы и свойства">
             <MenuItem mnemonicParsing="false" onAction="#menuBisectorAngle" text="Свойства биссектрисы угла"/>
             <Menu mnemonicParsing="false" text="Признаки равенства треугольников">
-                <MenuItem fx:id="menuEqualTr" mnemonicParsing="false" onAction="#menuEquil"
+                <MenuItem fx:id="menuEqualTr" mnemonicParsing="false" onAction="#menuEqual"
                           text="Первый признак равенства треугольников"/>
                 <MenuItem fx:id="menuSecondTr" mnemonicParsing="false" onAction="#menuSecond"
                           text="Второй признак равенства треугольников "/>
@@ -64,7 +64,7 @@
             <MenuItem mnemonicParsing="false" onAction="#distantPar" text="Расстояние между параллельными прямыми"/>
         </Menu>
         <Menu mnemonicParsing="false" text="Аксиомы">
-            <MenuItem mnemonicParsing="false" onAction="#menuAcsiomy1Click"
+            <MenuItem mnemonicParsing="false" onAction="#menuAcxiom1Click"
                       text="Аксиомы взаимного расположения точек, прямых и плоскостей"/>
             <MenuItem mnemonicParsing="false" onAction="#menuAcsiomy2Click" text="Аксиомы наложения и равенства"/>
             <MenuItem mnemonicParsing="false" onAction="#menuAcsiomy3Click" text="Аксиомы измерения отрезков"/>
@@ -78,8 +78,10 @@
                            onAction="#menuShowLineName"/>
             <CheckMenuItem fx:id="menuAngleName" mnemonicParsing="false" text="Показывать имена углов"
                            onAction="#menuAngleName"/>
-            <CheckMenuItem fx:id="menuGrid" mnemonicParsing="false" text="Показывать сетку и координатную ось" selected="true"
-                           onAction="#menuGrid"/>
+            <CheckMenuItem fx:id="menuShowGrid" mnemonicParsing="false" text="Показывать сетку" selected="true"
+                           onAction="#menuShowGrid"/>
+            <CheckMenuItem fx:id="menuShowLine" mnemonicParsing="false" text="Показывать координатные оси" selected="true"
+                           onAction="#menuShowLine"/>
         </Menu>
         <Menu mnemonicParsing="false" text="Помощь">
             <MenuItem fx:id="menuAbout" mnemonicParsing="false" onAction="#menuAbout" text="О программе"/>
@@ -131,7 +133,7 @@
         </AnchorPane>
         <StackPane fx:id="Cartesian">
             <Pane fx:id="paneGrid"/>
-            <Pane fx:id="paneShape" accessibleRole="NODE" onMouseDragged="#onMouseDraggen" onMouseMoved="#onMouseMoved"
+            <Pane fx:id="paneShape" accessibleRole="NODE" onMouseDragged="#onMouseDragged" onMouseMoved="#onMouseMoved"
                   onMousePressed="#onMousePressed" onScroll="#onScroll">
                 <Line fx:id="newLine"  disable="true" stroke="DARKSLATEBLUE" strokeWidth="2"/>
 

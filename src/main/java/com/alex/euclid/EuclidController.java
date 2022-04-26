@@ -24,6 +24,7 @@ import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 import lombok.val;
 
+import java.text.DecimalFormat;
 import java.util.Objects;
 import java.util.Optional;
 
@@ -107,9 +108,11 @@ public class EuclidController extends View {
     @FXML
     private CheckMenuItem menuShowLineName;
     @FXML
-    private CheckMenuItem menuGrid;
+    private CheckMenuItem menuShowGrid;
     @FXML
     private CheckMenuItem menuAngleName;
+    @FXML
+    public CheckMenuItem menuShowLine;
 
 
     /**
@@ -134,9 +137,7 @@ public class EuclidController extends View {
             gridViews.setWr(Cartesian.getWidth() / 2);
             gridViews.rate();//Перерасчет коэффициентов
             paneGrid.getChildren().clear();//Очистить экран и память
-            if (model.isShowGrid()) {
-                gridViews.gridCartesian();//Вывод сетки
-            }
+            gridViews.gridCartesian();//Вывод сетки
             updateShape();//обновить координаты геометрических фигур
         });
         //Изменение высоты окна
@@ -146,15 +147,11 @@ public class EuclidController extends View {
             gridViews.setWb(-Cartesian.getHeight() / 2);
             gridViews.rate();//Перерасчет коэффициентов
             paneGrid.getChildren().clear();//Очистить экран и память
-            if (model.isShowGrid()) {
-                gridViews.gridCartesian();//Вывод сетки
-            }
+            gridViews.gridCartesian();//Вывод сетки
             updateShape();//обновить координаты геометрических фигур
         });
 
-        if (model.isShowGrid()) {
-            gridViews.gridCartesian();//Вывод сетки
-        }
+        gridViews.gridCartesian();//Вывод сетки
         //Добавить изображение к кнопкам
         Image imPoind = new Image(Objects.requireNonNull(getClass().getResourceAsStream("Images/point.png")));
         btnPoind.graphicProperty().setValue(new ImageView(imPoind));
@@ -229,10 +226,11 @@ public class EuclidController extends View {
         model.setDecartX(gridViews.revAccessX(mouseEvent.getX()));
         model.setDecartY(gridViews.revAccessY(mouseEvent.getY()));
         //Вывод координат в окно уведомлений
-        rightStatus.setText("Координаты доски x: " + gridViews.revAccessX(mouseEvent.getX()) + " y: " + gridViews.revAccessY(mouseEvent.getY()));
+        DecimalFormat dF = new DecimalFormat("#.###");
+        rightStatus.setText("Координаты доски x: " + dF.format(gridViews.revAccessX(mouseEvent.getX())) + " y: " + dF.format(gridViews.revAccessY(mouseEvent.getY())));
 
         //Построение отрезка и треугольника
-        if ((model.getCreateGeometric() == 2 || model.getCreateGeometric()==8) && model.isPoindOne()) {
+        if ((model.getCreateGeometric() == 2 || model.getCreateGeometric() == 8) && model.isPoindOne()) {
             newLine.setVisible(true);//вспомогательная линия, сделать видимой
             model.setLine(newLine);//вывод на доску
             model.notifyObservers("SideGo");
@@ -240,21 +238,21 @@ public class EuclidController extends View {
             model.lineAddPoind(newLine);//приклеить к ближайшей точке
         }
         //построение прямой
-        if (model.getCreateGeometric()==3 && model.isPoindOne()){
+        if (model.getCreateGeometric() == 3 && model.isPoindOne()) {
             newLine.setVisible(true);
             //рассчитать концы прямой по уравнению прямой
             model.createMoveLine(newLine, 3);
             model.setPoindTwo(true);//разрешение для постройки 2 точки
         }
         //построение луча
-        if (model.getCreateGeometric()==4 && model.isPoindOne()){
+        if (model.getCreateGeometric() == 4 && model.isPoindOne()) {
             newLine.setVisible(true);
             //рассчитать конец луча по уравнению прямой
             model.createMoveLine(newLine, 4);
             model.setPoindTwo(true);//разрешение для постройки 2 точки
         }
         //Построение окружности
-        if (model.getCreateGeometric()==14 && model.isPoindOne()){
+        if (model.getCreateGeometric() == 14 && model.isPoindOne()) {
             //Насчитать радиус
             double r = model.distance(model.getSegmentStartX(), model.getScreenY(), model.getScreenX(), model.getScreenY());
             double rw = model.distance(gridViews.revAccessX(model.getSegmentStartX()), gridViews.revAccessY(model.getSegmentStartY()), model.getDecartX(), model.getDecartY());
@@ -293,9 +291,7 @@ public class EuclidController extends View {
             gridViews.setWb(gridViews.getWb() - dy);
             gridViews.rate();//Перерасчет коэффициентов
             paneGrid.getChildren().clear();//Очистить экран и память
-            if (model.isShowGrid()) {
-                gridViews.gridCartesian();//Вывод сетки
-            }
+            gridViews.gridCartesian();//Вывод сетки
             updateShape();
         }
         event.consume();
@@ -361,8 +357,8 @@ public class EuclidController extends View {
                 }
             });
 //            Обновление окружностей
-            model.getCircleLines().forEach(p->{
-                if(p!=null){
+            model.getCircleLines().forEach(p -> {
+                if (p != null) {
                     model.setSegmentStartX(gridViews.accessX(p.getX()));
                     model.setSegmentStartY(gridViews.accessY(p.getY()));
                     model.setRadiusCircle(p.getCircle().getRadius());
@@ -372,6 +368,7 @@ public class EuclidController extends View {
             });
         }
     }
+
     /**
      * Метод menuPoindClick().
      * Предназначен для вывода определения точки, прямой, отрезка.
@@ -561,14 +558,22 @@ public class EuclidController extends View {
      * Метод menuGrid().
      * Пункт меню "Настройки -> Показывать сетку".
      */
-    public void menuGrid() {
-        model.setShowGrid(menuGrid.isSelected());
-        if (model.isShowGrid()) {
-            gridViews.gridCartesian();//Вывод сетки
-        } else {
-            paneGrid.getChildren().clear();//Очистить экран и память
-        }
+    public void menuShowGrid() {
+        gridViews.setGridShow(menuShowGrid.isSelected());
+        paneGrid.getChildren().clear();//Очистить экран и память
+        gridViews.gridCartesian();//Вывод сетки
     }
+
+    /**
+     * Метод menuShowLine().
+     * Пункт меню "Настройки -> Показывать координатные оси".
+     */
+    public void menuShowLine() {
+        gridViews.setGridLineShow(menuShowLine.isSelected());
+        paneGrid.getChildren().clear();//Очистить экран и память
+        gridViews.gridCartesian();//Вывод сетки
+    }
+
 
     /**
      * Метод menuIsosceles_1().
@@ -756,7 +761,8 @@ public class EuclidController extends View {
      * Метод menuHelp_1()
      * Для вывода видео о работе с программой.
      */
-    public void menuHelp_1() {model.webHTML(webViewLeft, "help_1.html");
+    public void menuHelp_1() {
+        model.webHTML(webViewLeft, "help_1.html");
     }
 
     /**

@@ -25,7 +25,9 @@ import static java.lang.Math.pow;
 public class GridView extends WView {
     StackPane Cartesian; //начало стека контейнера
     Pane paneGrid;//контейнер для координатной сетки
-
+    boolean gridShow = true; //вывод сетки
+    boolean gridLineShow = true; // вывод координатных осей
+    //Конструктор
     GridView() {
     }
 
@@ -53,12 +55,13 @@ public class GridView extends WView {
         Shape[] shapes5 = new Shape[z1 + z2];
         //Вертикальная сетка
         for (int i = 0; i < z1; i++) {
-            shapes0[i] = new Line(gridShowX(i), 0, gridShowX(i), getVb());
-            shapes0[i].setStrokeWidth(1);
-            shapes0[i].setStroke(Color.LIGHTBLUE);
-
+            if (gridShow) {
+                shapes0[i] = new Line(gridShowX(i), 0, gridShowX(i), getVb());
+                shapes0[i].setStrokeWidth(1);
+                shapes0[i].setStroke(Color.LIGHTBLUE);
+            }
             //Нулевая координата
-            if (i == 0) {
+            if (i == 0 && isGridLineShow()) {
                 if (gridShowY(0) <= 0) {
                     shapes5[i] = new Text(gridShowX(0) - 10, getVt() + 12, String.valueOf(0));
                 } else if (gridShowY(0) >= getVb() - 12) {
@@ -69,8 +72,10 @@ public class GridView extends WView {
                 group2.getChildren().add(shapes5[i]);
             }
             if (i % 5 == 0) {
-                shapes0[i].setStrokeWidth(2);
-                if (i != 0) {
+                if (gridShow) {
+                    shapes0[i].setStrokeWidth(2);
+                }
+                if (i != 0 && isGridLineShow()) {
                     //Если начало координат выше зоны просмотра
                     if (gridShowY(0) <= 0) {
                         shapes5[i] = new Text(gridShowX(i) - 10, getVt() + 12, doubleString(i * rk));
@@ -85,15 +90,21 @@ public class GridView extends WView {
                     group2.getChildren().add(shapes5[i]);
                 }
             }
-            group.getChildren().add(shapes0[i]);
+            if (gridShow) {
+                group.getChildren().add(shapes0[i]);
+            }
         }
         for (int i = 0; i < z2; i++) {
-            shapes1[i] = new Line(gridShowX(-i), 0, gridShowX(-i), getVb());
-            shapes1[i].setStrokeWidth(1);
-            shapes1[i].setStroke(Color.LIGHTBLUE);
+            if (gridShow) {
+                shapes1[i] = new Line(gridShowX(-i), 0, gridShowX(-i), getVb());
+                shapes1[i].setStrokeWidth(1);
+                shapes1[i].setStroke(Color.LIGHTBLUE);
+            }
             if (i % 5 == 0) {
-                shapes1[i].setStrokeWidth(2);
-                if (i != 0) {
+                if (gridShow) {
+                    shapes1[i].setStrokeWidth(2);
+                }
+                if (i != 0 && isGridLineShow()) {
                     //Если начало координат левее зоны просмотра
                     if (gridShowY(0) <= 0) {
                         shapes5[i] = new Text(gridShowX(-i) - 8, getVt() + 12, "-" + doubleString(i * rk));
@@ -107,16 +118,22 @@ public class GridView extends WView {
                     group2.getChildren().add(shapes5[i]);
                 }
             }
-            group.getChildren().add(shapes1[i]);
+            if (gridShow) {
+                group.getChildren().add(shapes1[i]);
+            }
         }
         //Горизонтальная сетка положительная
         for (int i = 0; i < z3; i++) {
-            shapes2[i] = new Line(getVl(), gridShowY(i), getVr(), gridShowY(i));
-            shapes2[i].setStroke(Color.LIGHTBLUE);
-            shapes2[i].setStrokeWidth(1);
+            if (gridShow) {
+                shapes2[i] = new Line(getVl(), gridShowY(i), getVr(), gridShowY(i));
+                shapes2[i].setStroke(Color.LIGHTBLUE);
+                shapes2[i].setStrokeWidth(1);
+            }
             if (i % 5 == 0) {
-                shapes2[i].setStrokeWidth(2);
-                if (i != 0) {
+                if (gridShow) {
+                    shapes2[i].setStrokeWidth(2);
+                }
+                if (i != 0 && isGridLineShow()) {
                     if (gridShowX(0) <= 0) {
                         shapes4[i] = new Text(getVl(), gridShowY(i) + 5, doubleString(i * rk));
                     } else if (gridShowX(0) >= getVr() - 25) {
@@ -127,16 +144,22 @@ public class GridView extends WView {
                     group2.getChildren().add(shapes4[i]);
                 }
             }
-            group.getChildren().add(shapes2[i]);
+            if (gridShow) {
+                group.getChildren().add(shapes2[i]);
+            }
         }
         //Горизонтальная сетка отрицательная
         for (int i = 0; i < z4; i++) {
-            shapes3[i] = new Line(getVl(), gridShowY(-i), getVr(), gridShowY(-i));
-            shapes3[i].setStroke(Color.LIGHTBLUE);
-            shapes3[i].setStrokeWidth(1);
+            if (gridShow) {
+                shapes3[i] = new Line(getVl(), gridShowY(-i), getVr(), gridShowY(-i));
+                shapes3[i].setStroke(Color.LIGHTBLUE);
+                shapes3[i].setStrokeWidth(1);
+            }
             if (i % 5 == 0) {
-                shapes3[i].setStrokeWidth(2);
-                if (i != 0) {
+                if (gridShow) {
+                    shapes3[i].setStrokeWidth(2);
+                }
+                if (i != 0 && isGridLineShow()) {
                     if (gridShowX(0) <= 0) {
                         shapes4[i] = new Text(getVl(), gridShowY(-i) + 5, "-" + doubleString(i * rk));
                     } else if (gridShowX(0) >= getVr() - 25) {
@@ -147,24 +170,27 @@ public class GridView extends WView {
                     group2.getChildren().add(shapes4[i]);
                 }
             }
-            group.getChildren().add(shapes3[i]);
+            if (gridShow) {
+                group.getChildren().add(shapes3[i]);
+            }
         }
+        if (isGridLineShow()) {
+            //Абсцисса и ордината
+            Line l1 = new Line(getVl(), gridShowY(0), getVr(), gridShowY(0));
+            l1.setStroke(Color.BLACK);
+            Line l2 = new Line(gridShowX(0), getVt(), gridShowX(0), getVb());
+            l1.setStroke(Color.BLACK);
+            //Треугольные концы
+            Polygon p1 = new Polygon(getVr(), gridShowY(0),
+                    getVr() - 10, gridShowY(0) - 4,
+                    getVr() - 10, gridShowY(0) + 4);
+            Polygon p2 = new Polygon(gridShowX(0), getVt(),
+                    gridShowX(0) - 4, getVt() + 10,
+                    gridShowX(0) + 4, getVt() + 10);
+            group.getChildren().addAll(l1, l2, p1, p2);
 
-        //Абсцисса и ордината
-        Line l1 = new Line(getVl(), gridShowY(0), getVr(), gridShowY(0));
-        l1.setStroke(Color.BLACK);
-        Line l2 = new Line(gridShowX(0), getVt(), gridShowX(0), getVb());
-        l1.setStroke(Color.BLACK);
-        //Треугольные концы
-        Polygon p1 = new Polygon(getVr(), gridShowY(0),
-                getVr() - 10, gridShowY(0) - 4,
-                getVr() - 10, gridShowY(0) + 4);
-        Polygon p2 = new Polygon(gridShowX(0), getVt(),
-                gridShowX(0) - 4, getVt() + 10,
-                gridShowX(0) + 4, getVt() + 10);
-        group.getChildren().addAll(l1, l2, p1, p2);
+        }
         paneGrid.getChildren().addAll(group, group2);
-
     }
 
     /**
