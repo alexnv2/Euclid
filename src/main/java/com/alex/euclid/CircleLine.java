@@ -16,5 +16,4 @@ public class CircleLine {
     private String id; //имя линии одна буква
     private double radius;//радиус окружности в мировых координатах
     private String poindID;//имя точки центра окружности
-
 }
