@@ -365,6 +365,8 @@ class Model implements Observable {
                     case 5 -> txtShape = txtShape + STA_23 + nameSplitRemove(p.getId()) + "\n";
                     case 6 -> txtShape = txtShape + STA_25 + nameSplitRemove(p.getId()) + "\n";
                     case 7 -> txtShape = txtShape + STA_27 + nameSplitRemove(p.getId()) + "\n";
+                    case 8 -> txtShape = txtShape + STA_35 + nameSplitRemove(p.getId()) + "\n";
+                    case 9 -> txtShape = txtShape + STA_36 + nameSplitRemove(p.getId()) + "\n";
 
                 }
             }
@@ -398,6 +400,7 @@ class Model implements Observable {
      * 0-сбросить режим, 1- точка, 2- отрезок, 3-прямая, 4-луч, 5-угол
      * 6- перпендикуляр, 7 - параллельные прямые, 8-треугольник
      * 9- медиана 10-высота, 11-биссектриса, 12-середина отрезка, 14-окружность
+     * 15-касательная к окружности
      */
     public void createGeometrics() {
         switch (createGeometric) {
@@ -501,6 +504,7 @@ class Model implements Observable {
                     createGeometric = 0;
                 }
             }
+            //Параллельная прямая
             case 7 -> {
                 if (isPoindOldAdd()) {
                     circle = getTimeVer();//получаем точку через которую надо провести параллельную прямую
@@ -519,7 +523,7 @@ class Model implements Observable {
                     setScreenX(findCircle(nameLine[1]).getCenterX() + (circle.getCenterX() - findCircle(nameLine[0]).getCenterX()));
                     setScreenY(findCircle(nameLine[1]).getCenterY() + (circle.getCenterY() - findCircle(nameLine[0]).getCenterY()));
                     //Создать новую точку
-                    Circle newPoind = createPoindAdd(true);
+                    Circle newPoind = createPoindAdd(false);
                     newSegment.append(newPoind.getId());
                     //Обновить мировые координаты коллекции
                     findCirclesUpdateXY(newPoind.getId(), gridViews.revAccessX(newPoind.getCenterX()), gridViews.revAccessY(newPoind.getCenterY()));
@@ -527,7 +531,7 @@ class Model implements Observable {
                     setVertex(newPoind);
                     notifyObservers("VertexGo");
                     //Создать параллельную прямую
-                    Line parallelLine = createLineAdd(2);
+                    Line parallelLine = createLineAdd(9);
                     //задать координаты прямой
                     setRayStartX(circle.getCenterX() + (newPoind.getCenterX() - circle.getCenterX()) * 3);
                     setRayStartY(circle.getCenterY() + (newPoind.getCenterY() - circle.getCenterY()) * 3);
@@ -681,6 +685,66 @@ class Model implements Observable {
                     createGeometric = 0;
                     setPoindOne(false);
                     setPoindTwo(false);
+                }
+            }
+            //Построение касательной
+            case 15 -> {
+                vertex = getTimeVer();
+                //Проверить, принадлежит ли точка окружности
+                if (findBCircle(vertex.getId())) {
+                    circleStack.push(vertex);
+                    newSegment.append(vertex.getId());
+                    newSegment.append("_");
+                    //Рассчитать координаты второй точки касательной
+                    Circle circle1 = findCirclePoind(vertex.getId());
+                    Point2D a = new Point2D(gridViews.revAccessX(circle1.getCenterX()), gridViews.revAccessY(circle1.getCenterY()));
+                    Point2D b = new Point2D(gridViews.revAccessX(vertex.getCenterX()), gridViews.revAccessY(vertex.getCenterY()));
+                    double r = distance(a.getX(), a.getY(), b.getX(), b.getY());
+                    Point2D pd = tangentCircle(a, b, r);
+                    //Построить точку
+                    Circle newPoind = createPoindAdd(false);
+                    setScreenX(gridViews.accessX(pd.getX()));
+                    setScreenY(gridViews.accessY(pd.getY()));
+                    newSegment.append(newPoind.getId());
+                    //Обновить мировые координаты коллекции
+                    findCirclesUpdateXY(newPoind.getId(), pd.getX(), pd.getY());
+                    //Вывести на доску
+                    setVertex(newPoind);
+                    notifyObservers("VertexGo");
+                    //построить касательную
+                    Line tangentLine = createLineAdd(8);
+                    circle = circleStack.pop();
+                    //задать координаты прямой
+                    setRayStartX(circle.getCenterX() + (newPoind.getCenterX() - circle.getCenterX()) * 3);
+                    setRayStartY(circle.getCenterY() + (newPoind.getCenterY() - circle.getCenterY()) * 3);
+                    setRayEndX(circle.getCenterX() + (newPoind.getCenterX() - circle.getCenterX()) * -3);
+                    setRayEndY(circle.getCenterY() + (newPoind.getCenterY() - circle.getCenterY()) * -3);
+                    //Передать в View для вывода
+                    setLine(tangentLine);
+                    notifyObservers("RayGo");
+                    tangentLine.toBack();
+                    //Обновить мировые координаты
+                    findLinesUpdateXY(tangentLine.getId());
+                    //Заменить имя
+                    findNameId(newSegment.toString(), tangentLine.getId());
+                    //Привязка свойств мышки
+                    mouseLine(tangentLine);
+                    //Добавить имя
+                    nameLineAdd(tangentLine);
+                    //Связать касательную с окружностью, последовательность связывания такая,
+                    //иначе неправильно работает.
+                    tangentBindCircles(circle1, circle, newPoind, tangentLine);
+                    //Связать прямую с точками
+                    circlesBindLine(newPoind, circle, tangentLine);
+                    //Закончить построение
+                    //Вывод информации об объектах в правую часть доски
+                    setTxtShape("");
+                    txtAreaOutput();
+                    newSegment.delete(0, newSegment.length());//очистить строку
+                    createGeometric = 0;
+                } else {
+                    setStringLeftStatus(STA_34);
+                    notifyObservers("LeftStatusGo");
                 }
             }
         }
@@ -1017,7 +1081,7 @@ class Model implements Observable {
 
     /**
      * Метод circlesBindOnLine(Circle c, Line l).
-     * Предназначен для связывания точки принадлежащей линии
+     * Предназначен для связывания точки принадлежащей линии.
      *
      * @param poindC - ссылка на точку принадлежащей линии
      * @param lineA  - ссылка на линию которой принадлежит точка
@@ -1045,10 +1109,10 @@ class Model implements Observable {
     }
 
     /**
-     * Метод poindBindOnCircles(Circle poindA, Circle poindB)
-     * Предназначен для связывания точки с окружностью
+     * Метод poindBindOnCircles(Circle poindA, Circle poindB).
+     * Предназначен для связывания точки с окружностью.
      *
-     * @param poindA - объект точка окружности
+     * @param poindA - объект точка на окружности
      * @param poindB - объект окружность
      */
     private void poindBindOnCircles(Circle poindA, Circle poindB) {
@@ -1066,6 +1130,14 @@ class Model implements Observable {
             poindA.setCenterX(cordX);
         });
         poindB.centerYProperty().addListener((obj, oldValue, newValue) -> {
+            double cordY = poindB.getRadius() * Math.sin(Math.toRadians(findAngle(poindA))) + poindB.getCenterY();
+            poindA.setCenterY(cordY);
+        });
+        poindB.radiusProperty().addListener((obj, oldValue, newValue) -> {
+            double cordX = poindB.getRadius() * Math.cos(Math.toRadians(findAngle(poindA))) + poindB.getCenterX();
+            poindA.setCenterX(cordX);
+        });
+        poindB.radiusProperty().addListener((obj, oldValue, newValue) -> {
             double cordY = poindB.getRadius() * Math.sin(Math.toRadians(findAngle(poindA))) + poindB.getCenterY();
             poindA.setCenterY(cordY);
         });
@@ -1125,8 +1197,6 @@ class Model implements Observable {
         nameCircleAdd(vertex);
         //добавить в коллекцию точек
         poindCircles.add(new PoindCircle(vertex, vertex.getId(), decartX, decartY, bMove, false, 0, null, 0.0, false, false, null, 0));
-        System.out.println(timeCircle);
-        System.out.println(vertex);
         //Связать изменение координат с перерасчетом мировых координат
         poindBindUpdateXY(vertex);
         //Добавить в правую часть доски
@@ -1150,7 +1220,6 @@ class Model implements Observable {
 
         //Если точка на окружности
         if (circleAddPoind) {
-            System.out.println("Точка на окружности");
             Point2D a = new Point2D(timeCircle.getCenterX(), timeCircle.getCenterY());
             Point2D b = new Point2D(vertex.getCenterX(), vertex.getCenterY());
             double angle = newAngle(a, b);
@@ -1158,12 +1227,12 @@ class Model implements Observable {
                 if (p != null) {
                     if (p.getCircle().getId().equals(vertex.getId())) {
                         p.setCircleName(timeCircle);//добавить линию
-                        p.setAngle(angle);//параметр для параметрического уравнения
-                        p.setBCircle(true);//точка принадлежит линии
+                        p.setAngle(angle);//угол для преобразования из полярных координат в декартовые
+                        p.setBCircle(true);//точка принадлежит окружности
                     }
                 }
             }
-            poindBindOnCircles(vertex, timeCircle);
+            poindBindOnCircles(vertex, timeCircle);//связать точку с окружностью
         }
         return vertex;//возвращает точку
     }
@@ -1171,7 +1240,6 @@ class Model implements Observable {
     /**
      * Метод newAngle(Point2D a, Point2D b).
      * Предназначен для расчета угла точки в полярных координатах.
-     * Определяет основные свойства объекта.
      *
      * @param a - центр окружности
      * @param b - точка на окружности
@@ -1179,8 +1247,7 @@ class Model implements Observable {
      */
     private double newAngle(Point2D a, Point2D b) {
         Point2D c = new Point2D(a.getX() + 20, a.getY());
-        double angle = a.angle(b, c);
-        return angle;
+        return a.angle(b, c);
     }
 
     /**
@@ -1258,14 +1325,12 @@ class Model implements Observable {
             }
         });
         //Нажатие клавиши
-        newPoind.setOnMousePressed(e ->
-
-        {
+        newPoind.setOnMousePressed(e -> {
             //Проверить разрешено ли взять эту точку. Если расчетная, то запрещено
-            if (findPoindAddMove(newPoind)) {
-                poindOldAdd = true;//взять эту точку для отрезка
-                timeVer = newPoind;//сохранить выбранную точку для построения
-            }
+            //if (findPoindAddMove(newPoind)) {
+            poindOldAdd = true;//взять эту точку для отрезка
+            timeVer = newPoind;//сохранить выбранную точку для построения
+            //}
         });
         //Наведение на точку
         newPoind.setOnMouseEntered(e ->
@@ -1314,10 +1379,33 @@ class Model implements Observable {
     }
 
     /**
+     * Метод tangentCircle(Point2D c, Point2D d, double r).
+     * Предназначен для расчета точки которая принадлежит касательной к окружности.
+     *
+     * @param c - координаты центра окружности
+     * @param d - координаты точки лежащей на окружности, через которую проведена касательная
+     * @param r - радиус окружности
+     * @return e - координаты второй точки касательной
+     */
+    private Point2D tangentCircle(Point2D c, Point2D d, double r) {
+        double a4 = -2 * c.getX();
+        double a5 = -2 * c.getY();
+        double a6 = pow(c.getX(), 2) + pow(c.getY(), 2) - pow(r, 2);
+        double a1 = d.getX() + a4 / 2;
+        double b1 = d.getY() + a5 / 2;
+        double c1 = (a4 * d.getX() + a5 * d.getY()) / 2 + a6;
+        double x = d.getX() + 10;
+        double y = (-a1 / b1) * (d.getX() + 10) - c1 / b1;
+        Point2D e = new Point2D(x, y);
+        return e;
+    }
+
+    /**
      * Метод findCirclePoind(String id).
      * Предназначен для поиска объекта окружность, которой принадлежит точка.
      *
      * @param id - имя точки
+     * @return - объект окружность
      */
     private Circle findCirclePoind(String id) {
         for (PoindCircle p : poindCircles) {
@@ -1495,8 +1583,7 @@ class Model implements Observable {
         //Добавление точки на окружность
         newCircle.setOnMousePressed(e -> {
             circleAddPoind = true;
-            timeCircle = newCircle;
-
+            timeCircle = newCircle;//сохранить ссылку во временной переменной
         });
         return newCircle;
     }
@@ -1831,7 +1918,12 @@ class Model implements Observable {
     Line createLineAdd(int segment) {
         Line newLine = createLine();//добавить линию
         paneBoards.getChildren().add(newLine);
-        poindLines.add(new PoindLine(newLine, newLine.getId(), decartX, decartY, decartX, decartY, true, false, segment));
+        if (segment == 9 || segment == 8) {
+            poindLines.add(new PoindLine(newLine, newLine.getId(), decartX, decartY, decartX, decartY, false, false, segment));
+        } else {
+            poindLines.add(new PoindLine(newLine, newLine.getId(), decartX, decartY, decartX, decartY, true, false, segment));
+
+        }
         return newLine;
     }
 
@@ -2524,6 +2616,42 @@ class Model implements Observable {
             }
         }
         return -1;
+    }
+
+    /**
+     * Метод tangentBindCircles(Circle A, Circle B, Circle C, Line tangentLine).
+     * Метод однонаправленного связывания точки окружности и касательной к окружности.
+     *
+     * @param A           - объект окружность
+     * @param B           - объект точка на окружности
+     * @param C           - объект расчетная точка касательной
+     * @param tangentLine - объект касательная
+     */
+    private void tangentBindCircles(Circle A, Circle B, Circle C, Line tangentLine) {
+        B.centerXProperty().addListener((obj, oldValue, newValue) -> {
+            //рассчитать новую точку
+            Point2D a = new Point2D(gridViews.revAccessX(A.getCenterX()), gridViews.revAccessY(A.getCenterY()));
+            Point2D b = new Point2D(gridViews.revAccessX(B.getCenterX()), gridViews.revAccessY(B.getCenterY()));
+            double r = distance(a.getX(), a.getY(), b.getX(), b.getY());
+            Point2D pd = tangentCircle(a, b, r);
+            C.setCenterX(gridViews.accessX(pd.getX()));
+            C.setCenterY(gridViews.accessY(pd.getY()));
+            tangentLine.setEndX(rayLineX(B, C));
+            tangentLine.setStartX(rayLineX(C, B));
+            findLinesUpdateXY(tangentLine.getId());
+        });
+        B.centerYProperty().addListener((obj, oldValue, newValue) -> {
+            //рассчитать новую точку
+            Point2D a = new Point2D(gridViews.revAccessX(A.getCenterX()), gridViews.revAccessY(A.getCenterY()));
+            Point2D b = new Point2D(gridViews.revAccessX(B.getCenterX()), gridViews.revAccessY(B.getCenterY()));
+            double r = distance(a.getX(), a.getY(), b.getX(), b.getY());
+            Point2D pd = tangentCircle(a, b, r);
+            C.setCenterX(gridViews.accessX(pd.getX()));
+            C.setCenterY(gridViews.accessY(pd.getY()));
+            tangentLine.setEndY(rayLineX(B, C));
+            tangentLine.setStartY(rayLineX(C, B));
+            findLinesUpdateXY(tangentLine.getId());
+        });
     }
 
     /**

@@ -24,6 +24,6 @@ public class PoindCircle {
     private double t;//коэффициент для параметрического уравнения прямой (0.0 по умолчанию)
     private boolean bLine;//true - точка принадлежит прямой (по умолчанию false)
     private boolean bCircle;//true - точка принадлежит окружности (по умолчанию false)
-    private Circle circleName;//имя окружности
+    private Circle circleName;//окружность которой принадлежит точка
     private double angle;//угол для точки на окружности
 }

@@ -93,6 +93,8 @@ public class EuclidController extends View {
     private Button btnParallelLines;
     @FXML
     private Button btnMiddleSegment;
+    @FXML
+    private Button btnTangent;
 
     //Web браузер для вывода данных
     @FXML
@@ -940,6 +942,19 @@ public class EuclidController extends View {
     }
 
     /**
+     * Метод btnTangentClick().
+     * Метод для события нажатия кнопки "Построить касательную к окружности".
+     * Устанавливает режим построения касательной к окружности.
+     */
+    public void btnTangentClick() {
+        model.setStringLeftStatus(STA_33);
+        model.notifyObservers("LeftStatusGo");
+        disableButton(true);//блокировать кнопки
+        model.setCreateGeometric(15);//Установить режим добавления
+        model.setCreateShape(true);//Установить режим создания фигуры
+    }
+
+    /**
      * Метод btnParallelLimes().
      * Метод для события нажатия кнопки "Построить параллельные прямые"
      * Устанавливает режим построения параллельных прямых
@@ -1121,6 +1136,16 @@ public class EuclidController extends View {
         model.setTextToolTip("Удалить с доски все геометрические фигуры");
         //Передать в View для вывода
         model.setBtnToolTip(btnDelete);
+        model.notifyObservers("ToolTip");
+    }
+
+    /**
+     * Метод onMousseEnteredTangent().
+     * Всплывающая подсказка при наведении на кнопку "Добавить касательную к окружности"
+     */
+    public void onMousseEnteredTangent() {
+        model.setTextToolTip("Построить касательную к окружности");
+        model.setBtnToolTip(btnTangent);
         model.notifyObservers("ToolTip");
     }
 

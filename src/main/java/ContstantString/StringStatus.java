@@ -35,12 +35,10 @@ public final class StringStatus {
     public static final String STA_30="Данную линию запрещено перемещать!";
     public static final String STA_31="Укажите на доске отрезок, для которого надо найти середину.";
     public static final String STA_32="Середина отрезка строится только для отрезков. Операция не выполнена.";
-
-
-
-
-
-
+    public static final String STA_33="Укажите на доске точку на окружности, через которую ,будет проходить касательная к окружности.";
+    public static final String STA_34="Точка не принадлежит окружности, выберите другую точку или нажмите ESC.";
+    public static final String STA_35="Касательная к окружности ";
+    public static final String STA_36="Параллельная прямая";
     //Конструктор
     private StringStatus(){}
 }
