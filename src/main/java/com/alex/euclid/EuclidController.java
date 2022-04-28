@@ -183,6 +183,8 @@ public class EuclidController extends View {
         btnCircle.graphicProperty().setValue(new ImageView(imCircle));
         Image imMiddleSegment = new Image(Objects.requireNonNull(getClass().getResourceAsStream("Images/middle.png")));
         btnMiddleSegment.graphicProperty().setValue(new ImageView(imMiddleSegment));
+        Image imTangent = new Image(Objects.requireNonNull(getClass().getResourceAsStream("Images/tangent.png")));
+        btnTangent.graphicProperty().setValue(new ImageView(imTangent));
     }
 
 
@@ -205,6 +207,7 @@ public class EuclidController extends View {
         btnParallelLines.setDisable(b);
         btnTreangle.setDisable(b);
         btnDelete.setDisable(b);
+        btnTangent.setDisable(b);
         if (model.isTreangleVisibly()) {
             btnBisector.setDisable(b);
             btnMediana.setDisable(b);
@@ -746,7 +749,8 @@ public class EuclidController extends View {
         label1.setFont(Font.font("TimesRoman", FontWeight.BOLD, 58.0));
         label1.setTextFill(Color.RED);
         label1.setTextAlignment(TextAlignment.CENTER);
-        Label label3 = new Label("Разработка ученика 8Б класса \n Носова Алексея \n2022 г. \nПрограмма с открытым исходным кодом.\n \n ");
+        Label label3 = new Label("Разработка ученика 8Б класса \n Носова Алексея \n Программа с открытым исходным кодом GPLv3 \t\n" +
+                "\nВерсия 1.1    2022 г. \n ");
         label3.setFont(Font.font("Courier", FontWeight.BOLD, 24.0));
         label3.setTextFill(Color.YELLOW);
         label3.setTextAlignment(TextAlignment.CENTER);
