@@ -3,161 +3,125 @@
 <?import javafx.geometry.*?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
+<?import javafx.scene.shape.*?>
 <?import javafx.scene.text.*?>
 <?import javafx.scene.web.*?>
 
-<?import javafx.scene.shape.Line?>
-<VBox prefHeight="600.0" prefWidth="900.0" xmlns="http://javafx.com/javafx/11.0.2"
-      xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.alex.euclid.EuclidController" onKeyPressed="#onKeyPressed">
+<VBox onKeyPressed="#onKeyPressed" prefHeight="600.0" prefWidth="900.0" xmlns="http://javafx.com/javafx/11.0.14-internal" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.alex.euclid.EuclidController">
     <MenuBar VBox.vgrow="NEVER">
         <Menu mnemonicParsing="false" text="Фигуры">
-            <MenuItem mnemonicParsing="false" onAction="#menuPoindClick" text="Точка, Прямая, Отрезок"/>
-            <MenuItem mnemonicParsing="false" onAction="#menuRayClick" text="Луч и угол"/>
-            <MenuItem mnemonicParsing="false" onAction="#menuAngleClick" text="Смежные и вертикальные углы"/>
-            <SeparatorMenuItem mnemonicParsing="false"/>
+            <MenuItem mnemonicParsing="false" onAction="#menuPoindClick" text="Точка, Прямая, Отрезок" />
+            <MenuItem mnemonicParsing="false" onAction="#menuRayClick" text="Луч и угол" />
+            <MenuItem mnemonicParsing="false" onAction="#menuAngleClick" text="Смежные и вертикальные углы" />
+            <SeparatorMenuItem mnemonicParsing="false" />
             <Menu fx:id="menuTreangleP" mnemonicParsing="false" text="Треугольник">
-                <MenuItem fx:id="menuTreangle" mnemonicParsing="false" onAction="#menuTriangle"
-                          text="Определение треугольника"/>
-                <MenuItem fx:id="menuTr" mnemonicParsing="false" onAction="#menuTr" text="Классификация треугольников"/>
-                <MenuItem fx:id="menuBisector" mnemonicParsing="false" onAction="#menuBisector"
-                          text="Биссектриса треугольника"/>
-                <MenuItem fx:id="menuMedina" mnemonicParsing="false" onAction="#menuMediana"
-                          text="Медиана треугольника "/>
-                <MenuItem fx:id="menuHeight" mnemonicParsing="false" onAction="#menuHeight" text="Высота треугольника"/>
+                <MenuItem fx:id="menuTreangle" mnemonicParsing="false" onAction="#menuTriangle" text="Определение треугольника" />
+                <MenuItem fx:id="menuTr" mnemonicParsing="false" onAction="#menuTr" text="Классификация треугольников" />
+                <MenuItem fx:id="menuBisector" mnemonicParsing="false" onAction="#menuBisector" text="Биссектриса треугольника" />
+                <MenuItem fx:id="menuMedina" mnemonicParsing="false" onAction="#menuMediana" text="Медиана треугольника " />
+                <MenuItem fx:id="menuHeight" mnemonicParsing="false" onAction="#menuHeight" text="Высота треугольника" />
             </Menu>
-            <MenuItem mnemonicParsing="false" text="Окружность" onAction="#menuCircle"/>
+            <MenuItem mnemonicParsing="false" onAction="#menuCircle" text="Окружность" />
         </Menu>
         <Menu mnemonicParsing="false" text="Теоремы и свойства">
-            <MenuItem mnemonicParsing="false" onAction="#menuBisectorAngle" text="Свойства биссектрисы угла"/>
+            <MenuItem mnemonicParsing="false" onAction="#menuBisectorAngle" text="Свойства биссектрисы угла" />
             <Menu mnemonicParsing="false" text="Признаки равенства треугольников">
-                <MenuItem fx:id="menuEqualTr" mnemonicParsing="false" onAction="#menuEqual"
-                          text="Первый признак равенства треугольников"/>
-                <MenuItem fx:id="menuSecondTr" mnemonicParsing="false" onAction="#menuSecond"
-                          text="Второй признак равенства треугольников "/>
-                <MenuItem fx:id="menuTread" mnemonicParsing="false" onAction="#menuTread"
-                          text="Третий признак равенства треугольников"/>
+                <MenuItem fx:id="menuEqualTr" mnemonicParsing="false" onAction="#menuEqual" text="Первый признак равенства треугольников" />
+                <MenuItem fx:id="menuSecondTr" mnemonicParsing="false" onAction="#menuSecond" text="Второй признак равенства треугольников " />
+                <MenuItem fx:id="menuTread" mnemonicParsing="false" onAction="#menuTread" text="Третий признак равенства треугольников" />
             </Menu>
-            <MenuItem mnemonicParsing="false" onAction="#menuPerpend" text="Перпендикуляр к прямой"/>
+            <MenuItem mnemonicParsing="false" onAction="#menuPerpend" text="Перпендикуляр к прямой" />
             <Menu mnemonicParsing="false" text="Свойства равнобедренного треугольника">
-                <MenuItem mnemonicParsing="false" onAction="#menuIsosceles_1" text="Теорема № 1"/>
-                <MenuItem mnemonicParsing="false" onAction="#menuIsosceles_2" text="Теорема № 2"/>
+                <MenuItem mnemonicParsing="false" onAction="#menuIsosceles_1" text="Теорема № 1" />
+                <MenuItem mnemonicParsing="false" onAction="#menuIsosceles_2" text="Теорема № 2" />
             </Menu>
-            <SeparatorMenuItem mnemonicParsing="false"/>
-            <MenuItem mnemonicParsing="false" onAction="#menuPriznak" text="Три признака параллельности двух прямых"/>
+            <SeparatorMenuItem mnemonicParsing="false" />
+            <MenuItem mnemonicParsing="false" onAction="#menuPriznak" text="Три признака параллельности двух прямых" />
             <Menu mnemonicParsing="false" text="Теоремы об углах, образованных двумя параллельными прямыми и секущей">
-                <MenuItem mnemonicParsing="false" onAction="#menuPriznak_1" text="Теорема № 1"/>
-                <MenuItem mnemonicParsing="false" onAction="#menuPriznak_2" text="Теорема № 2"/>
-                <MenuItem mnemonicParsing="false" onAction="#menuPriznak_3" text="Теорема № 3"/>
+                <MenuItem mnemonicParsing="false" onAction="#menuPriznak_1" text="Теорема № 1" />
+                <MenuItem mnemonicParsing="false" onAction="#menuPriznak_2" text="Теорема № 2" />
+                <MenuItem mnemonicParsing="false" onAction="#menuPriznak_3" text="Теорема № 3" />
             </Menu>
             <Menu mnemonicParsing="false" text="Теорема об углах с соответственно параллельными прямыми">
-                <MenuItem mnemonicParsing="false" onAction="#menuSecantAngle_1" text="Теорема № 1"/>
-                <MenuItem mnemonicParsing="false" onAction="#menuSecantAngle_2" text="Теорема № 2"/>
+                <MenuItem mnemonicParsing="false" onAction="#menuSecantAngle_1" text="Теорема № 1" />
+                <MenuItem mnemonicParsing="false" onAction="#menuSecantAngle_2" text="Теорема № 2" />
             </Menu>
-            <SeparatorMenuItem mnemonicParsing="false"/>
-            <MenuItem mnemonicParsing="false" onAction="#treangleAngle" text="Теорема о сумме углов треугольника"/>
-            <MenuItem mnemonicParsing="false" onAction="#treangleTheorem_2"
-                      text="Теорема о соотношениях между сторонами углами треугольника"/>
-            <MenuItem mnemonicParsing="false" onAction="#treangleTheorem_3" text="Неравенство треугольника"/>
-            <MenuItem mnemonicParsing="false" onAction="#treangleProperty" text="Свойства прямоугольных треугольников"/>
-            <MenuItem mnemonicParsing="false" onAction="#treangleQuayle"
-                      text="Признаки равенства прямоугольных треугольников"/>
-            <MenuItem mnemonicParsing="false" onAction="#distantPar" text="Расстояние между параллельными прямыми"/>
+            <SeparatorMenuItem mnemonicParsing="false" />
+            <MenuItem mnemonicParsing="false" onAction="#treangleAngle" text="Теорема о сумме углов треугольника" />
+            <MenuItem mnemonicParsing="false" onAction="#treangleTheorem_2" text="Теорема о соотношениях между сторонами углами треугольника" />
+            <MenuItem mnemonicParsing="false" onAction="#treangleTheorem_3" text="Неравенство треугольника" />
+            <MenuItem mnemonicParsing="false" onAction="#treangleProperty" text="Свойства прямоугольных треугольников" />
+            <MenuItem mnemonicParsing="false" onAction="#treangleQuayle" text="Признаки равенства прямоугольных треугольников" />
+            <MenuItem mnemonicParsing="false" onAction="#distantPar" text="Расстояние между параллельными прямыми" />
         </Menu>
         <Menu mnemonicParsing="false" text="Аксиомы">
-            <MenuItem mnemonicParsing="false" onAction="#menuAcxiom1Click"
-                      text="Аксиомы взаимного расположения точек, прямых и плоскостей"/>
-            <MenuItem mnemonicParsing="false" onAction="#menuAcsiomy2Click" text="Аксиомы наложения и равенства"/>
-            <MenuItem mnemonicParsing="false" onAction="#menuAcsiomy3Click" text="Аксиомы измерения отрезков"/>
-            <MenuItem mnemonicParsing="false" onAction="#menuAcsiomy4Click" text="Аксиома параллельных"/>
+            <MenuItem mnemonicParsing="false" onAction="#menuAcxiom1Click" text="Аксиомы взаимного расположения точек, прямых и плоскостей" />
+            <MenuItem mnemonicParsing="false" onAction="#menuAcsiomy2Click" text="Аксиомы наложения и равенства" />
+            <MenuItem mnemonicParsing="false" onAction="#menuAcsiomy3Click" text="Аксиомы измерения отрезков" />
+            <MenuItem mnemonicParsing="false" onAction="#menuAcsiomy4Click" text="Аксиома параллельных" />
 
         </Menu>
         <Menu mnemonicParsing="false" text="Настройки">
-            <CheckMenuItem fx:id="menuShowPoindName" mnemonicParsing="false" text="Показывать большие буквы для имен"
-                           selected="true" onAction="#menuShowPoindName"/>
-            <CheckMenuItem fx:id="menuShowLineName" mnemonicParsing="false" text="Показывать маленькие буквы для имен"
-                           onAction="#menuShowLineName"/>
-            <CheckMenuItem fx:id="menuAngleName" mnemonicParsing="false" text="Показывать имена углов"
-                           onAction="#menuAngleName"/>
-            <CheckMenuItem fx:id="menuShowGrid" mnemonicParsing="false" text="Показывать сетку" selected="true"
-                           onAction="#menuShowGrid"/>
-            <CheckMenuItem fx:id="menuShowLine" mnemonicParsing="false" text="Показывать координатные оси" selected="true"
-                           onAction="#menuShowLine"/>
+            <CheckMenuItem fx:id="menuShowPoindName" mnemonicParsing="false" onAction="#menuShowPoindName" selected="true" text="Показывать большие буквы для имен" />
+            <CheckMenuItem fx:id="menuShowLineName" mnemonicParsing="false" onAction="#menuShowLineName" text="Показывать маленькие буквы для имен" />
+            <CheckMenuItem fx:id="menuAngleName" mnemonicParsing="false" onAction="#menuAngleName" text="Показывать имена углов" />
+            <CheckMenuItem fx:id="menuShowGrid" mnemonicParsing="false" onAction="#menuShowGrid" selected="true" text="Показывать сетку" />
+            <CheckMenuItem fx:id="menuShowLine" mnemonicParsing="false" onAction="#menuShowLine" selected="true" text="Показывать координатные оси" />
         </Menu>
         <Menu mnemonicParsing="false" text="Помощь">
-            <MenuItem fx:id="menuAbout" mnemonicParsing="false" onAction="#menuAbout" text="О программе"/>
-            <MenuItem fx:id="menuHelp_1" mnemonicParsing="false" onAction="#menuHelp_1" text="Работа с программой"/>
+            <MenuItem fx:id="menuAbout" mnemonicParsing="false" onAction="#menuAbout" text="О программе" />
+            <MenuItem fx:id="menuHelp_1" mnemonicParsing="false" onAction="#menuHelp_1" text="Работа с программой" />
         </Menu>
     </MenuBar>
     <HBox prefHeight="25.0" prefWidth="900.0">
-        <Button fx:id="btnPoind" mnemonicParsing="false" onAction="#btnPoindClick" onMouseEntered="#onMouseEnteredPoind"
-                prefHeight="20.0" prefWidth="40.0" textAlignment="CENTER"/>
-        <Button fx:id="btnSegment" mnemonicParsing="false" onAction="#btnSegmentClick"
-                onMouseEntered="#onMoseEnteredSegment" prefHeight="20.0" prefWidth="40.0"/>
-        <Button fx:id="btnMiddleSegment" mnemonicParsing="false" onAction="#btnMiddleSegment"
-                onMouseEntered="#onMouseEnteredMiddleSegment" prefHeight="20.0" prefWidth="40.0"/>
-        <Button fx:id="btnRay" mnemonicParsing="false" onAction="#btnRay" onMouseEntered="#onMouseEnteredRay"
-                prefHeight="20.0" prefWidth="40.0"/>
-        <Button fx:id="btnLine" mnemonicParsing="false" onAction="#btnLine" onMouseEntered="#onMouseEnteredLine"
-                prefHeight="20.0" prefWidth="40.0"/>
-        <Button fx:id="btnCircle" mnemonicParsing="false" onAction="#btnCircleClick"
-                onMouseEntered="#onMouseEnteredCircle" prefHeight="20.0" prefWidth="40.0"/>
-        <Button fx:id="btnTangent" mnemonicParsing="false" onAction="#btnTangentClick"
-                onMouseEntered="#onMousseEnteredTangent" prefHeight="20.0" prefWidth="40.0"/>
-        <Button fx:id="btnAngle" mnemonicParsing="false" onAction="#btnAngle" onMouseEntered="#onMouseEnteredAngle"
-                prefHeight="20.0" prefWidth="40.0"/>
-        <Button fx:id="btnVertical" mnemonicParsing="false" onAction="#btnVertical"
-                onMouseEntered="#onMouseEnteredVertical" prefHeight="20.0" prefWidth="40.0"/>
-        <Button fx:id="btnParallelLines" mnemonicParsing="false" onAction="#btnParallelLines"
-                onMouseEntered="#onMouseEnteredParallelLines" prefHeight="20.0" prefWidth="40.0"/>
-        <Button fx:id="btnTreangle" mnemonicParsing="false" onAction="#btnTreangle"
-                onMouseEntered="#onMouseEnteredTreangle" prefHeight="20.0" prefWidth="40.0"/>
-        <Button fx:id="btnMediana" mnemonicParsing="false" onAction="#btnMedian" onMouseEntered="#onMouseEnteredMediana"
-                prefHeight="20.0" prefWidth="40.0" disable="true"/>
-        <Button fx:id="btnHeight" mnemonicParsing="false" onAction="#btnHeight" onMouseEntered="#onMouseEnteredHeight"
-                prefHeight="20.0" prefWidth="40.0" disable="true"/>
-        <Button fx:id="btnBisector" mnemonicParsing="false" onAction="#btnBisector"
-                onMouseEntered="#onMouseEnteredBisector" prefHeight="20.0" prefWidth="40.0" disable="true"/>
-        <Button fx:id="btnDelete" mnemonicParsing="false" onAction="#btnDelete" onMouseEntered="#onMouseEnteredDelete"
-                prefHeight="20.0" prefWidth="40.0"/>
-        <Button mnemonicParsing="false" onAction="#btnTest" text="Тест" visible="false"/>
+        <Button fx:id="btnPoind" mnemonicParsing="false" onAction="#btnPoindClick" onMouseEntered="#onMouseEnteredPoind" prefHeight="20.0" prefWidth="40.0" textAlignment="CENTER" />
+        <Button fx:id="btnSegment" mnemonicParsing="false" onAction="#btnSegmentClick" onMouseEntered="#onMoseEnteredSegment" prefHeight="20.0" prefWidth="40.0" />
+        <Button fx:id="btnMiddleSegment" mnemonicParsing="false" onAction="#btnMiddleSegment" onMouseEntered="#onMouseEnteredMiddleSegment" prefHeight="20.0" prefWidth="40.0" />
+        <Button fx:id="btnRay" mnemonicParsing="false" onAction="#btnRay" onMouseEntered="#onMouseEnteredRay" prefHeight="20.0" prefWidth="40.0" />
+        <Button fx:id="btnLine" mnemonicParsing="false" onAction="#btnLine" onMouseEntered="#onMouseEnteredLine" prefHeight="20.0" prefWidth="40.0" />
+        <Button fx:id="btnCircle" mnemonicParsing="false" onAction="#btnCircleClick" onMouseEntered="#onMouseEnteredCircle" prefHeight="20.0" prefWidth="40.0" />
+        <Button fx:id="btnTangent" mnemonicParsing="false" onAction="#btnTangentClick" onMouseEntered="#onMousseEnteredTangent" prefHeight="20.0" prefWidth="40.0" />
+        <Button fx:id="btnAngle" mnemonicParsing="false" onAction="#btnAngle" onMouseEntered="#onMouseEnteredAngle" prefHeight="20.0" prefWidth="40.0" />
+        <Button fx:id="btnVertical" mnemonicParsing="false" onAction="#btnVertical" onMouseEntered="#onMouseEnteredVertical" prefHeight="20.0" prefWidth="40.0" />
+        <Button fx:id="btnParallelLines" mnemonicParsing="false" onAction="#btnParallelLines" onMouseEntered="#onMouseEnteredParallelLines" prefHeight="20.0" prefWidth="40.0" />
+        <Button fx:id="btnTreangle" mnemonicParsing="false" onAction="#btnTreangle" onMouseEntered="#onMouseEnteredTreangle" prefHeight="20.0" prefWidth="40.0" />
+        <Button fx:id="btnMediana" disable="true" mnemonicParsing="false" onAction="#btnMedian" onMouseEntered="#onMouseEnteredMediana" prefHeight="20.0" prefWidth="40.0" />
+        <Button fx:id="btnHeight" disable="true" mnemonicParsing="false" onAction="#btnHeight" onMouseEntered="#onMouseEnteredHeight" prefHeight="20.0" prefWidth="40.0" />
+        <Button fx:id="btnBisector" disable="true" mnemonicParsing="false" onAction="#btnBisector" onMouseEntered="#onMouseEnteredBisector" prefHeight="20.0" prefWidth="40.0" />
+        <Button fx:id="btnDelete" mnemonicParsing="false" onAction="#btnDelete" onMouseEntered="#onMouseEnteredDelete" prefHeight="20.0" prefWidth="40.0" />
+        <Button mnemonicParsing="false" onAction="#btnTest" text="Тест" visible="false" />
     </HBox>
-    <SplitPane dividerPositions="0.25, 0.85" focusTraversable="true"
-               VBox.vgrow="ALWAYS">
+    <SplitPane dividerPositions="0.25, 0.85" focusTraversable="true" VBox.vgrow="ALWAYS">
         <AnchorPane>
-            <WebView fx:id="webViewLeft" maxHeight="-1.0" maxWidth="-1.0" minHeight="-1.0" minWidth="-1.0"
-                     prefHeight="-1.0"
-                     prefWidth="-1.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0"
-                     AnchorPane.rightAnchor="0.0"
-                     AnchorPane.topAnchor="0.0"/>
+            <WebView fx:id="webViewLeft" maxHeight="-1.0" maxWidth="-1.0" minHeight="-1.0" minWidth="-1.0" prefHeight="-1.0" prefWidth="-1.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />
             <opaqueInsets>
-                <Insets/>
+                <Insets />
             </opaqueInsets>
         </AnchorPane>
         <StackPane fx:id="Cartesian">
-            <Pane fx:id="paneGrid"/>
-            <Pane fx:id="paneShape" accessibleRole="NODE" onMouseDragged="#onMouseDragged" onMouseMoved="#onMouseMoved"
-                  onMousePressed="#onMousePressed" onScroll="#onScroll">
-                <Line fx:id="newLine"  disable="true" stroke="DARKSLATEBLUE" strokeWidth="2"/>
+            <Pane fx:id="paneGrid" />
+            <Pane fx:id="paneShape" accessibleRole="NODE" onMouseDragged="#onMouseDragged" onMouseMoved="#onMouseMoved" onMousePressed="#onMousePressed" onScroll="#onScroll">
+                <Line fx:id="newLine" disable="true" stroke="DARKSLATEBLUE" strokeWidth="2" />
 
             </Pane>
         </StackPane>
         <AnchorPane>
-            <TextArea fx:id="txtShape" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0"
-                      AnchorPane.rightAnchor="0.0"
-                      AnchorPane.topAnchor="0.0"/>
+            <TextArea fx:id="txtShape" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />
         </AnchorPane>
     </SplitPane>
     <HBox id="HBox" alignment="CENTER_LEFT" spacing="5.0" VBox.vgrow="NEVER">
         <padding>
-            <Insets bottom="3.0" left="3.0" right="3.0" top="3.0"/>
+            <Insets bottom="3.0" left="3.0" right="3.0" top="3.0" />
         </padding>
         <Label fx:id="leftStatus" maxHeight="1.8" textFill="blue" HBox.hgrow="ALWAYS">
             <font>
-                <Font size="15.0" fx:id="x3"/>
+                <Font size="15.0" fx:id="x3" />
             </font>
 
         </Label>
-        <Pane HBox.hgrow="ALWAYS"/>
-        <Label fx:id="rightStatus" font="$x3" textFill="blue" HBox.hgrow="NEVER"/>
+        <Pane HBox.hgrow="ALWAYS" />
+        <Label fx:id="rightStatus" font="$x3" prefHeight="21.0" prefWidth="100.0" textFill="blue" HBox.hgrow="NEVER" />
+        <Label fx:id="coordinateX" font="$x3" prefHeight="21.0" prefWidth="56.0" textFill="blue" HBox.hgrow="NEVER" />
+        <Label fx:id="coordinateY" font="$x3" prefHeight="21.0" prefWidth="56.0" textFill="blue" HBox.hgrow="NEVER" />
     </HBox>
 </VBox>

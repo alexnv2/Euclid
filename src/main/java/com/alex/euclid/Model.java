@@ -563,6 +563,7 @@ class Model implements Observable {
                     createGeometric = 0;
                 }
             }
+            //Добавить треугольник
             case 8 -> {
                 vertexTr1 = newCirclePoind();
                 setSegmentStartX(vertexTr1.getCenterX());
@@ -608,10 +609,12 @@ class Model implements Observable {
                     lineBindCircles(vertexTr1, vertexTr2, findLineVertex(vertexTr1.getId() + "_" + vertexTr2.getId()));
                     lineBindCircles(vertexTr2, vertexTr3, findLineVertex(vertexTr2.getId() + "_" + vertexTr3.getId()));
                     lineBindCircles(vertexTr1, vertexTr3, findLineVertex(vertexTr1.getId() + "_" + vertexTr3.getId()));
-                    //Добавить многоугольник в форме треугольника
+                    //Добавить многоугольник в форме треугольника, добавить треугольник в коллекцию
                     Polygon t = treangleAdd(vertexTr1, vertexTr2, vertexTr3, newSegment.toString());
                     paneBoards.getChildren().add(t);
-                    t.toBack();
+                 //   t.toBack();
+                    //Внести в коллекцию точек, что точки являются вершинами треугольника
+                    vertexTreangle(vertexTr1.getId(), vertexTr2.getId(), vertexTr3.getId());
                     //закончить построение
                     newSegment.delete(0, newSegment.length());//очистить строку
                     setCreateGeometric(0);
@@ -622,26 +625,47 @@ class Model implements Observable {
                     setTreangleVisibly(true);//разблокировать кнопки высота, медиана, биссектриса
                 }
             }
+            //Медиана
             case 9 -> {
                 vertex = getTimeVer();
-                line = mbhLineAdd(vertex, 4);
-                mouseLine(line);//привязка событий мыши
-                closeLine(line);//запрет на перемещение
-                createGeometric = 0;
+                if (findVertexTreangle(vertex.getId())) {
+                    line = mbhLineAdd(vertex, 4);
+                    line.toFront();
+                    mouseLine(line);//привязка событий мыши
+                    closeLine(line);//запрет на перемещение
+                    createGeometric = 0;
+                } else {
+                    setStringLeftStatus(STA_37);
+                    notifyObservers("LeftStatusGo");
+                }
             }
+            //Высота
             case 10 -> {
                 vertex = getTimeVer();
-                line = mbhLineAdd(vertex, 6);
-                mouseLine(line);//привязка событий мыши
-                closeLine(line);//запрет на перемещение
-                createGeometric = 0;
+                if (findVertexTreangle(vertex.getId())) {
+                    line = mbhLineAdd(vertex, 6);
+                    line.toFront();
+                    mouseLine(line);//привязка событий мыши
+                    closeLine(line);//запрет на перемещение
+                    createGeometric = 0;
+                } else {
+                    setStringLeftStatus(STA_37);
+                    notifyObservers("LeftStatusGo");
+                }
             }
+            //Биссектриса
             case 11 -> {
                 vertex = getTimeVer();
-                line = mbhLineAdd(vertex, 5);
-                mouseLine(line);//привязка событий мыши
-                closeLine(line);//запрет на перемещение
-                createGeometric = 0;
+                if (findVertexTreangle(vertex.getId())) {
+                    line = mbhLineAdd(vertex, 5);
+                    line.toFront();
+                    mouseLine(line);//привязка событий мыши
+                    closeLine(line);//запрет на перемещение
+                    createGeometric = 0;
+                } else {
+                    setStringLeftStatus(STA_37);
+                    notifyObservers("LeftStatusGo");
+                }
             }
             case 12 -> {
                 // Построение середины отрезка
@@ -745,6 +769,50 @@ class Model implements Observable {
                 } else {
                     setStringLeftStatus(STA_34);
                     notifyObservers("LeftStatusGo");
+                }
+            }
+        }
+    }
+
+    /**
+     * Метод findVertexTreangle(String id).
+     * Предназначен для поиска вершин треугольника
+     *
+     * @param id - точка
+     * @return - true- если точка принадлежит вершине треугольника
+     */
+    private boolean findVertexTreangle(String id) {
+        boolean vertexTr = false;
+        for (PoindCircle p : poindCircles) {
+            if (p != null) {
+                if (p.getId().equals(id)) {
+                    vertexTr = p.isBTreangle();
+                }
+            }
+        }
+        return vertexTr;
+    }
+
+    /**
+     * Метод vertexTreangle(String id, String id1, String id2).
+     * Предназначен для внесения в коллекцию точек признака принадлежности
+     * точек к вершинам треугольника
+     *
+     * @param id  - первая вершина треугольника
+     * @param id1 - вторая вершина треугольника
+     * @param id2 - третья вершина треугольника
+     */
+    private void vertexTreangle(String id, String id1, String id2) {
+        for (PoindCircle p : poindCircles) {
+            if (p != null) {
+                if (p.getId().equals(id)) {
+                    p.setBTreangle(true);
+                }
+                if (p.getId().equals(id1)) {
+                    p.setBTreangle(true);
+                }
+                if (p.getId().equals(id2)) {
+                    p.setBTreangle(true);
                 }
             }
         }
@@ -1260,7 +1328,12 @@ class Model implements Observable {
     Circle createPoind() {
         Circle newPoind = new Circle();
         newPoind.setRadius(radiusPoind);//радиус
-        newPoind.setFill(circleColorFill);//Цвет
+        //Цвет точки
+        Stop[] stops = new Stop[]{
+                new Stop(0.0, Color.BLUE), new Stop(1.0, Color.WHITE)
+        };
+        newPoind.setFill(new RadialGradient(0.0, 0.0, 0.5, 0.5, 0.5, true,
+                CycleMethod.NO_CYCLE, stops));
         newPoind.setStroke(circleColorStroke);//Цвет линий
         newPoind.setId(indexPoindAdd());//Индификатор узла
         //Обработка событий
@@ -1338,11 +1411,11 @@ class Model implements Observable {
         {
             newPoind.setCursor(Cursor.HAND);
             newPoind.setRadius(12);
-            Stop[] stops = new Stop[]{
-                    new Stop(0.0, Color.BLUE), new Stop(1.0, Color.WHITE)
+            Stop[] stops1 = new Stop[]{
+                    new Stop(0.0, Color.BLUE), new Stop(1.0, Color.YELLOW)
             };
             newPoind.setFill(new RadialGradient(0.0, 0.0, 0.5, 0.5, 0.5, true,
-                    CycleMethod.NO_CYCLE, stops));
+                    CycleMethod.NO_CYCLE, stops1));
             //Установить статус "Точка + выбранная точка"
             setStringLeftStatus(STA_9 + newPoind.getId());
             notifyObservers("LeftStatusGo");
@@ -1353,6 +1426,11 @@ class Model implements Observable {
         {
             newPoind.setCursor(Cursor.DEFAULT);
             newPoind.setRadius(5);
+            Stop[] stops2 = new Stop[]{
+                    new Stop(0.0, Color.BLUE), new Stop(1.0, Color.WHITE)
+            };
+            newPoind.setFill(new RadialGradient(0.0, 0.0, 0.5, 0.5, 0.5, true,
+                    CycleMethod.NO_CYCLE, stops2));
             poindOldAdd = false;//запрет брать точку для отрезков, прямых, лучей
             //Установить статус пустая строка
             setStringLeftStatus("");

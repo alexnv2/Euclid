@@ -39,6 +39,7 @@ public final class StringStatus {
     public static final String STA_34="Точка не принадлежит окружности, выберите другую точку или нажмите ESC.";
     public static final String STA_35="Касательная к окружности ";
     public static final String STA_36="Параллельная прямая";
+    public static final String STA_37="Точка не является вершиной треугольника, выберите другую точку или нажмите ESC.";
     //Конструктор
     private StringStatus(){}
 }

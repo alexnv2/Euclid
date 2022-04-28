@@ -106,6 +106,11 @@ public class EuclidController extends View {
     @FXML
     private Label rightStatus;//Правый статус
     @FXML
+    private Label coordinateX;
+    @FXML
+    private Label coordinateY;
+
+    @FXML
     private CheckMenuItem menuShowPoindName;
     @FXML
     private CheckMenuItem menuShowLineName;
@@ -232,7 +237,9 @@ public class EuclidController extends View {
         model.setDecartY(gridViews.revAccessY(mouseEvent.getY()));
         //Вывод координат в окно уведомлений
         DecimalFormat dF = new DecimalFormat("#.###");
-        rightStatus.setText("Координаты доски x: " + dF.format(gridViews.revAccessX(mouseEvent.getX())) + " y: " + dF.format(gridViews.revAccessY(mouseEvent.getY())));
+        rightStatus.setText("Координаты:  ");
+        coordinateX.setText(" x: "+dF.format(gridViews.revAccessX(mouseEvent.getX())));
+        coordinateY.setText(" y: " + dF.format(gridViews.revAccessY(mouseEvent.getY())));
 
         //Построение отрезка и треугольника
         if ((model.getCreateGeometric() == 2 || model.getCreateGeometric() == 8) && model.isPoindOne()) {
@@ -749,8 +756,13 @@ public class EuclidController extends View {
         label1.setFont(Font.font("TimesRoman", FontWeight.BOLD, 58.0));
         label1.setTextFill(Color.RED);
         label1.setTextAlignment(TextAlignment.CENTER);
-        Label label3 = new Label("Разработка ученика 8Б класса \n Носова Алексея \n Программа по лицензии GPLv3 \t\n" +
-                "\nВерсия 1.2    2022 г. \n ");
+        Label label3 = new Label("""
+                Разработка ученика 8Б класса\s
+                 Носова Алексея\s
+                 Программа по лицензии GPLv3 \t
+
+                Версия 1.2    2022 г.\s
+                \s""");
         label3.setFont(Font.font("Courier", FontWeight.BOLD, 24.0));
         label3.setTextFill(Color.YELLOW);
         label3.setTextAlignment(TextAlignment.CENTER);
