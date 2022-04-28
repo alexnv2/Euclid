@@ -749,8 +749,8 @@ public class EuclidController extends View {
         label1.setFont(Font.font("TimesRoman", FontWeight.BOLD, 58.0));
         label1.setTextFill(Color.RED);
         label1.setTextAlignment(TextAlignment.CENTER);
-        Label label3 = new Label("Разработка ученика 8Б класса \n Носова Алексея \n Программа с открытым исходным кодом GPLv3 \t\n" +
-                "\nВерсия 1.1    2022 г. \n ");
+        Label label3 = new Label("Разработка ученика 8Б класса \n Носова Алексея \n Программа по лицензии GPLv3 \t\n" +
+                "\nВерсия 1.2    2022 г. \n ");
         label3.setFont(Font.font("Courier", FontWeight.BOLD, 24.0));
         label3.setTextFill(Color.YELLOW);
         label3.setTextAlignment(TextAlignment.CENTER);
