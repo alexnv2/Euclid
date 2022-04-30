@@ -236,9 +236,9 @@ public class EuclidController extends View {
         model.setDecartX(gridViews.revAccessX(mouseEvent.getX()));
         model.setDecartY(gridViews.revAccessY(mouseEvent.getY()));
         //Вывод координат в окно уведомлений
-        DecimalFormat dF = new DecimalFormat("#.###");
+        DecimalFormat dF = new DecimalFormat("#.##");
         rightStatus.setText("Координаты:  ");
-        coordinateX.setText(" x: "+dF.format(gridViews.revAccessX(mouseEvent.getX())));
+        coordinateX.setText(" x: " + dF.format(gridViews.revAccessX(mouseEvent.getX())));
         coordinateY.setText(" y: " + dF.format(gridViews.revAccessY(mouseEvent.getY())));
 
         //Построение отрезка и треугольника
