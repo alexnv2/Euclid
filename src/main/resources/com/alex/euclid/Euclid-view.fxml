@@ -121,7 +121,7 @@
         </Label>
         <Pane HBox.hgrow="ALWAYS" />
         <Label fx:id="rightStatus" font="$x3" prefHeight="21.0" prefWidth="100.0" textFill="blue" HBox.hgrow="NEVER" />
-        <Label fx:id="coordinateX" font="$x3" prefHeight="21.0" prefWidth="56.0" textFill="blue" HBox.hgrow="NEVER" />
-        <Label fx:id="coordinateY" font="$x3" prefHeight="21.0" prefWidth="56.0" textFill="blue" HBox.hgrow="NEVER" />
+        <Label fx:id="coordinateX" font="$x3" prefHeight="21.0" prefWidth="70.0" textFill="blue" HBox.hgrow="NEVER" />
+        <Label fx:id="coordinateY" font="$x3" prefHeight="21.0" prefWidth="70.0" textFill="blue" HBox.hgrow="NEVER" />
     </HBox>
 </VBox>
