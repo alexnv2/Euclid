@@ -6,7 +6,7 @@
 
     <groupId>com.alex</groupId>
     <artifactId>Euclid</artifactId>
-    <version>1.0-SNAPSHOT</version>
+    <version>1.2</version>
     <name>Euclid</name>
 
     <properties>
@@ -61,9 +61,11 @@
                     <source>15</source>
                     <target>15</target>
                     <annotationProcessorPaths>
-                        <groupId>org.projectlombok</groupId>
-                        <artifactId>lombok</artifactId>
-                        <version>1.18.12</version>
+                        <path>
+                            <groupId>org.projectlombok</groupId>
+                            <artifactId>lombok</artifactId>
+                            <version>1.18.22</version>
+                        </path>
                     </annotationProcessorPaths>
                 </configuration>
             </plugin>
