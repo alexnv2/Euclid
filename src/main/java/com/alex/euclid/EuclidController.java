@@ -2,6 +2,7 @@ package com.alex.euclid;
 
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
+import javafx.geometry.Point2D;
 import javafx.geometry.Pos;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
@@ -95,6 +96,10 @@ public class EuclidController extends View {
     private Button btnMiddleSegment;
     @FXML
     private Button btnTangent;
+    @FXML
+    private Button btnCircleInTreangle;
+    @FXML
+    private Button btnCircleOutTreangle;
 
     //Web браузер для вывода данных
     @FXML
@@ -190,6 +195,10 @@ public class EuclidController extends View {
         btnMiddleSegment.graphicProperty().setValue(new ImageView(imMiddleSegment));
         Image imTangent = new Image(Objects.requireNonNull(getClass().getResourceAsStream("Images/tangent.png")));
         btnTangent.graphicProperty().setValue(new ImageView(imTangent));
+        Image imInCircle = new Image(Objects.requireNonNull(getClass().getResourceAsStream("Images/TrOutCircle.png")));
+        btnCircleInTreangle.graphicProperty().setValue(new ImageView(imInCircle));
+        Image imOutCircle = new Image(Objects.requireNonNull(getClass().getResourceAsStream("Images/TrInCircle.png")));
+        btnCircleOutTreangle.graphicProperty().setValue(new ImageView(imOutCircle));
     }
 
 
@@ -217,6 +226,8 @@ public class EuclidController extends View {
             btnBisector.setDisable(b);
             btnMediana.setDisable(b);
             btnHeight.setDisable(b);
+            btnCircleInTreangle.setDisable(b);
+            btnCircleOutTreangle.setDisable(b);
         }
     }
 
@@ -236,9 +247,9 @@ public class EuclidController extends View {
         model.setDecartX(gridViews.revAccessX(mouseEvent.getX()));
         model.setDecartY(gridViews.revAccessY(mouseEvent.getY()));
         //Вывод координат в окно уведомлений
-        DecimalFormat dF = new DecimalFormat("#.###");
+        DecimalFormat dF = new DecimalFormat("#.##");
         rightStatus.setText("Координаты:  ");
-        coordinateX.setText(" x: "+dF.format(gridViews.revAccessX(mouseEvent.getX())));
+        coordinateX.setText(" x: " + dF.format(gridViews.revAccessX(mouseEvent.getX())));
         coordinateY.setText(" y: " + dF.format(gridViews.revAccessY(mouseEvent.getY())));
 
         //Построение отрезка и треугольника
@@ -267,7 +278,7 @@ public class EuclidController extends View {
         if (model.getCreateGeometric() == 14 && model.isPoindOne()) {
             //Насчитать радиус
             double r = model.distance(model.getSegmentStartX(), model.getScreenY(), model.getScreenX(), model.getScreenY());
-            double rw = model.distance(gridViews.revAccessX(model.getSegmentStartX()), gridViews.revAccessY(model.getSegmentStartY()), model.getDecartX(), model.getDecartY());
+            double rw=model.accessRadiusW(new Point2D(gridViews.revAccessX(model.getSegmentStartX()), gridViews.revAccessY(model.getSegmentStartY())),r);
             model.setRadiusCircle(r);
             model.setRadiusCircleW(rw);
             model.setPoindTwo(true);
@@ -369,11 +380,12 @@ public class EuclidController extends View {
                 }
             });
 //            Обновление окружностей
+
             model.getCircleLines().forEach(p -> {
                 if (p != null) {
                     model.setSegmentStartX(gridViews.accessX(p.getX()));
                     model.setSegmentStartY(gridViews.accessY(p.getY()));
-                    model.setRadiusCircle(p.getCircle().getRadius());
+                    model.setRadiusCircle(model.accessRadius( new Point2D(p.getX(), p.getY()), p.getRadius()));
                     model.setCircle(p.getCircle());
                     model.notifyObservers("CircleGo");
                 }
@@ -1112,6 +1124,36 @@ public class EuclidController extends View {
         model.notifyObservers("ToolTip");
     }
 
+    public void btnCircleInTreangle() {
+        model.setStringLeftStatus(STA_38);
+        model.notifyObservers("LeftStatusGo");
+        disableButton(true);//блокировать кнопки
+        model.setCreateGeometric(16);//Установить режим добавления
+        model.setCreateShape(true);//Установить режим создания фигуры
+    }
+
+    public void onMouseEnteredCircleInTreangle() {
+        model.setTextToolTip("Построить окружность вписанную в треугольник");
+        //Передать в View для вывода
+        model.setBtnToolTip(btnCircleInTreangle);
+        model.notifyObservers("ToolTip");
+    }
+
+    public void btnCircleOutTreangle() {
+        model.setStringLeftStatus(STA_39);
+        model.notifyObservers("LeftStatusGo");
+        disableButton(true);//блокировать кнопки
+        model.setCreateGeometric(17);//Установить режим добавления
+        model.setCreateShape(true);//Установить режим создания фигуры
+    }
+
+    public void onMouseEnteredCircleOutTreangle() {
+        model.setTextToolTip("Построить описанную окружность");
+        //Передать в View для вывода
+        model.setBtnToolTip(btnCircleOutTreangle);
+        model.notifyObservers("ToolTip");
+    }
+
     /**
      * Метод btnDelete()
      * Нажата копка "Удалить геометрическую фигуру." Метод удаляет все геометрические объекты.
@@ -1138,6 +1180,8 @@ public class EuclidController extends View {
             btnHeight.setDisable(true);//заблокировать
             btnMediana.setDisable(true);//заблокировать
             btnBisector.setDisable(true);//заблокировать
+            btnCircleOutTreangle.setDisable(true);
+            btnCircleInTreangle.setDisable(true);
             //Необходима для построения отрезков, лучей и прямых.
             //Определена fxml.
             paneShape.getChildren().add(newLine);//необходима для построения отрезков, лучей и прямых
@@ -1199,7 +1243,6 @@ public class EuclidController extends View {
     public void btnTest() {
         model.ColTest();
     }
-
 
 }
 

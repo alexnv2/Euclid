@@ -20,6 +20,7 @@ import java.text.MessageFormat;
 import java.util.*;
 
 import static ContstantString.StringStatus.*;
+import static java.lang.Math.abs;
 import static java.lang.StrictMath.pow;
 import static java.lang.StrictMath.sqrt;
 
@@ -86,10 +87,11 @@ class Model implements Observable {
     private double dXEnd;//смещение по х от нажатой мышки до конца линии для её перемещения
     private double dYEnd;
 
-    //Для временного хранения точек и линий.
+    //Для временного хранения точек и линий при выборе объектов.
     private Circle timeVer;//для временного хранения выбранных вершин
     private Line timeLine;// для временного хранения выбранной линии
     private Circle timeCircle;//для временного хранения окружности
+    private Polygon timeTreangle;//для временного хранения треугольников
 
     //Индексы
     private String indexPoind = "A";//Индекс для точек
@@ -341,7 +343,7 @@ class Model implements Observable {
                 String s1 = p.getId();
                 double s2 = p.getX();
                 double s3 = p.getY();
-                txtShape = MessageFormat.format("{0}Точка: {1} ({2}, {3})\n", txtShape, s1, s2, s3);
+                txtShape = MessageFormat.format("{0}Точка: {1} ({2,number, #.#}, {3,number, #.#})\n", txtShape, s1, s2, s3);
             }
         }
         //Информация об отрезках, лучах и прямых
@@ -351,7 +353,7 @@ class Model implements Observable {
                 switch (l) {
                     case 0 -> {
                         double lengthSegment = distance(p.getStX(), p.getStY(), p.getEnX(), p.getEnY());
-                        txtShape = MessageFormat.format("{0}{1}{2} Длина:{3}\n", txtShape, STA_10, nameSplitRemove(p.getId()), lengthSegment);
+                        txtShape = MessageFormat.format("{0}{1}{2} Длина:{3,number, #.#}\n", txtShape, STA_10, nameSplitRemove(p.getId()), lengthSegment);
                     }
                     case 1 ->
                             txtShape = txtShape + STA_11 + p.getLine().getId() + " или " + nameSplitRemove(p.getId()) + "\n";
@@ -387,7 +389,7 @@ class Model implements Observable {
         //Информация об окружностях
         for (CircleLine p : circleLines)
             if (p != null) {
-                txtShape = MessageFormat.format("{0}{1}{2} \n", txtShape, STA_29, p.getRadius());
+                txtShape = MessageFormat.format("{0}{1}{2}{3}{4,number, #.#} \n", txtShape, "Окружность: ", p.getId(), ", R=", p.getRadius());
             }
         //Передать в View для вывода
         notifyObservers("TextShapeGo");
@@ -453,9 +455,8 @@ class Model implements Observable {
             }
             case 6 -> {
                 if (isPoindOldAdd()) {
-                    circle = getTimeVer();//получаем точку из которой надо опустить перпендикуляр
                     poindAddVertical = true;
-                    newSegment.append(circle.getId());
+                    newSegment.append(getTimeVer().getId());
                     newSegment.append("_");
                 }
                 if (isLineOldAdd()) {
@@ -465,14 +466,14 @@ class Model implements Observable {
                 //Опускаем перпендикуляр, не важно что выбрано первым
                 if (poindAddVertical && lineAddVertical) {
                     String[] nameLine = findID(line).split("_");//получить имя отрезка по имени прямой
-                    Point2D A1 = new Point2D(circle.getCenterX(), circle.getCenterY());
+                    Point2D A1 = new Point2D(getTimeVer().getCenterX(), getTimeVer().getCenterY());
                     Point2D B1 = new Point2D(line.getStartX(), line.getStartY());
                     Point2D C1 = new Point2D(line.getEndX(), line.getEndY());
                     Point2D D1 = heightPoind(A1, B1, C1);//координаты точки пересечения
                     Line lP = createLineAdd(7);//Создание перпендикуляра
                     //Задаем координаты
-                    setSegmentStartX(circle.getCenterX());
-                    setSegmentStartY(circle.getCenterY());
+                    setSegmentStartX(getTimeVer().getCenterX());
+                    setSegmentStartY(getTimeVer().getCenterY());
                     setScreenX(D1.getX());
                     setScreenY(D1.getY());
                     closeLine(lP);//запрет на перемещение
@@ -496,7 +497,7 @@ class Model implements Observable {
                     setTxtShape("");
                     txtAreaOutput();
                     //связать точки и перпендикуляр для перемещения
-                    verticalBindCircles(circle, findCircle(nameLine[0]), findCircle(nameLine[1]), newPoind, lP);
+                    verticalBindCircles(getTimeVer(), findCircle(nameLine[0]), findCircle(nameLine[1]), newPoind, lP);
                     poindAddVertical = false;
                     lineAddVertical = false;
                     //закрыть режим создания перпендикуляра
@@ -507,21 +508,20 @@ class Model implements Observable {
             //Параллельная прямая
             case 7 -> {
                 if (isPoindOldAdd()) {
-                    circle = getTimeVer();//получаем точку через которую надо провести параллельную прямую
-                    newSegment.append(circle.getId());
+                    // получаем точку через которую надо провести параллельную прямую
+                    newSegment.append(getTimeVer().getId());
                     newSegment.append("_");
                     poindAddVParallel = true;
                 }
                 if (isLineOldAdd()) {
-                    line = getTimeLine();//получаем прямую к которой надо построить параллельную прямую
                     lineAddParallel = true;
                 }
                 if (poindAddVParallel && lineAddParallel) {
                     //получить имя отрезка по имени прямой
-                    String[] nameLine = findID(line).split("_");
+                    String[] nameLine = findID(getTimeLine()).split("_");
                     //Рассчитать координаты новой точки
-                    setScreenX(findCircle(nameLine[1]).getCenterX() + (circle.getCenterX() - findCircle(nameLine[0]).getCenterX()));
-                    setScreenY(findCircle(nameLine[1]).getCenterY() + (circle.getCenterY() - findCircle(nameLine[0]).getCenterY()));
+                    setScreenX(findCircle(nameLine[1]).getCenterX() + (getTimeVer().getCenterX() - findCircle(nameLine[0]).getCenterX()));
+                    setScreenY(findCircle(nameLine[1]).getCenterY() + (getTimeVer().getCenterY() - findCircle(nameLine[0]).getCenterY()));
                     //Создать новую точку
                     Circle newPoind = createPoindAdd(false);
                     newSegment.append(newPoind.getId());
@@ -533,10 +533,10 @@ class Model implements Observable {
                     //Создать параллельную прямую
                     Line parallelLine = createLineAdd(9);
                     //задать координаты прямой
-                    setRayStartX(circle.getCenterX() + (newPoind.getCenterX() - circle.getCenterX()) * 3);
-                    setRayStartY(circle.getCenterY() + (newPoind.getCenterY() - circle.getCenterY()) * 3);
-                    setRayEndX(circle.getCenterX() + (newPoind.getCenterX() - circle.getCenterX()) * -3);
-                    setRayEndY(circle.getCenterY() + (newPoind.getCenterY() - circle.getCenterY()) * -3);
+                    setRayStartX(getTimeVer().getCenterX() + (newPoind.getCenterX() - getTimeVer().getCenterX()) * 3);
+                    setRayStartY(getTimeVer().getCenterY() + (newPoind.getCenterY() - getTimeVer().getCenterY()) * 3);
+                    setRayEndX(getTimeVer().getCenterX() + (newPoind.getCenterX() - getTimeVer().getCenterX()) * -3);
+                    setRayEndY(getTimeVer().getCenterY() + (newPoind.getCenterY() - getTimeVer().getCenterY()) * -3);
                     //Передать в View для вывода
                     setLine(parallelLine);
                     notifyObservers("RayGo");
@@ -550,9 +550,9 @@ class Model implements Observable {
                     //Добавить имя
                     nameLineAdd(parallelLine);
                     //Связать параллельные прямые
-                    parallelBindLine(findCircle(nameLine[0]), findCircle(nameLine[1]), circle, newPoind);
+                    parallelBindLine(findCircle(nameLine[0]), findCircle(nameLine[1]), getTimeVer(), newPoind);
                     //Связать точки с прямой
-                    circlesBindLine(circle, newPoind, parallelLine);
+                    circlesBindLine(getTimeVer(), newPoind, parallelLine);
                     //Вывод информации об объектах в правую часть доски
                     setTxtShape("");
                     txtAreaOutput();
@@ -612,7 +612,7 @@ class Model implements Observable {
                     //Добавить многоугольник в форме треугольника, добавить треугольник в коллекцию
                     Polygon t = treangleAdd(vertexTr1, vertexTr2, vertexTr3, newSegment.toString());
                     paneBoards.getChildren().add(t);
-                 //   t.toBack();
+                    //   t.toBack();
                     //Внести в коллекцию точек, что точки являются вершинами треугольника
                     vertexTreangle(vertexTr1.getId(), vertexTr2.getId(), vertexTr3.getId());
                     //закончить построение
@@ -691,6 +691,7 @@ class Model implements Observable {
                 }
                 createGeometric = 0;
             }
+            //Построение окружности
             case 14 -> {
                 //Взять существующую или создать новую точку для прямой
                 if (!isPoindTwo()) {
@@ -737,12 +738,12 @@ class Model implements Observable {
                     notifyObservers("VertexGo");
                     //построить касательную
                     Line tangentLine = createLineAdd(8);
-                    circle = circleStack.pop();
+                    Circle c = circleStack.pop();
                     //задать координаты прямой
-                    setRayStartX(circle.getCenterX() + (newPoind.getCenterX() - circle.getCenterX()) * 3);
-                    setRayStartY(circle.getCenterY() + (newPoind.getCenterY() - circle.getCenterY()) * 3);
-                    setRayEndX(circle.getCenterX() + (newPoind.getCenterX() - circle.getCenterX()) * -3);
-                    setRayEndY(circle.getCenterY() + (newPoind.getCenterY() - circle.getCenterY()) * -3);
+                    setRayStartX(c.getCenterX() + (newPoind.getCenterX() - c.getCenterX()) * 3);
+                    setRayStartY(c.getCenterY() + (newPoind.getCenterY() - c.getCenterY()) * 3);
+                    setRayEndX(c.getCenterX() + (newPoind.getCenterX() - c.getCenterX()) * -3);
+                    setRayEndY(c.getCenterY() + (newPoind.getCenterY() - c.getCenterY()) * -3);
                     //Передать в View для вывода
                     setLine(tangentLine);
                     notifyObservers("RayGo");
@@ -757,9 +758,9 @@ class Model implements Observable {
                     nameLineAdd(tangentLine);
                     //Связать касательную с окружностью, последовательность связывания такая,
                     //иначе неправильно работает.
-                    tangentBindCircles(circle1, circle, newPoind, tangentLine);
+                    tangentBindCircles(circle1, c, newPoind, tangentLine);
                     //Связать прямую с точками
-                    circlesBindLine(newPoind, circle, tangentLine);
+                    circlesBindLine(newPoind, c, tangentLine);
                     //Закончить построение
                     //Вывод информации об объектах в правую часть доски
                     setTxtShape("");
@@ -771,26 +772,168 @@ class Model implements Observable {
                     notifyObservers("LeftStatusGo");
                 }
             }
+
+            //Вписанная окружность
+            case 16 -> {
+                //Выбрать вершины треугольника
+                String[] ver = timeTreangle.getId().split("_");
+                Circle v1 = findCircle(ver[0]);
+                Circle v2 = findCircle(ver[1]);
+                Circle v3 = findCircle(ver[2]);
+                Circle c1=createPoindAdd(false);//центр вписанной окружности
+                Circle c2= createCircleAdd(c1);//вписанная окружность
+                //Создать вписанную окружность
+                accessInCircle(v1,v2,v3,c2,c1);
+                updateCircle(c1,c2);
+                //Привязать окружность к треугольнику
+                poindBindInTriangleCircle(v1, v2, v3, c2, c1);
+                setTxtShape("");
+                txtAreaOutput();
+                createGeometric = 0;
+            }
+            // Описанная окружность
+            case 17 -> {
+                //Выбрать вершины треугольника
+                String[] ver = timeTreangle.getId().split("_");
+                Circle v1 = findCircle(ver[0]);
+                Circle v2 = findCircle(ver[1]);
+                Circle v3 = findCircle(ver[2]);
+                //Выбрать координаты точек
+                Point2D v1XY = new Point2D(v1.getCenterX(), v1.getCenterY());
+                Point2D v2XY = new Point2D(v2.getCenterX(), v2.getCenterY());
+                Point2D v3XY = new Point2D(v3.getCenterX(), v3.getCenterY());
+                //Рассчитать центр окружности
+                Point2D circleXY = middlePerpendicular(v1XY, v2XY, v3XY);
+                double radius = radiusOutCircle(v1XY, v2XY, v3XY);
+                //создать центр окружности
+                Circle c1 = createPoindAdd(true);//центр окружности
+                Circle c2 = createCircleAdd(c1);// сама окружность
+                vertex=c1;
+                setScreenX(circleXY.getX());
+                setScreenY(circleXY.getY());
+                notifyObservers("VertexGo");
+                circle=c2;
+                setSegmentStartX(c1.getCenterX());
+                setSegmentStartY(c1.getCenterY());
+                setRadiusCircle(radius);
+                setRadiusCircleW(accessRadiusW(new Point2D(getSegmentStartX(), getSegmentStartY()), radius));
+                notifyObservers("CircleGo");
+                //Присвоить вершины треугольника окружности
+                vertexInCircle(v1.getId(), v2.getId(), v3.getId(), circle);
+                updateCircle(circle, vertex);
+                setTxtShape("");
+                txtAreaOutput();
+                createGeometric = 0;
+            }
         }
     }
 
     /**
-     * Метод findVertexTreangle(String id).
-     * Предназначен для поиска вершин треугольника
+     * Метод poindBindInTriangleCircle(Circle v1, Circle v2, Circle v3, Circle circle).
+     * Предназначен для связывания вершин треугольника с вписанной окружностью.
      *
-     * @param id - точка
-     * @return - true- если точка принадлежит вершине треугольника
+     * @param v1  - первая вершина
+     * @param v2  - вторая вершина
+     * @param v3  - третья вершина
+     * @param c1  -вписанная окружность
+     * @param c2- центр окружности
      */
-    private boolean findVertexTreangle(String id) {
-        boolean vertexTr = false;
+    private void poindBindInTriangleCircle(Circle v1, Circle v2, Circle v3, Circle c1, Circle c2) {
+        //Рассчитать радиус и координаты
+        v1.centerXProperty().addListener((obj, oldValue, newValue) -> accessInCircle(v1, v2, v3, c1, c2));
+        v1.centerYProperty().addListener((obj, oldValue, newValue) -> accessInCircle(v1, v2, v3, c1, c2));
+        v2.centerXProperty().addListener((obj, oldValue, newValue) -> accessInCircle(v1, v2, v3, c1, c2));
+        v2.centerYProperty().addListener((obj, oldValue, newValue) -> accessInCircle(v1, v2, v3, c1, c2));
+        v3.centerXProperty().addListener((obj, oldValue, newValue) -> accessInCircle(v1, v2, v3, c1, c2));
+        v3.centerYProperty().addListener((obj, oldValue, newValue) -> accessInCircle(v1, v2, v3, c1, c2));
+        updateCircle(c1, c2);
+        setTxtShape("");
+        txtAreaOutput();
+    }
+
+    /**
+     * Метод accessInCircle(Circle v1,Circle v2, Circle v3, Circle c1, Circle c2).
+     * Предназначен для расчета центра и радиуса вписанной окружности.
+     *
+     * @param v1  - первая вершина
+     * @param v2  - вторая вершина
+     * @param v3  - третья вершина
+     * @param c1  -вписанная окружность
+     * @param c2- центр окружности
+     */
+    private void accessInCircle(Circle v1, Circle v2, Circle v3, Circle c1, Circle c2) {
+        //Выбрать координаты точек
+        Point2D v1XY = new Point2D(v1.getCenterX(), v1.getCenterY());
+        Point2D v2XY = new Point2D(v2.getCenterX(), v2.getCenterY());
+        Point2D v3XY = new Point2D(v3.getCenterX(), v3.getCenterY());
+        //Рассчитать центр окружности
+        Point2D circleXY = inCircleXY(v1XY, v2XY, v3XY);
+        double radius = radiusInCircle(v1XY, v2XY, v3XY);
+        setVertex(c2);
+        double stX = screenX;
+        double stY = screenY;
+        setScreenX(circleXY.getX());
+        setScreenY(circleXY.getY());
+        notifyObservers("VertexGo");
+        setCircle(c1);
+        setSegmentStartX(circleXY.getX());
+        setSegmentStartY(circleXY.getY());
+        setRadiusCircle(radius);
+        setRadiusCircleW(accessRadiusW(new Point2D(getSegmentStartX(), getSegmentStartY()), radius));
+        notifyObservers("CircleGo");
+        screenX = stX;
+        screenY = stY;
+        updateCircle(c1, c2);
+    }
+
+    /**
+     * Метод vertexInCircle(String id, String id1, String id2).
+     * Предназначена для присвоения вершин треугольника окружности.
+     *
+     * @param id  - первая вершина треугольника
+     * @param id1 - вторая вершина треугольника
+     * @param id2 - третья вершина треугольника
+     * @param c   - окружность для связывания с точкой
+     */
+    private void vertexInCircle(String id, String id1, String id2, Circle c) {
         for (PoindCircle p : poindCircles) {
             if (p != null) {
                 if (p.getId().equals(id)) {
-                    vertexTr = p.isBTreangle();
+                    p.setBCircle(true);
+                    p.setCircleName(c);
+                    double angle = newAngle(new Point2D(c.getCenterX(), c.getCenterY()), new Point2D(p.getCircle().getCenterX(), p.getCircle().getCenterY()));
+                    if (findCircle(id).getCenterY() < c.getCenterY()) {
+                        updateAngle(360 - angle, id);
+                    } else {
+                        updateAngle(angle, id);
+                    }
+                    poindBindOnCircles(p.getCircle(), c);//связать точку с окружностью
+
+                }
+                if (p.getId().equals(id1)) {
+                    p.setBCircle(true);
+                    p.setCircleName(c);
+                    double angle = newAngle(new Point2D(c.getCenterX(), c.getCenterY()), new Point2D(p.getCircle().getCenterX(), p.getCircle().getCenterY()));
+                    if (findCircle(id1).getCenterY() < c.getCenterY()) {
+                        updateAngle(360 - angle, id1);
+                    } else {
+                        updateAngle(angle, id1);
+                    }
+                    poindBindOnCircles(p.getCircle(), c);//связать точку с окружностью
+                }
+                if (p.getId().equals(id2)) {
+                    p.setBCircle(true);
+                    p.setCircleName(c);
+                    double angle = newAngle(new Point2D(c.getCenterX(), c.getCenterY()), new Point2D(p.getCircle().getCenterX(), p.getCircle().getCenterY()));
+                    if (findCircle(id2).getCenterY() < c.getCenterY()) {
+                        updateAngle(360 - angle, id2);
+                    } else {
+                        updateAngle(angle, id2);
+                    }
+                    poindBindOnCircles(p.getCircle(), c);//связать точку с окружностью
                 }
             }
         }
-        return vertexTr;
     }
 
     /**
@@ -817,6 +960,26 @@ class Model implements Observable {
             }
         }
     }
+
+    /**
+     * Метод findVertexTreangle(String id).
+     * Предназначен для поиска вершин треугольника
+     *
+     * @param id - точка
+     * @return - true- если точка принадлежит вершине треугольника
+     */
+    private boolean findVertexTreangle(String id) {
+        boolean vertexTr = false;
+        for (PoindCircle p : poindCircles) {
+            if (p != null) {
+                if (p.getId().equals(id)) {
+                    vertexTr = p.isBTreangle();
+                }
+            }
+        }
+        return vertexTr;
+    }
+
 
     /**
      * Метод newPoindShape().
@@ -1250,6 +1413,33 @@ class Model implements Observable {
     }
 
     /**
+     * Метод accessRadiusW(Circle c1, Circle c2).
+     * Предназначен для расчета радиуса в мировых координатах.
+     *
+     * @param poind - координаты центра окружности
+     * @param R     - радиус окружности
+     * @return радиус в мировых координатах
+     */
+    public double accessRadiusW(Point2D poind, double R) {
+        return distance(gridViews.revAccessX(poind.getX()), gridViews.revAccessY(poind.getY()), gridViews.revAccessX(poind.getX() + R), gridViews.revAccessY(poind.getY()));
+    }
+
+    /**
+     * Метод accessRadius(Point2D xy, int R).
+     * Предназначен для пересчета радиуса из мировых координат в координаты экрана.
+     *
+     * @param xy - мировые координаты центра окружности.
+     * @param R  - радиус в мировых значениях.
+     * @return возвращает радиус в экранных значениях.
+     */
+    public double accessRadius(Point2D xy, double R) {
+        double d1=xy.getX()+R;
+        return distance(gridViews.accessX(xy.getX()), gridViews.accessY(xy.getY()), gridViews.accessX(d1), gridViews.accessY(xy.getY()));
+    }
+
+
+
+    /**
      * Метод createPoindAdd()
      * Предназначен для создания точек и вывод на доску.
      * Для создания точки вызывается метод createPoind().
@@ -1474,8 +1664,7 @@ class Model implements Observable {
         double c1 = (a4 * d.getX() + a5 * d.getY()) / 2 + a6;
         double x = d.getX() + 10;
         double y = (-a1 / b1) * (d.getX() + 10) - c1 / b1;
-        Point2D e = new Point2D(x, y);
-        return e;
+        return new Point2D(x, y);
     }
 
     /**
@@ -1597,24 +1786,6 @@ class Model implements Observable {
         return null;
     }
 
-    /**
-     * Метод findPoindAddMove(Circle c).
-     * Предназначен для проверки на возможность выбрать точку для геометрической фигуры.
-     * Если точка расчетная, то её выбрать запрещено по условия связывания.
-     *
-     * @return - логическое значение bMove
-     */
-    private boolean findPoindAddMove(Circle c) {
-        for (PoindCircle p : poindCircles) {
-            if (p != null) {
-                if (p.getId().equals(c.getId())) {
-                    return p.isBMove();
-                }
-            }
-        }
-        return false;//всегда запрещено
-    }
-
 
     /**
      * Метод createCircle().
@@ -1633,7 +1804,7 @@ class Model implements Observable {
             newCircle.setCursor(Cursor.HAND);
             newCircle.setStrokeWidth(3.0);
             //Установить статус "Окружность"
-            setStringLeftStatus(STA_29 + findCircleRadius(newCircle));
+            setStringLeftStatus(MessageFormat.format("{0}{1}{2}{3,number, #.#} \n", "Окружность ", newCircle.getId(), ", R=", findCircleRadiusW(newCircle)));
             notifyObservers("LeftStatusGo");
         });
         //При уходе
@@ -1667,20 +1838,21 @@ class Model implements Observable {
     }
 
     /**
-     * Метод updateCircle(Circle c).
+     * Метод updateCircle(Circle c, Circle c0).
      * Предназначен для обновления мировых координат и радиуса окружности в коллекции.
      * Вызывается при изменении радиуса и смещении окружности.
      *
-     * @param c - ссылка на окружность
+     * @param c1 - ссылка на окружность
+     * @param c2 - центр окружности
      */
-    public void updateCircle(Circle c, Circle c0) {
+    public void updateCircle(Circle c1, Circle c2) {
         for (CircleLine p : circleLines) {
             if (p != null) {
-                if (p.getId().equals(c.getId())) {
-                    p.setRadius(getRadiusCircleW());
-                    p.setCircle(c);
-                    p.setX(gridViews.revAccessX(c0.getCenterX()));
-                    p.setY(gridViews.revAccessY(c0.getCenterY()));
+                if (p.getId().equals(c1.getId())) {
+                    p.setRadius(accessRadiusW(new Point2D(c2.getCenterX(),c2.getCenterY()),c1.getRadius()));
+                    p.setCircle(c1);
+                    p.setX(gridViews.revAccessX(c2.getCenterX()));
+                    p.setY(gridViews.revAccessY(c2.getCenterY()));
                 }
             }
         }
@@ -1697,7 +1869,7 @@ class Model implements Observable {
         for (CircleLine p : circleLines) {
             if (p != null) {
                 if (p.getCircle().getId().equals(c.getId())) {
-                    return p.getRadius();
+                    return p.getCircle().getRadius();
                 }
             }
         }
@@ -1715,7 +1887,7 @@ class Model implements Observable {
         for (CircleLine p : circleLines) {
             if (p != null) {
                 if (p.getCircle().getId().equals(c.getId())) {
-                    return p.getCircle().getRadius();
+                    return p.getRadius();
                 }
             }
         }
@@ -1739,23 +1911,13 @@ class Model implements Observable {
      * Предназначен для связывания центра окружности с окружностью для перемещения
      *
      * @param poind  - ссылка на центр окружности
-     * @param circle - ссылка на окружность
+     * @param c - ссылка на окружность
      */
-    public void bindPoindCircle(Circle poind, Circle circle) {
-        poind.centerXProperty().addListener((obj, oldValue, newValue) -> {
-            setRadiusCircle(findCircleRadiusW(circle));
-            circle.setCenterX(poind.getCenterX());
-            circle.setCenterY(poind.getCenterY());
-            circle.setRadius(getRadiusCircle());
-            updateCircle(circle, poind);//обновить коллекцию
-        });
-        poind.centerYProperty().addListener((obj, oldValue, newValue) -> {
-            setRadiusCircle(findCircleRadiusW(circle));
-            circle.setCenterX(poind.getCenterX());
-            circle.setCenterY(poind.getCenterY());
-            circle.setRadius(getRadiusCircle());
-            updateCircle(circle, poind);//обновить коллекцию
-        });
+    public void bindPoindCircle(Circle poind, Circle c) {
+        poind.centerXProperty().bindBidirectional(c.centerXProperty());
+        poind.centerYProperty().bindBidirectional(c.centerYProperty());
+        c.centerYProperty().addListener((old, oldValue,newValue)-> updateCircle(c,poind));
+        c.centerXProperty().addListener((old, oldValue,newValue)-> updateCircle(c,poind));
     }
 
 
@@ -1771,7 +1933,7 @@ class Model implements Observable {
         circleLines.add(new CircleLine(circle, gridViews.revAccessX(circle.getCenterX()), gridViews.revAccessY(circle.getCenterY()), circle.getId(), circle.getRadius(), name.getId()));
         paneBoards.getChildren().add(circle);//добавить окружность на доску
         circle.toBack();
-        bindPoindCircle(findCircle(findNameCenterCircle(circle)), circle);
+        bindPoindCircle(name, circle);
         setTxtShape("");
         txtAreaOutput();
         return circle;
@@ -1819,7 +1981,7 @@ class Model implements Observable {
                     String[] nameId = findID(newLine).split("_");
                     Circle A = findCircle(nameId[0]);
                     Circle B = findCircle(nameId[1]);
-                    //Проверить, принадлежит ли точка линии
+                    //Проверить, лежит ли первая точка на линии
                     if (findPoindMove(nameId[0])) {
                         Point2D A1 = new Point2D(e.getX(), e.getY());
                         Point2D B1 = new Point2D(Objects.requireNonNull(findLineForPoind(nameId[0])).getStartX(), Objects.requireNonNull(findLineForPoind(nameId[0])).getStartY());
@@ -1845,6 +2007,7 @@ class Model implements Observable {
                         //Сохранить параметрический параметр t для прямой в коллекции
                         updateT(Objects.requireNonNull(findLineForPoind(nameId[0])), A);
                     }
+                    //Проверить, лежит ли вторая точка на линии
                     if (findPoindMove(nameId[1])) {
                         Point2D A1 = new Point2D(e.getX(), e.getY());
                         Point2D B1 = new Point2D(Objects.requireNonNull(findLineForPoind(nameId[1])).getStartX(), Objects.requireNonNull(findLineForPoind(nameId[1])).getStartY());
@@ -1870,6 +2033,7 @@ class Model implements Observable {
                         //Сохранить параметрический параметр t для прямой в коллекции
                         updateT(Objects.requireNonNull(findLineForPoind(nameId[1])), B);
                     }
+                    //Перемещение линии
                     if (!findPoindMove(nameId[0]) && !findPoindMove(nameId[1])) {
                         //Если не расчетная, пересчитать координаты.
                         A.setCenterX(e.getX() + getDXStart());
@@ -2099,6 +2263,7 @@ class Model implements Observable {
                 v3.getCenterX(), v3.getCenterY());
         treangle.setFill(Color.CHOCOLATE);
         treangle.setOpacity(0.2);
+        treangle.setId(nameTr);
         polygonBindCircles(v1, v2, v3, treangle);
         treangleNames.add(new TreangleName(treangle, nameTr));
         //привязать событие мыши
@@ -2110,6 +2275,7 @@ class Model implements Observable {
             stringLeftStatus = " ";
             notifyObservers("LeftStatusGo");
         });
+        treangle.setOnMousePressed(e -> timeTreangle = treangle);
         return treangle;
     }
 
@@ -3156,5 +3322,83 @@ class Model implements Observable {
             newCircle.setCenterY(midPoindAB(p1, p2).getY());
             findCirclesUpdateXY(newCircle.getId(), gridViews.revAccessX(newCircle.getCenterX()), gridViews.revAccessY(newCircle.getCenterY()));
         });
+    }
+
+    /**
+     * Метод radiusInCircle(Point2D v1, Point2D v2, Point2D v3).
+     * Предназначен для расчета радиуса вписанной окружности.
+     *
+     * @param v1 - координаты первой вершины треугольника.
+     * @param v2 - координаты второй вершины треугольника.
+     * @param v3 - координаты третьей вершины треугольника.
+     * @return - возвращает радиус описанной окружности.
+     */
+    private double radiusInCircle(Point2D v1, Point2D v2, Point2D v3) {
+        double ab = v1.distance(v2);
+        double ac = v1.distance(v3);
+        double bc = v2.distance(v3);
+        double s = areaTriangle(v1.getX(), v1.getY(), v2.getX(), v2.getY(), v3.getX(), v3.getY());
+        double p = abs((ab + ac + bc) / 2);
+        return abs(s / p);
+    }
+
+    /**
+     * Метод inCircleXY(Point2D v1, Point2D v2, Point2D v3).
+     * Предназначен для расчета координат центра вписанной окружности.
+     *
+     * @param v1 - координаты первой вершины треугольника.
+     * @param v2 - координаты второй вершины треугольника.
+     * @param v3 - координаты третьей вершины треугольника.
+     * @return - возвращает радиус описанной окружности.
+     */
+    private Point2D inCircleXY(Point2D v1, Point2D v2, Point2D v3) {
+        double ab = v1.distance(v2);
+        double ac = v1.distance(v3);
+        double bc = v2.distance(v3);
+        return new Point2D((bc * v1.getX() + ac * v2.getX() + ab * v3.getX()) / (ab + bc + ac), ((bc * v1.getY() + ac * v2.getY() + ab * v3.getY()) / (ab + bc + ac)));
+    }
+
+
+    /**
+     * Метод radiusOutCircle(Point2D v1, Point2D v2, Point2D v3).
+     * Предназначен для расчета радиуса описанной окружности.
+     *
+     * @param v1 - координаты первой вершины треугольника.
+     * @param v2 - координаты второй вершины треугольника.
+     * @param v3 - координаты третьей вершины треугольника.
+     * @return - возвращает радиус описанной окружности.
+     */
+    private double radiusOutCircle(Point2D v1, Point2D v2, Point2D v3) {
+        double ab = v1.distance(v2);
+        double ac = v1.distance(v3);
+        double bc = v2.distance(v3);
+        double s = areaTriangle(v1.getX(), v1.getY(), v2.getX(), v2.getY(), v3.getX(), v3.getY());
+        return abs((ab * bc * ac) / (s * 4));
+    }
+
+    /**
+     * Метод middlePerpendicular(Point2D v1, Point2D v2, Point2D v3).
+     * Предназначен для расчета центра описанной окружности.
+     *
+     * @param v1 - координаты первой вершины треугольника.
+     * @param v2 - координаты второй вершины треугольника.
+     * @param v3 - координаты третьей вершины треугольника.
+     * @return возвращает координаты центра описанной окружности.
+     */
+    private Point2D middlePerpendicular(Point2D v1, Point2D v2, Point2D v3) {
+        double smAx = (v2.getX() + v3.getX()) / 2;//середина
+        double smAy = (v2.getY() + v3.getY()) / 2;
+        double smCx = (v1.getX() + v2.getX()) / 2;
+        double smCy = (v1.getY() + v2.getY()) / 2;
+        double sxAB = v1.getX() - v2.getX();
+        double syAB = -(v2.getY() - v1.getY());
+        double sAB = smCx * sxAB + smCy * syAB;
+        double sxBC = v2.getX() - v3.getX();
+        double syBC = v2.getY() - v3.getY();
+        double sBC = smAx * sxBC + smAy * syBC;
+        double d = sxAB * syBC - sxBC * syAB;
+        double dx = sAB * syBC - sBC * syAB;
+        double dy = sxAB * sBC - sxBC * sAB;
+        return new Point2D(dx / d, dy / d);
     }
 }
