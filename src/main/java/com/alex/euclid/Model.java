@@ -677,7 +677,7 @@ class Model implements Observable {
                     Circle c2 = findCircle(namePoind[1]);
                     Point2D p1 = new Point2D(c1.getCenterX(), c1.getCenterY());
                     Point2D p2 = new Point2D(c2.getCenterX(), c2.getCenterY());
-                    Point2D poindMiddle = midPoindAB(p1, p2);//получили координаты середины отрезка
+                    Point2D poindMiddle = p1.midpoint(p2);//получили координаты середины отрезка
                     Circle middleCircle = createPoindAdd(false);
                     setScreenX(poindMiddle.getX());
                     setScreenY(poindMiddle.getY());
@@ -722,6 +722,7 @@ class Model implements Observable {
                     newSegment.append("_");
                     //Рассчитать координаты второй точки касательной
                     Circle circle1 = findCirclePoind(vertex.getId());
+                    assert circle1 != null;
                     Point2D a = new Point2D(gridViews.revAccessX(circle1.getCenterX()), gridViews.revAccessY(circle1.getCenterY()));
                     Point2D b = new Point2D(gridViews.revAccessX(vertex.getCenterX()), gridViews.revAccessY(vertex.getCenterY()));
                     double r = distance(a.getX(), a.getY(), b.getX(), b.getY());
@@ -780,11 +781,11 @@ class Model implements Observable {
                 Circle v1 = findCircle(ver[0]);
                 Circle v2 = findCircle(ver[1]);
                 Circle v3 = findCircle(ver[2]);
-                Circle c1=createPoindAdd(false);//центр вписанной окружности
-                Circle c2= createCircleAdd(c1);//вписанная окружность
+                Circle c1 = createPoindAdd(false);//центр вписанной окружности
+                Circle c2 = createCircleAdd(c1);//вписанная окружность
                 //Создать вписанную окружность
-                accessInCircle(v1,v2,v3,c2,c1);
-                updateCircle(c1,c2);
+                accessInCircle(v1, v2, v3, c2, c1);
+                updateCircle(c1, c2);
                 //Привязать окружность к треугольнику
                 poindBindInTriangleCircle(v1, v2, v3, c2, c1);
                 setTxtShape("");
@@ -808,11 +809,11 @@ class Model implements Observable {
                 //создать центр окружности
                 Circle c1 = createPoindAdd(true);//центр окружности
                 Circle c2 = createCircleAdd(c1);// сама окружность
-                vertex=c1;
+                vertex = c1;
                 setScreenX(circleXY.getX());
                 setScreenY(circleXY.getY());
                 notifyObservers("VertexGo");
-                circle=c2;
+                circle = c2;
                 setSegmentStartX(c1.getCenterX());
                 setSegmentStartY(c1.getCenterY());
                 setRadiusCircle(radius);
@@ -1098,7 +1099,7 @@ class Model implements Observable {
                 textBindCircle(circle, nameText, (int) (nameText.getX() - circle.getCenterX()), (int) (nameText.getY() - circle.getCenterY()));
             }
             //Если выбрано имя линии
-            Line line = findLines(nameText.getId());
+            Line line = findLineForPoind(nameText.getId());
             if (line != null) {
                 //Перемещаем имя точки
                 nameText.setX(e.getX());
@@ -1135,7 +1136,7 @@ class Model implements Observable {
                 }
             }
         }
-        Line line = findLines(id);//Объект имя линии
+        Line line = findLineForPoind(id);//Объект имя линии
         if (line != null) {
             for (NamePoindLine np : namePoindLines) {
                 if (np != null) {
@@ -1281,7 +1282,7 @@ class Model implements Observable {
         double aY = findCircle(sVer[0]).getCenterY();
         double bX = findCircle(sVer[1]).getCenterX();
         double bY = findCircle(sVer[1]).getCenterY();
-        Point2D mP = midPoindAB(new Point2D(aX, aY), new Point2D(bX, bY));
+        Point2D mP = new Point2D(aX, aY).midpoint(new Point2D(bX, bY));
         double cX = mP.getX();
         double cY = mP.getY();
         //Рассчитать координаты перпендикуляр от середины линии на расстоянии 15рх
@@ -1433,10 +1434,8 @@ class Model implements Observable {
      * @return возвращает радиус в экранных значениях.
      */
     public double accessRadius(Point2D xy, double R) {
-        double d1=xy.getX()+R;
-        return distance(gridViews.accessX(xy.getX()), gridViews.accessY(xy.getY()), gridViews.accessX(d1), gridViews.accessY(xy.getY()));
+        return distance(gridViews.accessX(xy.getX()), gridViews.accessY(xy.getY()), gridViews.accessX(xy.getX() + R), gridViews.accessY(xy.getY()));
     }
-
 
 
     /**
@@ -1567,6 +1566,7 @@ class Model implements Observable {
                     if (findBCircle(newPoind.getId())) {
                         Circle c = findCirclePoind(newPoind.getId());
                         Point2D b = new Point2D(e.getX(), e.getY());
+                        assert c != null;
                         Point2D a = new Point2D(c.getCenterX(), c.getCenterY());
                         double angle = newAngle(a, b);
                         if (e.getY() < c.getCenterY()) {
@@ -1849,7 +1849,7 @@ class Model implements Observable {
         for (CircleLine p : circleLines) {
             if (p != null) {
                 if (p.getId().equals(c1.getId())) {
-                    p.setRadius(accessRadiusW(new Point2D(c2.getCenterX(),c2.getCenterY()),c1.getRadius()));
+                    p.setRadius(accessRadiusW(new Point2D(c2.getCenterX(), c2.getCenterY()), c1.getRadius()));
                     p.setCircle(c1);
                     p.setX(gridViews.revAccessX(c2.getCenterX()));
                     p.setY(gridViews.revAccessY(c2.getCenterY()));
@@ -1858,23 +1858,6 @@ class Model implements Observable {
         }
     }
 
-    /**
-     * Метод findCircleRadius(Circle c).
-     * Возвращает радиус окружности из коллекции
-     *
-     * @param c - ссылка на окружность
-     * @return - радиус окружности
-     */
-    double findCircleRadius(Circle c) {
-        for (CircleLine p : circleLines) {
-            if (p != null) {
-                if (p.getCircle().getId().equals(c.getId())) {
-                    return p.getCircle().getRadius();
-                }
-            }
-        }
-        return 0;
-    }
 
     /**
      * Метод findCircleRadiusW(Circle c).
@@ -1910,16 +1893,15 @@ class Model implements Observable {
      * Метод bindPoindCircle(Circle poind, Circle circle).
      * Предназначен для связывания центра окружности с окружностью для перемещения
      *
-     * @param poind  - ссылка на центр окружности
-     * @param c - ссылка на окружность
+     * @param poind - ссылка на центр окружности
+     * @param c     - ссылка на окружность
      */
     public void bindPoindCircle(Circle poind, Circle c) {
         poind.centerXProperty().bindBidirectional(c.centerXProperty());
         poind.centerYProperty().bindBidirectional(c.centerYProperty());
-        c.centerYProperty().addListener((old, oldValue,newValue)-> updateCircle(c,poind));
-        c.centerXProperty().addListener((old, oldValue,newValue)-> updateCircle(c,poind));
+        c.centerYProperty().addListener((old, oldValue, newValue) -> updateCircle(c, poind));
+        c.centerXProperty().addListener((old, oldValue, newValue) -> updateCircle(c, poind));
     }
-
 
     /**
      * Метод createCircleAdd(Circle name).
@@ -2130,7 +2112,6 @@ class Model implements Observable {
         return poindCircles.stream().filter(p -> p.getId().equals(vertex)).findFirst().filter(PoindCircle::isBLine).isPresent();
     }
 
-
     /**
      * Метод indLineMove(Line line).
      * Предназначен для поиска разрешения на перемещение линии.
@@ -2238,18 +2219,6 @@ class Model implements Observable {
     }
 
     /**
-     * Метод midPoindAB(Point2D p1,Point2D p2).
-     * Предназначен для расчета координат середины между указанными точками.
-     *
-     * @param p1 - координаты первой точки
-     * @param p2 - координаты второй точки
-     * @return - возвращает точку с координатами середины между указанными точками
-     */
-    public Point2D midPoindAB(Point2D p1, Point2D p2) {
-        return p1.midpoint(p2);
-    }
-
-    /**
      * Метод treangleAdd(Point2D v1, Point2D v2, Point2D v3)
      * Предназначен для создания треугольников.
      *
@@ -2314,25 +2283,6 @@ class Model implements Observable {
             }
         }
         return null;//ничего не найдено
-    }
-
-    /**
-     * Метод findLine().
-     * Предназначен для поиска линии в коллекции PoindLIne.
-     * Вызывается из метода createNameShapes() при создании объекта text, для перемещения.
-     *
-     * @param s - имя линии
-     * @return - возвращает объект или null
-     */
-    Line findLines(String s) {
-        for (PoindLine p : poindLines) {
-            if (p != null) {
-                if (p.getLine().getId().equals(s)) {
-                    return p.getLine();
-                }
-            }
-        }
-        return null;
     }
 
     /**
@@ -3016,7 +2966,7 @@ class Model implements Observable {
             Point2D p3 = new Point2D(c.getCenterX(), c.getCenterY());
             Point2D mc;
             switch (nl) {
-                case 4 -> mc = midPoindAB(p1, p2);
+                case 4 -> mc = p1.midpoint(p2);
                 case 5 -> mc = bisectorPoind(p1, p3, p2);
                 case 6 -> mc = heightPoind(p3, p2, p1);
                 default -> throw new IllegalStateException("Неопределенно значение: " + nl);
@@ -3033,7 +2983,7 @@ class Model implements Observable {
             Point2D p3 = new Point2D(c.getCenterX(), c.getCenterY());
             Point2D mc;
             switch (nl) {
-                case 4 -> mc = midPoindAB(p1, p2);
+                case 4 -> mc = p1.midpoint(p2);
                 case 5 -> mc = bisectorPoind(p1, p3, p2);
                 case 6 -> mc = heightPoind(p3, p2, p1);
                 default -> throw new IllegalStateException("Неопределенно значение: " + nl);
@@ -3051,7 +3001,7 @@ class Model implements Observable {
             Point2D p3 = new Point2D(c.getCenterX(), c.getCenterY());
             Point2D mc;
             switch (nl) {
-                case 4 -> mc = midPoindAB(p1, p2);
+                case 4 -> mc = p1.midpoint(p2);
                 case 5 -> mc = bisectorPoind(p1, p3, p2);
                 case 6 -> mc = heightPoind(p3, p2, p1);
                 default -> throw new IllegalStateException("Неопределенно значение: " + nl);
@@ -3068,7 +3018,7 @@ class Model implements Observable {
             Point2D p3 = new Point2D(c.getCenterX(), c.getCenterY());
             Point2D mc;
             switch (nl) {
-                case 4 -> mc = midPoindAB(p1, p2);
+                case 4 -> mc = p1.midpoint(p2);
                 case 5 -> mc = bisectorPoind(p1, p3, p2);
                 case 6 -> mc = heightPoind(p3, p2, p1);
                 default -> throw new IllegalStateException("Неопределенно значение: " + nl);
@@ -3085,7 +3035,7 @@ class Model implements Observable {
             Point2D p3 = new Point2D(c.getCenterX(), c.getCenterY());
             Point2D mc;
             switch (nl) {
-                case 4 -> mc = midPoindAB(p1, p2);
+                case 4 -> mc = p1.midpoint(p2);
                 case 5 -> mc = bisectorPoind(p1, p3, p2);
                 case 6 -> mc = heightPoind(p3, p2, p1);
                 default -> throw new IllegalStateException("Неопределенно значение: " + nl);
@@ -3102,7 +3052,7 @@ class Model implements Observable {
             Point2D p3 = new Point2D(c.getCenterX(), c.getCenterY());
             Point2D mc;
             switch (nl) {
-                case 4 -> mc = midPoindAB(p1, p2);
+                case 4 -> mc = p1.midpoint(p2);
                 case 5 -> mc = bisectorPoind(p1, p3, p2);
                 case 6 -> mc = heightPoind(p3, p2, p1);
                 default -> throw new IllegalStateException("Неопределенно значение: " + nl);
@@ -3162,7 +3112,7 @@ class Model implements Observable {
                     Point2D p2 = new Point2D(c2.getCenterX(), c2.getCenterY());
                     Point2D p3 = new Point2D(c.getCenterX(), c.getCenterY());
                     switch (nl) {
-                        case 4 -> mc = midPoindAB(p1, p2);
+                        case 4 -> mc = p1.midpoint(p2);
                         case 5 -> mc = bisectorPoind(p1, p3, p2);
                         case 6 -> mc = heightPoind(p3, p2, p1);
                         default -> throw new IllegalStateException("Неопределенно значение: " + nl);
@@ -3175,7 +3125,7 @@ class Model implements Observable {
                     Point2D p2 = new Point2D(c2.getCenterX(), c2.getCenterY());
                     Point2D p3 = new Point2D(c.getCenterX(), c.getCenterY());
                     switch (nl) {
-                        case 4 -> mc = midPoindAB(p1, p2);
+                        case 4 -> mc = p1.midpoint(p2);
                         case 5 -> mc = bisectorPoind(p1, p3, p2);
                         case 6 -> mc = heightPoind(p3, p2, p1);
                         default -> throw new IllegalStateException("Неопределенно значение: " + nl);
@@ -3188,7 +3138,7 @@ class Model implements Observable {
                     Point2D p2 = new Point2D(c2.getCenterX(), c2.getCenterY());
                     Point2D p3 = new Point2D(c.getCenterX(), c.getCenterY());
                     switch (nl) {
-                        case 4 -> mc = midPoindAB(p1, p2);
+                        case 4 -> mc = p1.midpoint(p2);
                         case 5 -> mc = bisectorPoind(p1, p3, p2);
                         case 6 -> mc = heightPoind(p3, p2, p1);
                         default -> throw new IllegalStateException("Неопределенно значение: " + nl);
@@ -3297,29 +3247,29 @@ class Model implements Observable {
         newLine.startXProperty().addListener((old, oldValue, newValue) -> {
             Point2D p1 = new Point2D(newLine.startXProperty().get(), newLine.startYProperty().get());
             Point2D p2 = new Point2D(newLine.endXProperty().get(), newLine.endYProperty().get());
-            newCircle.setCenterX(midPoindAB(p1, p2).getX());
-            newCircle.setCenterY(midPoindAB(p1, p2).getY());
+            newCircle.setCenterX(p1.midpoint(p2).getX());
+            newCircle.setCenterY(p1.midpoint(p2).getY());
             findCirclesUpdateXY(newCircle.getId(), gridViews.revAccessX(newCircle.getCenterX()), gridViews.revAccessY(newCircle.getCenterY()));
         });
         newLine.startYProperty().addListener((old, oldValue, newValue) -> {
             Point2D p1 = new Point2D(newLine.startXProperty().get(), newLine.startYProperty().get());
             Point2D p2 = new Point2D(newLine.endXProperty().get(), newLine.endYProperty().get());
-            newCircle.setCenterX(midPoindAB(p1, p2).getX());
-            newCircle.setCenterY(midPoindAB(p1, p2).getY());
+            newCircle.setCenterX(p1.midpoint(p2).getX());
+            newCircle.setCenterY(p1.midpoint(p2).getY());
             findCirclesUpdateXY(newCircle.getId(), gridViews.revAccessX(newCircle.getCenterX()), gridViews.revAccessY(newCircle.getCenterY()));
         });
         newLine.endXProperty().addListener((old, oldValue, newValue) -> {
             Point2D p1 = new Point2D(newLine.startXProperty().get(), newLine.startYProperty().get());
             Point2D p2 = new Point2D(newLine.endXProperty().get(), newLine.endYProperty().get());
-            newCircle.setCenterX(midPoindAB(p1, p2).getX());
-            newCircle.setCenterY(midPoindAB(p1, p2).getY());
+            newCircle.setCenterX(p1.midpoint(p2).getX());
+            newCircle.setCenterY(p1.midpoint(p2).getY());
             findCirclesUpdateXY(newCircle.getId(), gridViews.revAccessX(newCircle.getCenterX()), gridViews.revAccessY(newCircle.getCenterY()));
         });
         newLine.endYProperty().addListener((old, oldValue, newValue) -> {
             Point2D p1 = new Point2D(newLine.startXProperty().get(), newLine.startYProperty().get());
             Point2D p2 = new Point2D(newLine.endXProperty().get(), newLine.endYProperty().get());
-            newCircle.setCenterX(midPoindAB(p1, p2).getX());
-            newCircle.setCenterY(midPoindAB(p1, p2).getY());
+            newCircle.setCenterX(p1.midpoint(p2).getX());
+            newCircle.setCenterY(p1.midpoint(p2).getY());
             findCirclesUpdateXY(newCircle.getId(), gridViews.revAccessX(newCircle.getCenterX()), gridViews.revAccessY(newCircle.getCenterY()));
         });
     }
