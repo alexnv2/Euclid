@@ -106,8 +106,8 @@ class View implements Observer {
      * @param ver - объект Окружность
      */
     private void vertexGo(Circle ver) {
-        ver.setCenterX(model.getScreenX());
-        ver.setCenterY(model.getScreenY());
+        ver.setCenterX(model.getScreenXY().getX());
+        ver.setCenterY(model.getScreenXY().getY());
     }
 
     /**
@@ -119,8 +119,8 @@ class View implements Observer {
     private void sideGo(Line side) {
         side.setStartX(model.getSegmentStartX());
         side.setStartY(model.getSegmentStartY());
-        side.setEndX(model.getScreenX());
-        side.setEndY(model.getScreenY());
+        side.setEndX(model.getScreenXY().getX());
+        side.setEndY(model.getScreenXY().getY());
     }
 
     /**
@@ -178,8 +178,8 @@ class View implements Observer {
      * @param arc - объект Arc
      */
     private void arcGo(Arc arc) {
-        arc.setCenterX(model.getScreenX());
-        arc.setCenterY(model.getScreenY());
+       arc.setCenterX(model.getScreenXY().getX());
+       arc.setCenterY(model.getScreenXY().getY());
         arc.setRadiusX(model.getArcRadius());
         arc.setRadiusY(model.getArcRadius());
         arc.setStartAngle(model.getAngleStart());

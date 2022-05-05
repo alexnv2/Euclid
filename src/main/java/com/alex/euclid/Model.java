@@ -66,8 +66,7 @@ class Model implements Observable {
     private int colVertex;//Количество вершин для многоугольника, 3-для треугольника, 4- для четырехугольника
 
     //координаты
-    private double screenX;//координата экрана Х от мышки
-    private double screenY;//координата экрана Y от мышки
+    private Point2D screenXY;
     private double decartX;//координата X мировая на доске, зависят от мышки
     private double decartY;//координата Y мировая на доске, зависят от мышки
     private double segmentStartX;//координата StartX для отрезков
@@ -341,8 +340,8 @@ class Model implements Observable {
         for (PoindCircle p : poindCircles) {
             if (p.getCircle() != null) {
                 String s1 = p.getId();
-                double s2 = p.getX();
-                double s3 = p.getY();
+                double s2 = p.getXY().getX();
+                double s3 = p.getXY().getY();
                 txtShape = MessageFormat.format("{0}Точка: {1} ({2,number, #.#}, {3,number, #.#})\n", txtShape, s1, s2, s3);
             }
         }
@@ -474,8 +473,7 @@ class Model implements Observable {
                     //Задаем координаты
                     setSegmentStartX(getTimeVer().getCenterX());
                     setSegmentStartY(getTimeVer().getCenterY());
-                    setScreenX(D1.getX());
-                    setScreenY(D1.getY());
+                    setScreenXY(new Point2D(D1.getX(),D1.getY()));
                     closeLine(lP);//запрет на перемещение
                     //Передать в View для вывода
                     setLine(lP);
@@ -520,8 +518,9 @@ class Model implements Observable {
                     //получить имя отрезка по имени прямой
                     String[] nameLine = findID(getTimeLine()).split("_");
                     //Рассчитать координаты новой точки
-                    setScreenX(findCircle(nameLine[1]).getCenterX() + (getTimeVer().getCenterX() - findCircle(nameLine[0]).getCenterX()));
-                    setScreenY(findCircle(nameLine[1]).getCenterY() + (getTimeVer().getCenterY() - findCircle(nameLine[0]).getCenterY()));
+                    setScreenXY(new Point2D(findCircle(nameLine[1]).getCenterX() + (getTimeVer().getCenterX() - findCircle(nameLine[0]).getCenterX()),findCircle(nameLine[1]).getCenterY() + (getTimeVer().getCenterY() - findCircle(nameLine[0]).getCenterY())));
+                    //setScreenX(findCircle(nameLine[1]).getCenterX() + (getTimeVer().getCenterX() - findCircle(nameLine[0]).getCenterX()));
+                    //setScreenY(findCircle(nameLine[1]).getCenterY() + (getTimeVer().getCenterY() - findCircle(nameLine[0]).getCenterY()));
                     //Создать новую точку
                     Circle newPoind = createPoindAdd(false);
                     newSegment.append(newPoind.getId());
@@ -576,8 +575,7 @@ class Model implements Observable {
                     Line l1 = createLineAdd(3);
                     setSegmentStartX(newLine.getStartX());
                     setSegmentStartY(newLine.getStartY());
-                    setScreenX(newLine.getEndX());
-                    setScreenY(newLine.getEndY());
+                    setScreenXY(new Point2D(newLine.getEndX(),newLine.getEndY()));
                     setLine(l1);
                     l1.toBack();
                     //заменить имя отрезка
@@ -596,8 +594,7 @@ class Model implements Observable {
                     Line l1 = createLineAdd(3);
                     setSegmentStartX(vertexTr1.getCenterX());
                     setSegmentStartY(vertexTr1.getCenterY());
-                    setScreenX(newLine.getEndX());
-                    setScreenY(newLine.getEndY());
+                    setScreenXY(new Point2D(newLine.getEndX(),newLine.getEndY()));
                     newLine.setVisible(false);
                     setLine(l1);
                     l1.toBack();
@@ -679,8 +676,7 @@ class Model implements Observable {
                     Point2D p2 = new Point2D(c2.getCenterX(), c2.getCenterY());
                     Point2D poindMiddle = p1.midpoint(p2);//получили координаты середины отрезка
                     Circle middleCircle = createPoindAdd(false);
-                    setScreenX(poindMiddle.getX());
-                    setScreenY(poindMiddle.getY());
+                    setScreenXY(new Point2D(poindMiddle.getX(),poindMiddle.getY()));
                     notifyObservers("VertexGo");//вывести на экран
                     //Связать полученную точку с линией
                     middleBindSegment(middleCircle, l);
@@ -729,8 +725,7 @@ class Model implements Observable {
                     Point2D pd = tangentCircle(a, b, r);
                     //Построить точку
                     Circle newPoind = createPoindAdd(false);
-                    setScreenX(gridViews.accessX(pd.getX()));
-                    setScreenY(gridViews.accessY(pd.getY()));
+                    setScreenXY(new Point2D(gridViews.accessX(pd.getX()),gridViews.accessY(pd.getY())));
                     newSegment.append(newPoind.getId());
                     //Обновить мировые координаты коллекции
                     findCirclesUpdateXY(newPoind.getId(), pd.getX(), pd.getY());
@@ -810,8 +805,7 @@ class Model implements Observable {
                 Circle c1 = createPoindAdd(true);//центр окружности
                 Circle c2 = createCircleAdd(c1);// сама окружность
                 vertex = c1;
-                setScreenX(circleXY.getX());
-                setScreenY(circleXY.getY());
+                setScreenXY(new Point2D(circleXY.getX(),circleXY.getY()));
                 notifyObservers("VertexGo");
                 circle = c2;
                 setSegmentStartX(c1.getCenterX());
@@ -871,10 +865,9 @@ class Model implements Observable {
         Point2D circleXY = inCircleXY(v1XY, v2XY, v3XY);
         double radius = radiusInCircle(v1XY, v2XY, v3XY);
         setVertex(c2);
-        double stX = screenX;
-        double stY = screenY;
-        setScreenX(circleXY.getX());
-        setScreenY(circleXY.getY());
+        double stX = getScreenXY().getX();
+        double stY = getScreenXY().getY();
+        setScreenXY(new Point2D(circleXY.getX(),circleXY.getY()));
         notifyObservers("VertexGo");
         setCircle(c1);
         setSegmentStartX(circleXY.getX());
@@ -882,8 +875,7 @@ class Model implements Observable {
         setRadiusCircle(radius);
         setRadiusCircleW(accessRadiusW(new Point2D(getSegmentStartX(), getSegmentStartY()), radius));
         notifyObservers("CircleGo");
-        screenX = stX;
-        screenY = stY;
+        setScreenXY(new Point2D(stX,stY));
         updateCircle(c1, c2);
     }
 
@@ -1011,8 +1003,7 @@ class Model implements Observable {
         //Вывести на доску
         setSegmentStartX(newLine.getStartX());
         setSegmentStartY(newLine.getStartY());
-        setScreenX(newLine.getEndX());
-        setScreenY(newLine.getEndY());
+        setScreenXY(new Point2D(newLine.getEndX(),newLine.getEndY()));
         setLine(l);
         //обновить имя
         findNameId(newSegment.toString(), l.getId());
@@ -1453,7 +1444,7 @@ class Model implements Observable {
         //Добавить имя на доску
         nameCircleAdd(vertex);
         //добавить в коллекцию точек
-        poindCircles.add(new PoindCircle(vertex, vertex.getId(), decartX, decartY, bMove, false, 0, null, 0.0, false, false, null, 0));
+        poindCircles.add(new PoindCircle(vertex, vertex.getId(), new Point2D(decartX,decartY), bMove, false,  null, 0.0, false, false, null, 0));
         //Связать изменение координат с перерасчетом мировых координат
         poindBindUpdateXY(vertex);
         //Добавить в правую часть доски
@@ -1544,18 +1535,17 @@ class Model implements Observable {
                             Point2D C1 = new Point2D(l.getEndX(), l.getEndY());
                             Point2D D1 = heightPoind(A1, B1, C1);//координаты точки пересечения
                             t = (D1.getX() - l.getStartX()) / (l.getEndX() - l.getStartX());
-                            setScreenX(D1.getX());
-                            setScreenY(D1.getY());
+                            setScreenXY(new Point2D(D1.getX(),D1.getY()));
+                            //setScreenX(D1.getX());
+                            //setScreenY(D1.getY());
                             //Проверить дошла ли точка до начала линии
                             if (t <= 0) {
-                                setScreenX(l.getStartX());
-                                setScreenY(l.getStartY());
+                                setScreenXY(new Point2D(l.getStartX(),l.getStartY()));
                                 t = 0;
                             }
                             //Проверить достигла ли точка конца линии
                             if (t >= 1) {
-                                setScreenX(l.getEndX());
-                                setScreenY(l.getEndY());
+                                setScreenXY(new Point2D(l.getEndX(),l.getEndY()));
                                 t = 1;
                             }
                             //Сохранить параметрический параметр t для прямой в коллекции
@@ -1723,8 +1713,7 @@ class Model implements Observable {
         poindCircles.forEach(p -> {
             if (p != null) {
                 if (p.getId().equals(pCircle.getId())) {
-                    p.setX(gridViews.revAccessX(pCircle.getCenterX()));
-                    p.setY(gridViews.revAccessY(pCircle.getCenterY()));
+                    p.setXY(new Point2D(gridViews.revAccessX(pCircle.getCenterX()),gridViews.revAccessY(pCircle.getCenterY())));
                 }
             }
         });
@@ -1743,8 +1732,7 @@ class Model implements Observable {
             if (p != null) {
                 if (p.getId().equals(c.getId())) {
                     p.setT(t);
-                    p.setX(gridViews.revAccessX(c.getCenterX()));
-                    p.setY(gridViews.revAccessY(c.getCenterY()));
+                    p.setXY(new Point2D(gridViews.revAccessX(c.getCenterX()),gridViews.revAccessY(c.getCenterY())));
                 }
             }
         }
@@ -1794,7 +1782,7 @@ class Model implements Observable {
      * @return circle - возвращает созданную окружность
      */
     Circle createCircle() {
-        Circle newCircle = new Circle(screenX, screenY, 0, Color.TRANSPARENT);
+        Circle newCircle = new Circle(getScreenXY().getX(),getScreenXY().getY(), 0, Color.TRANSPARENT);
         newCircle.setStroke(Color.CHOCOLATE);
         newCircle.setStrokeWidth(2.0);
         newCircle.setId(indexLineAdd());//добавить имя окружности
@@ -1818,7 +1806,7 @@ class Model implements Observable {
         //При перемещении с нажатой кнопкой
         newCircle.setOnMouseDragged(e -> {
             if (!createShape) {
-                setRadiusCircle(distance(newCircle.getCenterX(), newCircle.getCenterY(), getScreenX(), getScreenY()));
+                setRadiusCircle(distance(newCircle.getCenterX(), newCircle.getCenterY(), getScreenXY().getX(), getScreenXY().getY()));
                 setRadiusCircleW(distance(gridViews.revAccessX(newCircle.getCenterX()), gridViews.revAccessY(newCircle.getCenterY()), getDecartX(), getDecartY()));
                 updateCircle(newCircle, findCircle(findNameCenterCircle(newCircle)));
                 setCircle(newCircle);
@@ -2161,10 +2149,9 @@ class Model implements Observable {
         for (PoindCircle c : poindCircles) {
             if (c != null && nl != null) {
                 pCl = c.getCircle();
-                double d = distance(pCl.getCenterX(), pCl.getCenterY(), screenX, screenY);
+                double d = distance(pCl.getCenterX(), pCl.getCenterY(), getScreenXY().getX(), getScreenXY().getY());
                 if (d < 25) {
-                    screenX = pCl.getCenterX();
-                    screenY = pCl.getCenterY();
+                    setScreenXY(new Point2D(pCl.getCenterX(),pCl.getCenterY()));
                     //Передать в View для вывода
                     line = nl;
                     notifyObservers("SideGo");
@@ -2188,16 +2175,16 @@ class Model implements Observable {
      */
     public void createMoveLine(Line line, int rayLine) {
         if (rayLine == 3) {
-            setRayStartX(getSegmentStartX() + (getScreenX() - getSegmentStartX()) * 3);
-            setRayStartY(getSegmentStartY() + (getScreenY() - getSegmentStartY()) * 3);
-            setRayEndX(getSegmentStartX() + (getScreenX() - getSegmentStartX()) * -3);
-            setRayEndY(getSegmentStartY() + (getScreenY() - getSegmentStartY()) * -3);
+            setRayStartX(getSegmentStartX() + (getScreenXY().getX() - getSegmentStartX()) * 3);
+            setRayStartY(getSegmentStartY() + (getScreenXY().getY() - getSegmentStartY()) * 3);
+            setRayEndX(getSegmentStartX() + (getScreenXY().getX() - getSegmentStartX()) * -3);
+            setRayEndY(getSegmentStartY() + (getScreenXY().getY() - getSegmentStartY()) * -3);
         }
         if (rayLine == 4) {
             setRayStartX(getSegmentStartX());
             setRayStartY(getSegmentStartY());
-            setRayEndX(getSegmentStartX() + (getScreenX() - getSegmentStartX()) * 3);
-            setRayEndY(getSegmentStartY() + (getScreenY() - getSegmentStartY()) * 3);
+            setRayEndX(getSegmentStartX() + (getScreenXY().getX() - getSegmentStartX()) * 3);
+            setRayEndY(getSegmentStartY() + (getScreenXY().getY() - getSegmentStartY()) * 3);
         }
         //Передать в View для вывода
         setLine(line);
@@ -2316,8 +2303,7 @@ class Model implements Observable {
         for (PoindCircle p : poindCircles) {
             if (p != null) {
                 if (p.getId().equals(id)) {
-                    p.setX(x);//меняем координаты X
-                    p.setY(y);//меняем координаты Y
+                    p.setXY(new Point2D(x,y));
                 }
             }
         }
@@ -2449,17 +2435,15 @@ class Model implements Observable {
     public void arcVertexGo(Circle o1, Circle o2, Circle o3, Arc arc) {
         arcVertex(o1, o2, o3);//рассчитать угол
         //Запомнить текущие координаты мышки
-        double stX = screenX;
-        double stY = screenY;
+        double stX = getScreenXY().getX();
+        double stY = getScreenXY().getY();
         //Заменить для построения арки угла
-        screenX = o2.getCenterX();
-        screenY = o2.getCenterY();
+        setScreenXY(new Point2D(o2.getCenterX(),o2.getCenterY())) ;
         //Передать в View для вывода
         arcGo = arc;
         notifyObservers("ArcGo");
         //Восстановить текущие координаты мышки
-        screenX = stX;
-        screenY = stY;
+        setScreenXY(new Point2D(stX,stY));
     }
 
     /**
@@ -2922,12 +2906,11 @@ class Model implements Observable {
     private Line createMedianaBisectorHeight(Circle c, Circle c1, Circle c2, Point2D mc, int i) {
         Line newLineTreangle = createLineAdd(i);//создать новую линию
         Circle newPoindTreangle = createPoindAdd(false);//создать новую расчетную точку
-        screenX = mc.getX();
-        screenY = mc.getY();
+        setScreenXY(new Point2D(mc.getX(),mc.getY()));
         //Передать в View для вывода
         vertex = newPoindTreangle;
         notifyObservers("VertexGo");
-        findCirclesUpdateXY(newPoindTreangle.getId(), gridViews.revAccessX(screenX), gridViews.revAccessY(screenY));
+        findCirclesUpdateXY(newPoindTreangle.getId(), gridViews.revAccessX(getScreenXY().getX()), gridViews.revAccessY(getScreenXY().getY()));
         segmentStartX = c.getCenterX();
         segmentStartY = c.getCenterY();
         line = newLineTreangle;
@@ -3076,8 +3059,7 @@ class Model implements Observable {
         for (PoindCircle p : poindCircles) {
             if (p != null) {
                 if (p.getCircle().getId().equals(md.getId())) {
-                    p.setX(gridViews.revAccessX(md.getCenterX()));
-                    p.setY(gridViews.revAccessY(md.getCenterY()));
+                    p.setXY(new Point2D(gridViews.revAccessX(md.getCenterX()),gridViews.revAccessY(md.getCenterY())));
                 }
             }
         }

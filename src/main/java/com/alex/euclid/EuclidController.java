@@ -241,8 +241,7 @@ public class EuclidController extends View {
      */
     public void onMouseMoved(MouseEvent mouseEvent) {
         //Координаты мышки экрана
-        model.setScreenX(mouseEvent.getX());
-        model.setScreenY(mouseEvent.getY());
+        model.setScreenXY(new Point2D(mouseEvent.getX(),mouseEvent.getY()));
         //Координаты мышки пересчитанные в декартовые
         model.setDecartX(gridViews.revAccessX(mouseEvent.getX()));
         model.setDecartY(gridViews.revAccessY(mouseEvent.getY()));
@@ -277,7 +276,7 @@ public class EuclidController extends View {
         //Построение окружности
         if (model.getCreateGeometric() == 14 && model.isPoindOne()) {
             //Насчитать радиус
-            double r = model.distance(model.getSegmentStartX(), model.getScreenY(), model.getScreenX(), model.getScreenY());
+            double r = model.distance(model.getSegmentStartX(), model.getScreenXY().getY(), model.getScreenXY().getX(), model.getScreenXY().getY());
             double rw=model.accessRadiusW(new Point2D(gridViews.revAccessX(model.getSegmentStartX()), gridViews.revAccessY(model.getSegmentStartY())),r);
             model.setRadiusCircle(r);
             model.setRadiusCircleW(rw);
@@ -296,8 +295,7 @@ public class EuclidController extends View {
      */
     public void onMouseDragged(MouseEvent event) {
         //координаты, нужны для перемещения объектов на доске
-        model.setScreenX(event.getX());
-        model.setScreenY(event.getY());
+        model.setScreenXY(new Point2D(event.getX(), event.getY()));
         model.setDecartX(gridViews.revAccessX(event.getX()));
         model.setDecartY(gridViews.revAccessY(event.getY()));
 
@@ -373,8 +371,7 @@ public class EuclidController extends View {
             //обновление точек
             model.getPoindCircles().forEach(p -> {
                 if (p != null) {
-                    model.setScreenX(gridViews.accessX(p.getX()));
-                    model.setScreenY(gridViews.accessY(p.getY()));
+                    model.setScreenXY(new Point2D(gridViews.accessX(p.getXY().getX()),gridViews.accessY(p.getXY().getY())));
                     model.setVertex(p.getCircle());
                     model.notifyObservers("VertexGo");
                 }
@@ -773,7 +770,7 @@ public class EuclidController extends View {
                  Носова Алексея\s
                  Программа по лицензии GPLv3 \t
 
-                Версия 1.2    2022 г.\s
+                Версия 1.3    2022 г.\s
                 \s""");
         label3.setFont(Font.font("Courier", FontWeight.BOLD, 24.0));
         label3.setTextFill(Color.YELLOW);
