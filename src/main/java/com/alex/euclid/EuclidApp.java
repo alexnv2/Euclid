@@ -13,7 +13,6 @@ import java.util.Objects;
 public class EuclidApp extends Application {
     @Override
     public void start(Stage stage) throws IOException {
-        Screen screen = Screen.getPrimary();
         FXMLLoader fxmlLoader = new FXMLLoader(EuclidApp.class.getResource("Euclid-view.fxml"));
         Scene scene = new Scene(fxmlLoader.load(), 1000, 600);
         stage.setTitle("Геометрия");
