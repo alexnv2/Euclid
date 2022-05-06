@@ -15,10 +15,8 @@ public class EuclidApp extends Application {
     public void start(Stage stage) throws IOException {
         Screen screen = Screen.getPrimary();
         FXMLLoader fxmlLoader = new FXMLLoader(EuclidApp.class.getResource("Euclid-view.fxml"));
-        Scene scene = new Scene(fxmlLoader.load(), screen.getBounds().getWidth()-15, screen.getBounds().getHeight()-80);
+        Scene scene = new Scene(fxmlLoader.load(), 1000, 600);
         stage.setTitle("Геометрия");
-        stage.setX(0);
-        stage.setY(0);
         stage.getIcons().add(new Image(Objects.requireNonNull(getClass().getResource("/com/alex/euclid/Images/Euclid.png")).toString()));
         stage.setScene(scene);
         stage.show();
