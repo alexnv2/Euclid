@@ -146,8 +146,7 @@ class View implements Observer {
     private void webFileHTMLGo(WebView web) {
         web.setContextMenuEnabled(false);
         WebEngine w = web.getEngine();
-        w.load(model.getLeftHTML());
-
+        w.load(getClass().getResource(model.getLeftHTML()).toString());
     }
 
     /**

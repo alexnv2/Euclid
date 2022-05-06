@@ -7,7 +7,7 @@
 <?import javafx.scene.text.*?>
 <?import javafx.scene.web.*?>
 
-<VBox onKeyPressed="#onKeyPressed" prefHeight="600.0" prefWidth="900.0" xmlns="http://javafx.com/javafx/11.0.14-internal" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.alex.euclid.EuclidController">
+<VBox onKeyPressed="#onKeyPressed"     xmlns="http://javafx.com/javafx/11.0.14-internal" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.alex.euclid.EuclidController">
     <MenuBar VBox.vgrow="NEVER">
         <Menu mnemonicParsing="false" text="Фигуры">
             <MenuItem mnemonicParsing="false" onAction="#menuPoindClick" text="Точка, Прямая, Отрезок" />

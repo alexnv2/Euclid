@@ -768,7 +768,7 @@ public class EuclidController extends View {
         Label label3 = new Label("""
                 Разработка ученика 8Б класса\s
                  Носова Алексея\s
-                 Программа по лицензии GPLv3 \t
+                 Программа по лицензии GPU v2.1 \t
 
                 Версия 1.3    2022 г.\s
                 \s""");

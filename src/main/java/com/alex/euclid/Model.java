@@ -305,9 +305,7 @@ class Model implements Observable {
      * @param file - имя файла html.
      */
     public void webHTML(WebView o, String file) {
-        String pathFile = new File("").getAbsolutePath();//получить полный путь к файлу
-        String path = "\\src\\main\\resources\\com\\alex\\euclid\\Web\\";
-        leftHTML = "file:" + pathFile + path + file;//установить ссылку
+        leftHTML="/com/alex/euclid/Web/"+file;
         //Передать в View для вывода
         webView = o;
         notifyObservers("WebGo");
