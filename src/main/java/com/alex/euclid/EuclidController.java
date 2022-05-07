@@ -261,7 +261,6 @@ public class EuclidController extends View {
         }
         //построение прямой
         if (model.getCreateGeometric() == 3 && model.isPoindOne()) {
-            newLine.setVisible(true);
             //рассчитать концы прямой по уравнению прямой
             model.createMoveLine(newLine, 3);
             model.setPoindTwo(true);//разрешение для постройки 2 точки
