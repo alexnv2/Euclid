@@ -2172,11 +2172,7 @@ class Model implements Observable {
      */
     public void createMoveLine(Line line, int rayLine) {
         if (rayLine == 3) {
-            if (abs(getScreenXY().getX() - getSegmentStartX()) > 5 || abs(getScreenXY().getY() - getSegmentStartY()) > 5) {
-                newLine.setVisible(true);
-            } else {
-                newLine.setVisible(false);
-            }
+            newLine.setVisible(abs(getScreenXY().getX() - getSegmentStartX()) > 5 || abs(getScreenXY().getY() - getSegmentStartY()) > 5);
             double t1, t2;
             if (getScreenXY().getX() - getSegmentStartX() != 0) {
                 t1 = (gridViews.getVr() - getSegmentStartX()) / (getScreenXY().getX() - getSegmentStartX());
@@ -2192,11 +2188,7 @@ class Model implements Observable {
             setRayEndY(getSegmentStartY() + (getScreenXY().getY() - getSegmentStartY()) * t2);
         }
         if (rayLine == 4) {
-            if (abs(getScreenXY().getX() - getSegmentStartX()) > 5 || abs(getScreenXY().getY() - getSegmentStartY()) > 5) {
-                newLine.setVisible(true);
-            } else {
-                newLine.setVisible(false);
-            }
+            newLine.setVisible(abs(getScreenXY().getX() - getSegmentStartX()) > 5 || abs(getScreenXY().getY() - getSegmentStartY()) > 5);
             double t1;
             if (getScreenXY().getX() - getSegmentStartX() != 0) {
                 t1 = (gridViews.getVr() - getSegmentStartX()) / (getScreenXY().getX() - getSegmentStartX());
@@ -2842,8 +2834,7 @@ class Model implements Observable {
             Point2D pd = tangentCircle(a, b, r);
             C.setCenterX(gridViews.accessX(pd.getX()));
             C.setCenterY(gridViews.accessY(pd.getY()));
-            tangentLine.setEndX(rayLineX(B, C));
-            tangentLine.setStartX(rayLineX(C, B));
+            updateStartEndLine(B, C, tangentLine, 1);
             findLinesUpdateXY(tangentLine.getId());
         });
         B.centerYProperty().addListener((obj, oldValue, newValue) -> {
@@ -2854,8 +2845,7 @@ class Model implements Observable {
             Point2D pd = tangentCircle(a, b, r);
             C.setCenterX(gridViews.accessX(pd.getX()));
             C.setCenterY(gridViews.accessY(pd.getY()));
-            tangentLine.setEndY(rayLineX(B, C));
-            tangentLine.setStartY(rayLineX(C, B));
+            updateStartEndLine(B, C, tangentLine, 1);
             findLinesUpdateXY(tangentLine.getId());
         });
     }
@@ -2902,8 +2892,7 @@ class Model implements Observable {
     private void updateStartEndLine(Circle cStart, Circle cEnd, Line l, int n) {
         //Для прямой
         if (n == 1) {
-            double t1 = 0;
-            double t2 = 0;
+            double t1, t2;
             if (cEnd.getCenterX() - cStart.getCenterX() != 0) {
                 t1 = (gridViews.getVr() - cStart.getCenterX()) / (cEnd.getCenterX() - cStart.getCenterX());
                 t2 = (-cStart.getCenterX()) / (cEnd.getCenterX() - cStart.getCenterX());
@@ -2919,7 +2908,7 @@ class Model implements Observable {
         //Для луча
         if (n == 2) {
             double t1;
-            if (cEnd.getCenterX() - cStart.getCenterX()  != 0) {
+            if (cEnd.getCenterX() - cStart.getCenterX() != 0) {
                 t1 = (gridViews.getVr() - cStart.getCenterX()) / (cEnd.getCenterX() - cStart.getCenterX());
                 if (t1 < 0) {
                     t1 = (-cStart.getCenterX()) / (cEnd.getCenterX() - cStart.getCenterX());
@@ -2935,39 +2924,9 @@ class Model implements Observable {
             setRayEndX(cStart.getCenterX() + (cEnd.getCenterX() - cStart.getCenterX()) * t1);
             setRayEndY(cStart.getCenterY() + (cEnd.getCenterY() - cStart.getCenterY()) * t1);
         }
-
-
         //Передать в View для вывода
         setLine(l);
         notifyObservers("RayGo");
-
-    }
-
-
-    /**
-     * Метод rayLineX(Circle c1, Circle c2)
-     * Метод для расчета по параметрическому уравнению прямой координат начала и конца для прямой,
-     * окончания линии для луча для координаты Х.
-     *
-     * @param c1 - объект первая точка
-     * @param c2 - объект вторая точка
-     * @return - координата Х
-     */
-    double rayLineX(Circle c1, Circle c2) {
-        return c1.getCenterX() + (c2.getCenterX() - c1.getCenterX()) * 3;
-    }
-
-    /**
-     * Метод rayLineY(Circle c1, Circle c2)
-     * Метод для расчета по параметрическому уравнению прямой координат начала и конца для прямой,
-     * окончания линии для луча для координаты Y.
-     *
-     * @param c1 - объект первая точка
-     * @param c2 - объект вторая точка
-     * @return - координата Y
-     */
-    double rayLineY(Circle c1, Circle c2) {
-        return c1.getCenterY() + (c2.getCenterY() - c1.getCenterY()) * 3;
     }
 
     /**
