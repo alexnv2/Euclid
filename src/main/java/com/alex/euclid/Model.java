@@ -14,8 +14,6 @@ import javafx.scene.text.FontWeight;
 import javafx.scene.text.Text;
 import javafx.scene.web.WebView;
 import lombok.Data;
-
-import java.io.File;
 import java.text.MessageFormat;
 import java.util.*;
 
@@ -2173,16 +2171,38 @@ class Model implements Observable {
      */
     public void createMoveLine(Line line, int rayLine) {
         if (rayLine == 3) {
-            setRayStartX(getSegmentStartX() + (getScreenXY().getX() - getSegmentStartX()) * 3);
-            setRayStartY(getSegmentStartY() + (getScreenXY().getY() - getSegmentStartY()) * 3);
-            setRayEndX(getSegmentStartX() + (getScreenXY().getX() - getSegmentStartX()) * -3);
-            setRayEndY(getSegmentStartY() + (getScreenXY().getY() - getSegmentStartY()) * -3);
+            double t1, t2;
+            if (getScreenXY().getX()-getSegmentStartX()!=0) {
+                t1 = (gridViews.getVr() - getSegmentStartX()) / (getScreenXY().getX() - getSegmentStartX());
+                t2 = (-getSegmentStartX()) / (getScreenXY().getX() - getSegmentStartX());
+            }else{
+                t1 = (gridViews.getVb() - getSegmentStartY()) / (getScreenXY().getY() - getSegmentStartY());
+                t2 = (-getSegmentStartY()) / (getScreenXY().getY() - getSegmentStartY());
+            }
+
+            setRayStartX(getSegmentStartX() + (getScreenXY().getX() - getSegmentStartX()) * t1);
+            setRayStartY(getSegmentStartY() + (getScreenXY().getY() - getSegmentStartY()) * t1);
+            setRayEndX(getSegmentStartX() + (getScreenXY().getX() - getSegmentStartX()) * t2);
+            setRayEndY(getSegmentStartY() + (getScreenXY().getY() - getSegmentStartY()) * t2);
+            System.out.println(t1+" "+t2);
         }
         if (rayLine == 4) {
+            double t1;
+            if (getScreenXY().getX()-getSegmentStartX()!=0) {
+                t1 = (gridViews.getVr() - getSegmentStartX()) / (getScreenXY().getX() - getSegmentStartX());
+                if (t1 < 0) {
+                    t1 = -getSegmentStartX() / (getScreenXY().getX() - getSegmentStartX());
+                }
+            }else{
+                t1 = (gridViews.getVb() - getSegmentStartY()) / (getScreenXY().getY() - getSegmentStartY());
+                if (t1<0){
+                    t1 = -getSegmentStartY() / (getScreenXY().getY() - getSegmentStartY());
+                }
+            }
             setRayStartX(getSegmentStartX());
             setRayStartY(getSegmentStartY());
-            setRayEndX(getSegmentStartX() + (getScreenXY().getX() - getSegmentStartX()) * 3);
-            setRayEndY(getSegmentStartY() + (getScreenXY().getY() - getSegmentStartY()) * 3);
+            setRayEndX(getSegmentStartX() + (getScreenXY().getX() - getSegmentStartX()) * t1);
+            setRayEndY(getSegmentStartY() + (getScreenXY().getY() - getSegmentStartY()) * t1);
         }
         //Передать в View для вывода
         setLine(line);
