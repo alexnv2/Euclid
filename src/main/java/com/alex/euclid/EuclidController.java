@@ -769,7 +769,7 @@ public class EuclidController extends View {
                  Носова Алексея\s
                  Программа по лицензии GPU v2.1 \t
 
-                Версия 1.3    2022 г.\s
+                Версия 1.4    2022 г.\s
                 \s""");
         label3.setFont(Font.font("Courier", FontWeight.BOLD, 24.0));
         label3.setTextFill(Color.YELLOW);

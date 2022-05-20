@@ -14,6 +14,8 @@ import javafx.scene.web.WebEngine;
 import javafx.scene.web.WebView;
 import javafx.util.Duration;
 
+import java.util.Objects;
+
 /**
  * Класс View расширяет интерфейс Observer.
  * Базовый класс, предназначен отображения информации на экране.
@@ -65,7 +67,17 @@ class View implements Observer {
             case "TextGo" -> this.TextGo(model.getTextGo());//буквы
             case "ToolTip" -> this.ToolTipGo(model.getBtnToolTip());//добавить всплывающие подсказки
             case "CircleGo" -> this.CircleGo(model.getCircle());//вывод окружности
+            case "StrokeWidth" ->this.LineStrokeWidth(model.getLine());
         }
+    }
+
+    /**
+     * Метод LineStrokeWidth(Line line).
+     * Предназначен для задания толщины линий
+     * @param line - объект линия
+     */
+    private void LineStrokeWidth(Line line) {
+        line.setStrokeWidth(model.getLineStokeWidth());
     }
 
     /**
@@ -146,7 +158,7 @@ class View implements Observer {
     private void webFileHTMLGo(WebView web) {
         web.setContextMenuEnabled(false);
         WebEngine w = web.getEngine();
-        w.load(getClass().getResource(model.getLeftHTML()).toString());
+        w.load(Objects.requireNonNull(getClass().getResource(model.getLeftHTML())).toString());
     }
 
     /**

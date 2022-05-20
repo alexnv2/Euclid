@@ -1,10 +1,12 @@
 package com.alex.euclid;
 
 import javafx.geometry.Point2D;
+import javafx.geometry.Pos;
 import javafx.scene.Cursor;
-import javafx.scene.control.Button;
-import javafx.scene.control.Label;
-import javafx.scene.control.TextArea;
+import javafx.scene.control.*;
+import javafx.scene.image.ImageView;
+import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.Pane;
 import javafx.scene.paint.*;
 import javafx.scene.shape.*;
@@ -139,8 +141,6 @@ class Model implements Observable {
     //Свойства линий
     private Color ColorLine = Color.DARKSLATEBLUE;//цвет линий по умолчанию
     private double lineStokeWidth = 2;//толщина линий
-    private double selectStrokeWidth = 3;//толщина линии при наведении на неё мыши
-    private int inDash = 0;//индекс определяет внешний вид прямой (0-4 вида), по умолчанию 0
     //Логические переменные из меню настроек
     private boolean showPoindName = true;//по умолчанию, всегда показывать имена точек
     private boolean showLineName = false;//по умолчанию, не показывать имена линий
@@ -515,10 +515,17 @@ class Model implements Observable {
                     //получить имя отрезка по имени прямой
                     String[] nameLine = findID(getTimeLine()).split("_");
                     //Рассчитать координаты новой точки
-                    setScreenXY(new Point2D(findCircle(nameLine[1]).getCenterX() + (getTimeVer().getCenterX() - findCircle(nameLine[0]).getCenterX()), findCircle(nameLine[1]).getCenterY() + (getTimeVer().getCenterY() - findCircle(nameLine[0]).getCenterY())));
-                    //setScreenX(findCircle(nameLine[1]).getCenterX() + (getTimeVer().getCenterX() - findCircle(nameLine[0]).getCenterX()));
-                    //setScreenY(findCircle(nameLine[1]).getCenterY() + (getTimeVer().getCenterY() - findCircle(nameLine[0]).getCenterY()));
+                    double a = findCircle(nameLine[1]).getCenterY() - findCircle(nameLine[0]).getCenterY();
+                    double b = findCircle(nameLine[0]).getCenterX() - findCircle(nameLine[1]).getCenterX();
+                    double x = 4000;
+                    double y;
+                    if (b != 0) {
+                        y = (a * (timeVer.getCenterX() - 4000) + b * timeVer.getCenterY()) / b;
+                    } else {
+                        y = a * (timeVer.getCenterX() - 4000);
+                    }
                     //Создать новую точку
+                    setScreenXY(new Point2D(x, y));
                     Circle newPoind = createPoindAdd(false);
                     newSegment.append(newPoind.getId());
                     //Обновить мировые координаты коллекции
@@ -528,14 +535,11 @@ class Model implements Observable {
                     notifyObservers("VertexGo");
                     //Создать параллельную прямую
                     Line parallelLine = createLineAdd(9);
-                    //задать координаты прямой
-                    setRayStartX(getTimeVer().getCenterX() + (newPoind.getCenterX() - getTimeVer().getCenterX()) * 3);
-                    setRayStartY(getTimeVer().getCenterY() + (newPoind.getCenterY() - getTimeVer().getCenterY()) * 3);
-                    setRayEndX(getTimeVer().getCenterX() + (newPoind.getCenterX() - getTimeVer().getCenterX()) * -3);
-                    setRayEndY(getTimeVer().getCenterY() + (newPoind.getCenterY() - getTimeVer().getCenterY()) * -3);
-                    //Передать в View для вывода
-                    setLine(parallelLine);
-                    notifyObservers("RayGo");
+                    setSegmentStartX(timeVer.getCenterX());
+                    setSegmentStartY(timeVer.getCenterY());
+                    setScreenXY(new Point2D(x, y));
+                    createMoveLine(parallelLine, 3);
+                    newLine.setVisible(false);//Нужна, иначе появится вторая прямая на линии
                     parallelLine.toBack();
                     //Обновить мировые координаты
                     findLinesUpdateXY(parallelLine.getId());
@@ -545,10 +549,10 @@ class Model implements Observable {
                     findNameId(newSegment.toString(), parallelLine.getId());
                     //Добавить имя
                     nameLineAdd(parallelLine);
-                    //Связать параллельные прямые
-                    parallelBindLine(findCircle(nameLine[0]), findCircle(nameLine[1]), getTimeVer(), newPoind);
                     //Связать точки с прямой
                     circlesBindLine(getTimeVer(), newPoind, parallelLine);
+                    //Связать параллельные прямые
+                    parallelBindLine(findCircle(nameLine[0]), findCircle(nameLine[1]), getTimeVer(), newPoind);
                     //Вывод информации об объектах в правую часть доски
                     setTxtShape("");
                     txtAreaOutput();
@@ -1019,7 +1023,7 @@ class Model implements Observable {
             case 2 -> circlesBindLine(findCircle(nameP[0]), findCircle(nameP[1]), l);
         }
         if (segment != 0) {
-            nameLineAdd(l);
+            nameLineAdd(l);//добавить имя
         }
     }
 
@@ -1066,7 +1070,7 @@ class Model implements Observable {
         Text nameText = new Text();//создать новый объект
         nameText.setId(name);//присвоить имя
         nameText.setFont(Font.font("Alexander", FontWeight.BOLD, FontPosture.REGULAR, 14));
-        nameText.setFill(Color.BLUE);//цвет букв
+        nameText.setFill(getColorLine());//цвет букв
         //Привязка к событию мышки
         nameText.setOnMouseDragged(e -> {//перемещение
             //Найти точку с которой связано имя
@@ -1240,7 +1244,7 @@ class Model implements Observable {
     /**
      * Метод nameLineAdd().
      * Предназначен для добавления имен к прямой и лучам.
-     * Вызывается из контролера onMousePressed() при добавлении луча и прямой.
+     * Вызывается из метода newPoindTwoShape(int segment) при добавлении луча и прямой.
      *
      * @param line - объект линия
      */
@@ -1311,20 +1315,24 @@ class Model implements Observable {
         Circle vertexA = findCircle(namePoind[0]);
         Circle vertexB = findCircle(namePoind[1]);
         vertexA.centerXProperty().addListener((obj, ojdValue, newValue) -> {
-            double cordX = lineA.getStartX() + (lineA.getEndX() - lineA.getStartX()) * findT(poindC);
+            double cordX = vertexA.getCenterX() + (vertexB.getCenterX() - vertexA.getCenterX()) * findT(poindC);
             poindC.setCenterX(cordX);
+            poindUpdateXY(poindC);
         });
         vertexA.centerYProperty().addListener((obj, ojdValue, newValue) -> {
-            double cordY = lineA.getStartY() + (lineA.getEndY() - lineA.getStartY()) * findT(poindC);
+            double cordY = vertexA.getCenterY() + (vertexB.getCenterY() - vertexA.getCenterY()) * findT(poindC);
             poindC.setCenterY(cordY);
+            poindUpdateXY(poindC);
         });
         vertexB.centerXProperty().addListener((obj, ojdValue, newValue) -> {
-            double cordX = lineA.getStartX() + (lineA.getEndX() - lineA.getStartX()) * findT(poindC);
+            double cordX = vertexA.getCenterX() + (vertexB.getCenterX() - vertexA.getCenterX()) * findT(poindC);
             poindC.setCenterX(cordX);
+            poindUpdateXY(poindC);
         });
         vertexB.centerYProperty().addListener((obj, ojdValue, newValue) -> {
-            double cordY = lineA.getStartY() + (lineA.getEndY() - lineA.getStartY()) * findT(poindC);
+            double cordY = vertexA.getCenterY() + (vertexB.getCenterY() - vertexA.getCenterY()) * findT(poindC);
             poindC.setCenterY(cordY);
+            poindUpdateXY(poindC);
         });
     }
 
@@ -1449,7 +1457,12 @@ class Model implements Observable {
         txtAreaOutput();
         //Если точка на линии
         if (lineOldAdd && createGeometric != 12 && createGeometric != 6 && createGeometric != 7) {
-            t = (vertex.getCenterX() - timeLine.getStartX()) / (timeLine.getEndX() - timeLine.getStartX());
+            String[] n = findID(timeLine).split("_");
+            if ((findCircle(n[1]).getCenterX() - findCircle(n[0]).getCenterX()) != 0) {
+                t = (vertex.getCenterX() - findCircle(n[0]).getCenterX()) / (findCircle(n[1]).getCenterX() - findCircle(n[0]).getCenterX());
+            } else {
+                t = (vertex.getCenterY() - findCircle(n[0]).getCenterY()) / (findCircle(n[1]).getCenterY() - findCircle(n[0]).getCenterY());
+            }
             for (PoindCircle p : poindCircles) {
                 if (p != null) {
                     if (p.getCircle().getId().equals(vertex.getId())) {
@@ -1513,6 +1526,8 @@ class Model implements Observable {
                 CycleMethod.NO_CYCLE, stops));
         newPoind.setStroke(circleColorStroke);//Цвет линий
         newPoind.setId(indexPoindAdd());//Индификатор узла
+        //Контекстное меню
+        // newContextMenu(newPoind);
         //Обработка событий
         //Перемещение с нажатой клавишей
         newPoind.setOnMouseDragged(e -> {
@@ -1531,22 +1546,31 @@ class Model implements Observable {
                             Point2D B1 = new Point2D(l.getStartX(), l.getStartY());
                             Point2D C1 = new Point2D(l.getEndX(), l.getEndY());
                             Point2D D1 = heightPoind(A1, B1, C1);//координаты точки пересечения
-                            t = (D1.getX() - l.getStartX()) / (l.getEndX() - l.getStartX());
-                            setScreenXY(new Point2D(D1.getX(), D1.getY()));
-                            //setScreenX(D1.getX());
-                            //setScreenY(D1.getY());
-                            //Проверить дошла ли точка до начала линии
-                            if (t <= 0) {
-                                setScreenXY(new Point2D(l.getStartX(), l.getStartY()));
-                                t = 0;
+                            String[] n = findID(l).split("_");
+                            if ((findCircle(n[1]).getCenterX() - findCircle(n[0]).getCenterX()) != 0) {
+                                t = (D1.getX() - findCircle(n[0]).getCenterX()) / (findCircle(n[1]).getCenterX() - findCircle(n[0]).getCenterX());
+                            } else {
+                                t = (D1.getY() - findCircle(n[0]).getCenterY()) / (findCircle(n[1]).getCenterY() - findCircle(n[0]).getCenterY());
                             }
-                            //Проверить достигла ли точка конца линии
-                            if (t >= 1) {
-                                setScreenXY(new Point2D(l.getEndX(), l.getEndY()));
-                                t = 1;
+                            setScreenXY(new Point2D(D1.getX(), D1.getY()));
+                            //Определить тип линии
+                            double typeL = findTypeLine(l);
+                            if (typeL == 0 || typeL == 1 || typeL == 3 || typeL == 4 || typeL == 5 || typeL == 6 || typeL == 7) {
+                                //Проверить дошла ли точка до начала линии
+                                if (t <= 0) {
+                                    setScreenXY(new Point2D(l.getStartX(), l.getStartY()));
+                                    t = 0;
+                                }
+                            }
+                            if (typeL == 0 || typeL == 3 || typeL == 4 || typeL == 5 || typeL == 6 || typeL == 7) {
+                                //Проверить достигла ли точка конца линии
+                                if (t >= 1) {
+                                    setScreenXY(new Point2D(l.getEndX(), l.getEndY()));
+                                    t = 1;
+                                }
                             }
                             //Сохранить параметрический параметр t для прямой в коллекции
-                            updateT(l, newPoind);
+                            updateT(newPoind, t);
                         }
                     }
                     //Проверить принадлежит ли точка окружности
@@ -1615,6 +1639,155 @@ class Model implements Observable {
         });
         return newPoind;//завершено создание новой точки
     }
+
+    /**
+     * Метод newContextMenu(Shape c).
+     * Предназначен для добавления контекстного меню
+     * отрезку, прямой, луча.
+     *
+     * @param c - графический объект линия
+     */
+    private void newContextMenu(Line c) {
+        //Контекстное меню
+        MenuItem menuItem = new MenuItem("Переименовать");
+        menuItem.setOnAction(event ->{
+            TextField text = new TextField();
+            text.setText(c.getId());
+            text.setAlignment(Pos.CENTER);
+            text.setLayoutX(getScreenXY().getX());
+            text.setLayoutY(getScreenXY().getY());
+            paneBoards.getChildren().add(text);
+
+            text.addEventFilter(KeyEvent.KEY_PRESSED, e -> {
+                if (e.getCode() == KeyCode.ENTER) {
+                    System.out.println(text.getText());
+                    event.consume();
+                    paneBoards.getChildren().remove(text);
+
+                }
+            });
+
+        });
+        Menu menuItem2 = new Menu("Цвет линий");
+        MenuItem mCol1 = new MenuItem();
+        MenuItem mCol2 = new MenuItem();
+        MenuItem mCol3 = new MenuItem();
+        MenuItem mCol4 = new MenuItem();
+        MenuItem mCol5 = new MenuItem();
+
+        mCol1.setGraphic(new ImageView(Objects.requireNonNull(getClass().getResource("/com/alex/euclid/Images/RedColor.png")).toString()));
+        mCol2.setGraphic(new ImageView(Objects.requireNonNull(getClass().getResource("/com/alex/euclid/Images/BlueColor.png")).toString()));
+        mCol3.setGraphic(new ImageView(Objects.requireNonNull(getClass().getResource("/com/alex/euclid/Images/GreenColor.png")).toString()));
+        mCol4.setGraphic(new ImageView(Objects.requireNonNull(getClass().getResource("/com/alex/euclid/Images/YellowColor.png")).toString()));
+        mCol5.setGraphic(new ImageView(Objects.requireNonNull(getClass().getResource("/com/alex/euclid/Images/BlackColor.png")).toString()));
+        menuItem2.getItems().addAll(mCol1, mCol2, mCol3, mCol4, mCol5);
+        mCol1.setOnAction(event -> {
+            setColorLine(Color.RED);
+            setLine(c);
+            notifyObservers("ColorLine");
+        });
+        mCol2.setOnAction(event -> {
+            setColorLine(Color.DARKSLATEBLUE);
+            setLine(c);
+            notifyObservers("ColorLine");
+        });
+        mCol3.setOnAction(event -> {
+            setColorLine(Color.GREEN);
+            setLine(c);
+            notifyObservers("ColorLine");
+        });
+        mCol4.setOnAction(event -> {
+            setColorLine(Color.YELLOWGREEN);
+            setLine(c);
+            notifyObservers("ColorLine");
+        });
+        mCol5.setOnAction(event -> {
+            setColorLine(Color.BLACK);
+            setLine(c);
+            notifyObservers("ColorLine");
+        });
+
+        Menu menuItem3 = new Menu("Форма линий");
+        MenuItem mIt1 = new MenuItem();
+        MenuItem mIt2 = new MenuItem();
+        MenuItem mIt3 = new MenuItem();
+        MenuItem mIt4 = new MenuItem();
+        MenuItem mIt5 = new MenuItem();
+        mIt1.setGraphic(new ImageView(Objects.requireNonNull(getClass().getResource("/com/alex/euclid/Images/Line1.png")).toString()));
+        mIt2.setGraphic(new ImageView(Objects.requireNonNull(getClass().getResource("/com/alex/euclid/Images/Line2.png")).toString()));
+        mIt3.setGraphic(new ImageView(Objects.requireNonNull(getClass().getResource("/com/alex/euclid/Images/Line3.png")).toString()));
+        mIt4.setGraphic(new ImageView(Objects.requireNonNull(getClass().getResource("/com/alex/euclid/Images/Line4.png")).toString()));
+        mIt5.setGraphic(new ImageView(Objects.requireNonNull(getClass().getResource("/com/alex/euclid/Images/Line5.png")).toString()));
+        menuItem3.getItems().addAll(mIt1, mIt2, mIt3, mIt4, mIt5);
+
+        mIt1.setOnAction(event -> {
+            c.getStrokeDashArray().clear();
+            c.getStrokeDashArray().addAll(getLineStokeWidth());
+        });
+        mIt2.setOnAction(event -> {
+            c.getStrokeDashArray().clear();
+            c.getStrokeDashArray().addAll( getLineStokeWidth(), 2 * getLineStokeWidth());
+        });
+        mIt3.setOnAction(event -> {
+            c.getStrokeDashArray().clear();
+            c.getStrokeDashArray().addAll(7 * getLineStokeWidth(), 2 * getLineStokeWidth());
+        });
+        mIt4.setOnAction(event -> {
+            c.getStrokeDashArray().clear();
+            c.getStrokeDashArray().addAll(5.0 * getLineStokeWidth(),  getLineStokeWidth(), 5.0 * getLineStokeWidth());
+        });
+        mIt5.setOnAction(event -> {
+            c.getStrokeDashArray().clear();
+            c.getStrokeDashArray().addAll(5.0 * getLineStokeWidth(), getLineStokeWidth(), 2.5 * getLineStokeWidth(), getLineStokeWidth(),5.0 * getLineStokeWidth());
+        });
+
+        Menu menuItem4 = new Menu("Толщина линий");
+        MenuItem m1 = new MenuItem();
+        MenuItem m2 = new MenuItem();
+        MenuItem m3 = new MenuItem();
+        MenuItem m4 = new MenuItem();
+        MenuItem m5 = new MenuItem();
+        m1.setText("2 px");
+        m2.setText("3 px");
+        m3.setText("4 px");
+        m4.setText("5 px");
+        m5.setText("6 px");
+        menuItem4.getItems().addAll(m1, m2, m3, m4, m5);
+
+        m1.setOnAction(event -> {
+            setLineStokeWidth(2);
+            setLine(c);
+            notifyObservers("StrokeWidth");
+        });
+        m2.setOnAction(event -> {
+            setLineStokeWidth(3);
+            setLine(c);
+            notifyObservers("StrokeWidth");
+        });
+        m3.setOnAction(event -> {
+            setLineStokeWidth(4);
+            setLine(c);
+            notifyObservers("StrokeWidth");
+        });
+        m4.setOnAction(event -> {
+            setLineStokeWidth(5);
+            setLine(c);
+            notifyObservers("StrokeWidth");
+        });
+        m5.setOnAction(event -> {
+            setLineStokeWidth(6);
+            setLine(c);
+            notifyObservers("StrokeWidth");
+        });
+        ContextMenu menu = new ContextMenu();
+        menu.getItems().addAll(menuItem, menuItem2, menuItem3, menuItem4);
+        //Привязка меню к графическому объекту
+        c.setOnMouseClicked(t -> {
+            if (t.getButton().toString().equals("SECONDARY"))
+                menu.show(c, t.getScreenX(), t.getSceneY());
+        });
+    }
+
 
     /**
      * Метод updateAngle(double angle, String id).
@@ -1720,11 +1893,10 @@ class Model implements Observable {
      * Метод updateT((Line l, Circle c).
      * Предназначен для пересчета параметрического параметра прямой.
      *
-     * @param l - ссылка на линию
+     * @param t - параметрический параметр
      * @param c - ссылка на точку
      */
-    private void updateT(Line l, Circle c) {
-        double t = (c.getCenterX() - l.getStartX()) / (l.getEndX() - l.getStartX());
+    private void updateT(Circle c, double t) {
         for (PoindCircle p : poindCircles) {
             if (p != null) {
                 if (p.getId().equals(c.getId())) {
@@ -1915,20 +2087,15 @@ class Model implements Observable {
     Line createLine() {
         line = new Line();
         line.setStrokeWidth(lineStokeWidth);//Толщина линии
-        //Вид линии по умолчанию -0. Задается в переменных
-        switch (inDash) {
-            case 0 -> Collections.addAll(arrDash, 2.0);
-            case 1 -> Collections.addAll(arrDash, 15.0, 5.0);
-            case 2 -> Collections.addAll(arrDash, 5.0, 4.0, 5.0, 4.0, 5.0);
-            case 3 -> Collections.addAll(arrDash, 2.0, 10.0);
-            case 4 -> Collections.addAll(arrDash, 10.0, 4.0, 10.0);
-        }
-        line.getStrokeDashArray().addAll(arrDash); //Задаем вид линии
+        line.getStrokeDashArray().addAll(2.0); //Задаем вид линии
         //Цвет линии задается переменной ColorLine
+        setColorLine(Color.DARKSLATEBLUE);
         notifyObservers("ColorLine"); //Передаем в View для вывода
         line.setId(indexLineAdd());//Идентификатор узла
         //Привязка событий мышки
         mouseLine(line);
+        //Контекстное меню
+        newContextMenu(line);
         return line;
     }
 
@@ -1948,60 +2115,8 @@ class Model implements Observable {
                     String[] nameId = findID(newLine).split("_");
                     Circle A = findCircle(nameId[0]);
                     Circle B = findCircle(nameId[1]);
-                    //Проверить, лежит ли первая точка на линии
-                    if (findPoindMove(nameId[0])) {
-                        Point2D A1 = new Point2D(e.getX(), e.getY());
-                        Point2D B1 = new Point2D(Objects.requireNonNull(findLineForPoind(nameId[0])).getStartX(), Objects.requireNonNull(findLineForPoind(nameId[0])).getStartY());
-                        Point2D C1 = new Point2D(Objects.requireNonNull(findLineForPoind(nameId[0])).getEndX(), Objects.requireNonNull(findLineForPoind(nameId[0])).getEndY());
-                        Point2D D1 = heightPoind(A1, B1, C1);//координаты точки пересечения
-                        A.setCenterX(D1.getX());
-                        A.setCenterY(D1.getY());
-                        if (!findPoindMove(nameId[1])) {
-                            B.setCenterX(e.getX() + getDXEnd());
-                            B.setCenterY(e.getY() + getDYEnd());
-                        }
-                        double t = (D1.getX() - Objects.requireNonNull(findLineForPoind(nameId[0])).getStartX()) / (Objects.requireNonNull(findLineForPoind(nameId[0])).getEndX() - Objects.requireNonNull(findLineForPoind(nameId[0])).getStartX());
-                        //Проверить дошла ли точка до начала линии
-                        if (t <= 0) {
-                            A.setCenterX(Objects.requireNonNull(findLineForPoind(nameId[0])).getStartX());
-                            A.setCenterY(Objects.requireNonNull(findLineForPoind(nameId[0])).getStartY());
-                        }
-                        //Проверить достигла ли точка конца линии
-                        if (t >= 1) {
-                            A.setCenterX(Objects.requireNonNull(findLineForPoind(nameId[0])).getEndX());
-                            A.setCenterY(Objects.requireNonNull(findLineForPoind(nameId[0])).getEndY());
-                        }
-                        //Сохранить параметрический параметр t для прямой в коллекции
-                        updateT(Objects.requireNonNull(findLineForPoind(nameId[0])), A);
-                    }
-                    //Проверить, лежит ли вторая точка на линии
-                    if (findPoindMove(nameId[1])) {
-                        Point2D A1 = new Point2D(e.getX(), e.getY());
-                        Point2D B1 = new Point2D(Objects.requireNonNull(findLineForPoind(nameId[1])).getStartX(), Objects.requireNonNull(findLineForPoind(nameId[1])).getStartY());
-                        Point2D C1 = new Point2D(Objects.requireNonNull(findLineForPoind(nameId[1])).getEndX(), Objects.requireNonNull(findLineForPoind(nameId[1])).getEndY());
-                        Point2D D1 = heightPoind(A1, B1, C1);//координаты точки пересечения
-                        B.setCenterX(D1.getX());
-                        B.setCenterY(D1.getY());
-                        if (!findPoindMove(nameId[0])) {
-                            A.setCenterX(e.getX() + getDXStart());
-                            A.setCenterY(e.getY() + getDYStart());
-                        }
-                        double t = (D1.getX() - Objects.requireNonNull(findLineForPoind(nameId[1])).getStartX()) / (Objects.requireNonNull(findLineForPoind(nameId[1])).getEndX() - Objects.requireNonNull(findLineForPoind(nameId[1])).getStartX());
-                        //Проверить дошла ли точка до начала линии
-                        if (t <= 0) {
-                            B.setCenterX(Objects.requireNonNull(findLineForPoind(nameId[1])).getStartX());
-                            B.setCenterY(Objects.requireNonNull(findLineForPoind(nameId[1])).getStartY());
-                        }
-                        //Проверить достигла ли точка конца линии
-                        if (t >= 1) {
-                            B.setCenterX(Objects.requireNonNull(findLineForPoind(nameId[1])).getEndX());
-                            B.setCenterY(Objects.requireNonNull(findLineForPoind(nameId[1])).getEndY());
-                        }
-                        //Сохранить параметрический параметр t для прямой в коллекции
-                        updateT(Objects.requireNonNull(findLineForPoind(nameId[1])), B);
-                    }
                     //Перемещение линии
-                    if (!findPoindMove(nameId[0]) && !findPoindMove(nameId[1])) {
+                    if (findPoindMove(nameId[0]) && findPoindMove(nameId[1])) {
                         //Если не расчетная, пересчитать координаты.
                         A.setCenterX(e.getX() + getDXStart());
                         A.setCenterY(e.getY() + getDYStart());
@@ -2058,7 +2173,7 @@ class Model implements Observable {
                     }
                 }
             }
-            newLine.setStrokeWidth(selectStrokeWidth);
+            newLine.setStrokeWidth(lineStokeWidth+1);
         });
         //уход с линии
         newLine.setOnMouseExited(e -> {
@@ -2094,7 +2209,7 @@ class Model implements Observable {
      * @return - true-точка принадлежит линии
      */
     private boolean findPoindMove(String vertex) {
-        return poindCircles.stream().filter(p -> p.getId().equals(vertex)).findFirst().filter(PoindCircle::isBLine).isPresent();
+        return poindCircles.stream().filter(p -> p.getId().equals(vertex)).findFirst().filter(PoindCircle::isBLine).isEmpty();
     }
 
     /**
@@ -2127,9 +2242,9 @@ class Model implements Observable {
         Line newLine = createLine();//добавить линию
         paneBoards.getChildren().add(newLine);
         if (segment == 9 || segment == 8) {
-            poindLines.add(new PoindLine(newLine, newLine.getId(), decartX, decartY, decartX, decartY, false, false, segment));
+            poindLines.add(new PoindLine(newLine, newLine.getId(), decartX, decartY, decartX, decartY, false, segment));
         } else {
-            poindLines.add(new PoindLine(newLine, newLine.getId(), decartX, decartY, decartX, decartY, true, false, segment));
+            poindLines.add(new PoindLine(newLine, newLine.getId(), decartX, decartY, decartX, decartY, true, segment));
 
         }
         return newLine;
@@ -2615,60 +2730,48 @@ class Model implements Observable {
      * Метод parallelBindLine(Circle b, Circle c, Circle a, Circle d).
      * Предназначен для связывания прямой с параллельной прямой.
      *
-     * @param b - точка на прямой начало
-     * @param c - точка на прямой, конец с-прямая относительно которой построена параллельная прямая
-     * @param a - точка через которую проходит параллельная прямая
-     * @param d - точка на параллельной прямой расчетная
+     * @param cA - точка на прямой начало
+     * @param cB - точка на прямой, конец с-прямая относительно которой построена параллельная прямая
+     * @param cC - точка через которую проходит параллельная прямая
+     * @param cD - точка на параллельной прямой расчетная
      */
-    public void parallelBindLine(Circle b, Circle c, Circle a, Circle d) {
-        c.centerXProperty().addListener((obj, OldValue, newValue) -> {
-            double Dx = a.getCenterX() - b.getCenterX();
-            double Dy = a.getCenterY() - b.getCenterY();
-            d.setCenterX(c.getCenterX() + Dx);
-            d.setCenterY(c.getCenterY() + Dy);
-        });
-        c.centerYProperty().addListener((obj, OldValue, newValue) -> {
-            double Dx = a.getCenterX() - b.getCenterX();
-            double Dy = a.getCenterY() - b.getCenterY();
-            d.setCenterX(c.getCenterX() + Dx);
-            d.setCenterY(c.getCenterY() + Dy);
-        });
-        b.centerXProperty().addListener((obj, OldValue, newValue) -> {
-            double Dx = a.getCenterX() - b.getCenterX();
-            double Dy = a.getCenterY() - b.getCenterY();
-            d.setCenterX(c.getCenterX() + Dx);
-            d.setCenterY(c.getCenterY() + Dy);
-        });
-        b.centerYProperty().addListener((obj, OldValue, newValue) -> {
-            double Dx = a.getCenterX() - b.getCenterX();
-            double Dy = a.getCenterY() - b.getCenterY();
-            d.setCenterX(c.getCenterX() + Dx);
-            d.setCenterY(c.getCenterY() + Dy);
-        });
-        a.centerXProperty().addListener((obj, OldValue, newValue) -> {
-            double Dx = a.getCenterX() - b.getCenterX();
-            double Dy = a.getCenterY() - b.getCenterY();
-            d.setCenterX(c.getCenterX() + Dx);
-            d.setCenterY(c.getCenterY() + Dy);
-        });
-        a.centerYProperty().addListener((obj, OldValue, newValue) -> {
-            double Dx = a.getCenterX() - b.getCenterX();
-            double Dy = a.getCenterY() - b.getCenterY();
-            d.setCenterX(c.getCenterX() + Dx);
-            d.setCenterY(c.getCenterY() + Dy);
-        });
-        d.centerXProperty().addListener((obj, OldValue, newValue) -> {
-            double Dx = d.getCenterX() - c.getCenterX();
-            double Dy = d.getCenterY() - c.getCenterY();
-            a.setCenterX(b.getCenterX() + Dx);
-            a.setCenterY(c.getCenterY() + Dy);
-        });
-        d.centerYProperty().addListener((obj, OldValue, newValue) -> {
-            double Dx = d.getCenterX() - c.getCenterX();
-            double Dy = d.getCenterY() - c.getCenterY();
-            a.setCenterX(b.getCenterX() + Dx);
-            a.setCenterY(b.getCenterY() + Dy);
-        });
+    public void parallelBindLine(Circle cA, Circle cB, Circle cC, Circle cD) {
+        cA.centerXProperty().addListener((obj, OldValue, newValue) -> accessParalel(cA, cB, cC, cD));
+        cA.centerYProperty().addListener((obj, OldValue, newValue) -> accessParalel(cA, cB, cC, cD));
+        cB.centerXProperty().addListener((obj, OldValue, newValue) -> accessParalel(cA, cB, cC, cD));
+        cB.centerYProperty().addListener((obj, OldValue, newValue) -> accessParalel(cA, cB, cC, cD));
+        cC.centerXProperty().addListener((obj, OldValue, newValue) -> accessParalel(cA, cB, cC, cD));
+        cC.centerYProperty().addListener((obj, OldValue, newValue) -> accessParalel(cA, cB, cC, cD));
+
+    }
+
+    /**
+     * Метод accessParalel(Circle cA, Circle cB, Circle cC, Circle cD).
+     * Предназначен для расчета точки для параллельной прямой.
+     *
+     * @param cA - первая точка прямой
+     * @param cB - вторая точка прямой
+     * @param cC - первая точка параллельной прямой
+     * @param cD - расчетная точка параллельной прямой
+     */
+    private void accessParalel(Circle cA, Circle cB, Circle cC, Circle cD) {
+        //Рассчитать координаты новой точки
+        double a = cB.getCenterY() - cA.getCenterY();
+        double b = cA.getCenterX() - cB.getCenterX();
+        double x = 4000;
+        double y;
+        if (b != 0) {
+            y = (a * (cC.getCenterX() - 4000) + b * cC.getCenterY()) / b;
+        } else {
+            y = a * (cC.getCenterX() - 4000);
+        }
+        double dx = getScreenXY().getX();
+        double dy = getScreenXY().getY();
+        setScreenXY(new Point2D(x, y));
+        setVertex(cD);
+        notifyObservers("VertexGo");
+        setScreenXY(new Point2D(dx, dy));
+        findCirclesUpdateXY(cD.getId(), gridViews.revAccessX(x), gridViews.revAccessY(y));
     }
 
     /**
