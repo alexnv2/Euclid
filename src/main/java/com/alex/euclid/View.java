@@ -8,6 +8,7 @@ import javafx.scene.control.Tooltip;
 import javafx.scene.shape.Arc;
 import javafx.scene.shape.Circle;
 import javafx.scene.shape.Line;
+import javafx.scene.shape.Shape;
 import javafx.scene.text.Font;
 import javafx.scene.text.Text;
 import javafx.scene.web.WebEngine;
@@ -61,9 +62,9 @@ class View implements Observer {
             case "LeftStatusGo" -> this.statusGo(model.getStatus());//вывод статуса
             case "WebGo" -> this.webFileHTMLGo(model.getWebView());//вывод файла HTML
             case "TextShapeGo" -> this.textShapeGo(model.getTextArea());//для вывода в правое окно
-            case "ColorLine" -> this.SrokeColor(model.getLine());//цвет линий
+            case "FillShape" -> this.FillColor(model.getShapeColor());//цвет заливки
+            case "StrokeShape" -> this.SrokeColor(model.getShapeColor());//цвет обводки
             case "ArcGo" -> this.arcGo(model.getArcGo());//дуги для углов и дуг для треугольников
-            case "ColorArc" -> this.ArcColor(model.getArcGo());//цвет дуги
             case "TextGo" -> this.TextGo(model.getTextGo());//буквы
             case "ToolTip" -> this.ToolTipGo(model.getBtnToolTip());//добавить всплывающие подсказки
             case "CircleGo" -> this.CircleGo(model.getCircle());//вывод окружности
@@ -82,14 +83,22 @@ class View implements Observer {
 
     /**
      * Метод SrokeColor(Line l)
-     * Предназначен для изменения цвета линий.
+     * Предназначен для изменения цвета обводки.
      *
-     * @param l - объект Line
+     * @param sh - объект circle, line, arc, text
      */
-    private void SrokeColor(Line l) {
-        l.setStroke(model.getColorLine());
+    private void SrokeColor(Shape sh) {
+        sh.setStroke(model.getColorStroke());
     }
-
+    /**
+     * Метод FillColor(Shape sh)
+     * Предназначен для изменения цвета заливки.
+     *
+     * @param sh - объект circle, line, arc, text
+     */
+    private void FillColor(Shape sh){
+        sh.setFill(model.getColorFill());
+    }
     /**
      * Метод ToolTipGo(Button btnToolTip)
      * Предназначен для вывода всплывающих подсказок
@@ -171,16 +180,6 @@ class View implements Observer {
         label.setText(model.getStringLeftStatus());
     }
 
-    /**
-     * Метод ArcColor(Arc arc)
-     * Предназначен для изменения цвета дуги и цвета заполнения дуги на доске.
-     *
-     * @param arc - объект Arc
-     */
-    private void ArcColor(Arc arc) {
-        arc.setStroke(model.getColorArc());//цвет дуги
-        arc.setFill(model.getColorFillArc());//цвет фона дуги
-    }
 
     /**
      * Метод arcGo(Arc arc)

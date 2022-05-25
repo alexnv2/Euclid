@@ -15,6 +15,7 @@ import javafx.scene.input.MouseEvent;
 import javafx.scene.input.ScrollEvent;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
+import javafx.scene.shape.Circle;
 import javafx.scene.shape.Line;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
@@ -48,6 +49,7 @@ public class EuclidController extends View {
     public MenuItem menuSecondTr;
     public Font x3;
     public Line newLine;
+    public Circle circleFill;
 
 
     //Связать переменные с шаблоном FXML
@@ -138,6 +140,7 @@ public class EuclidController extends View {
         model.setGridViews(gridViews);//Передать ссылку для пересчета координат класса модели.
         model.setPaneBoards(paneShape);//Передать ссылку на доску для класса модели.
         model.setNewLine(newLine);//Передать ссылку для построения отрезка, луча, прямой
+        model.setCircleFill(circleFill);//Передать ссылук для точки при наведении на точку
         model.webHTML(webViewLeft, "geometry.html");//Вывод в web файла html (что такое геометрия)
         //формирование линий координат и сетки, перерасчет при изменении размеров доски
         gridViews.setPaneGrid(paneGrid);
@@ -1180,7 +1183,7 @@ public class EuclidController extends View {
             btnCircleInTreangle.setDisable(true);
             //Необходима для построения отрезков, лучей и прямых.
             //Определена fxml.
-            paneShape.getChildren().add(newLine);//необходима для построения отрезков, лучей и прямых
+            paneShape.getChildren().addAll(newLine, circleFill);//необходима для построения отрезков, лучей и прямых
         }
     }
 

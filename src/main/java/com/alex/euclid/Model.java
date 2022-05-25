@@ -41,9 +41,12 @@ class Model implements Observable {
 
     //Переменные класса
     private Circle circle;//окружность
+
     private Circle vertex; //точка
+    private Circle circleFill;//увеличенная точка при наведении
     private Circle selected;//Хранит ссылки на выбранные объекты
     private Line line;//линия, луч, прямая
+    private Shape shapeColor;//для задания цвета
     private Line newLine;//луча, отрезка, прямой для построения
     private Label Status;//левый статус, вывод действий
     private Label rightStatus;//правый статус, вывод координат
@@ -132,15 +135,11 @@ class Model implements Observable {
     private double arcRadius = 30;//радиус дуги
     private double angleStart;//начало дуги гр.
     private double angleLength;//длина дуги гр.
-    private Color ColorArc = Color.DARKSLATEBLUE;//цвет дуги угла
-    private Color ColorFillArc = Color.LIGHTBLUE;//цвет заполнения дуги угла
     //Свойства точек
     private double radiusPoind = 5;//радиус точки
-    private Color circleColorFill = Color.LIGHTBLUE;//цвет фона
-    private Color circleColorStroke = Color.DARKSLATEBLUE;//цвет рамки
-    //Свойства линий
-    private Color ColorLine = Color.DARKSLATEBLUE;//цвет линий по умолчанию
-    private double lineStokeWidth = 2;//толщина линий
+    private Color  colorFill=Color.hsb(195,0.53,0.78,1);//цвет заливки
+    private Color colorStroke=Color.hsb(216,1,0.62,1); //цвет обводки
+     private double lineStokeWidth = 2;//толщина линий
     //Логические переменные из меню настроек
     private boolean showPoindName = true;//по умолчанию, всегда показывать имена точек
     private boolean showLineName = false;//по умолчанию, не показывать имена линий
@@ -478,7 +477,7 @@ class Model implements Observable {
                     //Привязать события мыши
                     mouseLine(lP);
                     //Переводим координаты линии в мировые
-                    findLinesUpdateXY(newLine.getId());
+                    findLinesUpdateXY(lP.getId());
                     //Переводим в мировые координаты точки
                     setDecartX(gridViews.revAccessX(D1.getX()));
                     setDecartY(gridViews.revAccessY(D1.getY()));
@@ -1070,7 +1069,7 @@ class Model implements Observable {
         Text nameText = new Text();//создать новый объект
         nameText.setId(name);//присвоить имя
         nameText.setFont(Font.font("Alexander", FontWeight.BOLD, FontPosture.REGULAR, 14));
-        nameText.setFill(getColorLine());//цвет букв
+        nameText.setFill(getColorStroke());//цвет букв
         //Привязка к событию мышки
         nameText.setOnMouseDragged(e -> {//перемещение
             //Найти точку с которой связано имя
@@ -1212,7 +1211,7 @@ class Model implements Observable {
      * @param circle - объект точка
      * @return - объект Text
      */
-    private Text findNameText(Circle circle) {
+    private Text findNameText(Shape circle) {
         for (NamePoindLine np : namePoindLines) {
             if (np != null) {
                 if (np.getId().equals(circle.getId())) {
@@ -1519,15 +1518,14 @@ class Model implements Observable {
         Circle newPoind = new Circle();
         newPoind.setRadius(radiusPoind);//радиус
         //Цвет точки
-        Stop[] stops = new Stop[]{
-                new Stop(0.0, Color.BLUE), new Stop(1.0, Color.WHITE)
-        };
-        newPoind.setFill(new RadialGradient(0.0, 0.0, 0.5, 0.5, 0.5, true,
-                CycleMethod.NO_CYCLE, stops));
-        newPoind.setStroke(circleColorStroke);//Цвет линий
+        setColorStroke(Color.DARKSLATEBLUE);
+        setColorFill(Color.DEEPSKYBLUE);
+        setShapeColor(newPoind);
+        notifyObservers("StrokeShape"); //Передаем в View для вывода
+        notifyObservers("FillShape");
         newPoind.setId(indexPoindAdd());//Индификатор узла
         //Контекстное меню
-        // newContextMenu(newPoind);
+         newContextMenu(newPoind, 1);
         //Обработка событий
         //Перемещение с нажатой клавишей
         newPoind.setOnMouseDragged(e -> {
@@ -1590,6 +1588,8 @@ class Model implements Observable {
                     //изменить местоположение точки
                     vertex = newPoind;
                     notifyObservers("VertexGo");
+                    vertex =circleFill;
+                    notifyObservers("VertexGo");
                     setTxtShape("");
                     txtAreaOutput();
                 } else {
@@ -1611,12 +1611,11 @@ class Model implements Observable {
 
         {
             newPoind.setCursor(Cursor.HAND);
-            newPoind.setRadius(12);
-            Stop[] stops1 = new Stop[]{
-                    new Stop(0.0, Color.BLUE), new Stop(1.0, Color.YELLOW)
-            };
-            newPoind.setFill(new RadialGradient(0.0, 0.0, 0.5, 0.5, 0.5, true,
-                    CycleMethod.NO_CYCLE, stops1));
+            circleFill.setVisible(true);//добавить увеличенную точку
+            circleFill.setCenterX(newPoind.getCenterX());
+            circleFill.setCenterY(newPoind.getCenterY());
+            circleFill.setFill(newPoind.getFill());
+            circleFill.setOpacity(0.4);
             //Установить статус "Точка + выбранная точка"
             setStringLeftStatus(STA_9 + newPoind.getId());
             notifyObservers("LeftStatusGo");
@@ -1626,12 +1625,7 @@ class Model implements Observable {
 
         {
             newPoind.setCursor(Cursor.DEFAULT);
-            newPoind.setRadius(5);
-            Stop[] stops2 = new Stop[]{
-                    new Stop(0.0, Color.BLUE), new Stop(1.0, Color.WHITE)
-            };
-            newPoind.setFill(new RadialGradient(0.0, 0.0, 0.5, 0.5, 0.5, true,
-                    CycleMethod.NO_CYCLE, stops2));
+            circleFill.setVisible(false);
             poindOldAdd = false;//запрет брать точку для отрезков, прямых, лучей
             //Установить статус пустая строка
             setStringLeftStatus("");
@@ -1646,8 +1640,9 @@ class Model implements Observable {
      * отрезку, прямой, луча.
      *
      * @param c - графический объект линия
+     * @param shape - тип графической фигуры 1-точка, 2-линия, 3 - угол
      */
-    private void newContextMenu(Line c) {
+    private void newContextMenu(Shape c, int shape) {
         //Контекстное меню
         MenuItem menuItem = new MenuItem("Переименовать");
         menuItem.setOnAction(event ->{
@@ -1682,29 +1677,79 @@ class Model implements Observable {
         mCol5.setGraphic(new ImageView(Objects.requireNonNull(getClass().getResource("/com/alex/euclid/Images/BlackColor.png")).toString()));
         menuItem2.getItems().addAll(mCol1, mCol2, mCol3, mCol4, mCol5);
         mCol1.setOnAction(event -> {
-            setColorLine(Color.RED);
-            setLine(c);
-            notifyObservers("ColorLine");
+            setShapeColor(c);
+            setColorStroke(Color.RED);
+            notifyObservers("StrokeShape");
+            setColorFill(Color.ROSYBROWN);
+            notifyObservers("FillShape");
+            setColorFill(Color.RED);
+            if (shape==3){
+                setShapeColor(findArcNameAngle(c.getId()));
+                notifyObservers("FillShape");
+            }else {
+                setShapeColor(findNameText(c));//буквы
+                notifyObservers("FillShape");
+            }
         });
         mCol2.setOnAction(event -> {
-            setColorLine(Color.DARKSLATEBLUE);
-            setLine(c);
-            notifyObservers("ColorLine");
+            setShapeColor(c);
+            setColorStroke(Color.DARKSLATEBLUE);
+            notifyObservers("StrokeShape");
+            setColorFill(Color.DEEPSKYBLUE);
+            notifyObservers("FillShape");
+            setColorFill(Color.DARKSLATEBLUE);
+            if (shape==3){
+                setShapeColor(findArcNameAngle(c.getId()));
+                notifyObservers("FillShape");
+            }else {
+                setShapeColor(findNameText(c));//буквы
+                notifyObservers("FillShape");
+            }
         });
         mCol3.setOnAction(event -> {
-            setColorLine(Color.GREEN);
-            setLine(c);
-            notifyObservers("ColorLine");
+            setShapeColor(c);
+            setColorStroke(Color.GREEN);
+            notifyObservers("StrokeShape");
+            setColorFill(Color.CADETBLUE);
+            notifyObservers("FillShape");
+            setColorFill(Color.GREEN);
+            if (shape==3){
+                setShapeColor(findArcNameAngle(c.getId()));
+                notifyObservers("FillShape");
+            }else {
+                setShapeColor(findNameText(c));//буквы
+                notifyObservers("FillShape");
+            }
         });
         mCol4.setOnAction(event -> {
-            setColorLine(Color.YELLOWGREEN);
-            setLine(c);
-            notifyObservers("ColorLine");
+            setShapeColor(c);
+            setColorStroke(Color.YELLOWGREEN);
+            notifyObservers("StrokeShape");
+            setColorFill(Color.GOLD);
+            notifyObservers("FillShape");
+            setColorFill(Color.YELLOWGREEN);
+            if (shape==3){
+                setShapeColor(findArcNameAngle(c.getId()));
+                notifyObservers("FillShape");
+            }else {
+                setShapeColor(findNameText(c));//буквы
+                notifyObservers("FillShape");
+            }
         });
         mCol5.setOnAction(event -> {
-            setColorLine(Color.BLACK);
-            setLine(c);
-            notifyObservers("ColorLine");
+            setShapeColor(c);
+            setColorStroke(Color.BLACK);
+            notifyObservers("StrokeShape");
+            setColorFill(Color.GRAY);
+            notifyObservers("FillShape");
+            setColorFill(Color.BLACK);
+            if (shape==3){
+                setShapeColor(findArcNameAngle(c.getId()));
+                notifyObservers("FillShape");
+            }else {
+                setShapeColor(findNameText(c));//буквы
+                notifyObservers("FillShape");
+            }
         });
 
         Menu menuItem3 = new Menu("Форма линий");
@@ -1756,27 +1801,27 @@ class Model implements Observable {
 
         m1.setOnAction(event -> {
             setLineStokeWidth(2);
-            setLine(c);
+            setShapeColor(c);
             notifyObservers("StrokeWidth");
         });
         m2.setOnAction(event -> {
             setLineStokeWidth(3);
-            setLine(c);
+            setShapeColor(c);
             notifyObservers("StrokeWidth");
         });
         m3.setOnAction(event -> {
             setLineStokeWidth(4);
-            setLine(c);
+            setShapeColor(c);
             notifyObservers("StrokeWidth");
         });
         m4.setOnAction(event -> {
             setLineStokeWidth(5);
-            setLine(c);
+            setShapeColor(c);
             notifyObservers("StrokeWidth");
         });
         m5.setOnAction(event -> {
             setLineStokeWidth(6);
-            setLine(c);
+            setShapeColor(c);
             notifyObservers("StrokeWidth");
         });
         ContextMenu menu = new ContextMenu();
@@ -2088,14 +2133,17 @@ class Model implements Observable {
         line = new Line();
         line.setStrokeWidth(lineStokeWidth);//Толщина линии
         line.getStrokeDashArray().addAll(2.0); //Задаем вид линии
-        //Цвет линии задается переменной ColorLine
-        setColorLine(Color.DARKSLATEBLUE);
-        notifyObservers("ColorLine"); //Передаем в View для вывода
+        //Цвет линии задается переменной
+        setColorStroke(Color.DARKSLATEBLUE);
+        setColorFill(Color.DEEPSKYBLUE);
+        setShapeColor(line);
+        notifyObservers("StrokeShape"); //Передаем в View для вывода
+        notifyObservers("FillShape");
         line.setId(indexLineAdd());//Идентификатор узла
         //Привязка событий мышки
         mouseLine(line);
         //Контекстное меню
-        newContextMenu(line);
+        newContextMenu(line, 2);
         return line;
     }
 
@@ -2103,16 +2151,16 @@ class Model implements Observable {
      * Метод mouseLine().
      * Предназначен для привязки событий мышки к объекту Line.
      *
-     * @param newLine - ссылка на линию к которой привязаны события мышки
+     * @param mLine - ссылка на линию к которой привязаны события мышки
      */
-    public void mouseLine(Line newLine) {
+    public void mouseLine(Line mLine) {
         //Перемещение линий
-        newLine.setOnMouseDragged(e -> {
+        mLine.setOnMouseDragged(e -> {
             //Блокировать, если режим построения
             if (!createShape) {
                 //Определить, разрешено ли перемещение линии
-                if (findLineMove(newLine)) {
-                    String[] nameId = findID(newLine).split("_");
+                if (findLineMove(mLine)) {
+                    String[] nameId = findID(mLine).split("_");
                     Circle A = findCircle(nameId[0]);
                     Circle B = findCircle(nameId[1]);
                     //Перемещение линии
@@ -2132,11 +2180,11 @@ class Model implements Observable {
             }
         });
         //Наведение на отрезок
-        newLine.setOnMouseEntered(e -> {
-            newLine.setCursor(Cursor.HAND);
+        mLine.setOnMouseEntered(e -> {
+            mLine.setCursor(Cursor.HAND);
             //Установить статус
             for (PoindLine p : poindLines) {
-                if (p.getLine().getId().equals(newLine.getId())) {
+                if (p.getLine().getId().equals(mLine.getId())) {
                     switch (p.getSegment()) {
                         case 0 -> {
                             setStringLeftStatus(STA_10 + nameSplitRemove(p.getId()));
@@ -2173,29 +2221,43 @@ class Model implements Observable {
                     }
                 }
             }
-            newLine.setStrokeWidth(lineStokeWidth+1);
+            //mLine.setStrokeWidth(lineStokeWidth+2);
+            newLine.setStartX(mLine.getStartX());
+            newLine.setStartY(mLine.getStartY());
+            newLine.setEndX(mLine.getEndX());
+            newLine.setEndY(mLine.getEndY());
+            newLine.setStrokeWidth(mLine.getStrokeWidth()*4);
+            newLine.setStroke(mLine.getFill());
+            newLine.setOpacity(0.3);
+            newLine.setVisible(true);
+            newLine.toBack();
+
         });
         //уход с линии
-        newLine.setOnMouseExited(e -> {
+        mLine.setOnMouseExited(e -> {
             //Установить статус
             setStringLeftStatus("");
             notifyObservers("LeftStatusGo");
-            newLine.setStrokeWidth(lineStokeWidth);
+            newLine.setStroke(Color.DARKSLATEBLUE);
+            newLine.setStrokeWidth(2);
+            newLine.setOpacity(1);
+            newLine.setVisible(false);
             lineOldAdd = false;
         });
         //нажата левая кнопка
-        newLine.setOnMousePressed(e -> {
-            timeLine = newLine;//выбрана данная линия, для построения
+        mLine.setOnMousePressed(e -> {
+            timeLine = mLine;//выбрана данная линия, для построения
             lineOldAdd = true;//линия выбрана
             //Определить, разрешено ли перемещение линии
-            if (findLineMove(newLine)) {
+            if (findLineMove(mLine)) {
                 //Вычислить смещение для перемещения всех линий
                 if (!createLine) {
-                    String[] nameId = findID(newLine).split("_");
+                    String[] nameId = findID(mLine).split("_");
                     setDXStart(findCircle(nameId[0]).getCenterX() - e.getX());
                     setDYStart(findCircle(nameId[0]).getCenterY() - e.getY());
                     setDXEnd(findCircle(nameId[1]).getCenterX() - e.getX());
                     setDYEnd(findCircle(nameId[1]).getCenterY() - e.getY());
+                    newLine.setVisible(false);
                 }
             }
         });
@@ -2239,15 +2301,15 @@ class Model implements Observable {
      * @return -возвращает объект Line.
      */
     Line createLineAdd(int segment) {
-        Line newLine = createLine();//добавить линию
-        paneBoards.getChildren().add(newLine);
+        Line l = createLine();//добавить линию
+        paneBoards.getChildren().add(l);
         if (segment == 9 || segment == 8) {
-            poindLines.add(new PoindLine(newLine, newLine.getId(), decartX, decartY, decartX, decartY, false, segment));
+            poindLines.add(new PoindLine(l, l.getId(), decartX, decartY, decartX, decartY, false, segment));
         } else {
-            poindLines.add(new PoindLine(newLine, newLine.getId(), decartX, decartY, decartX, decartY, true, segment));
+            poindLines.add(new PoindLine(l, l.getId(), decartX, decartY, decartX, decartY, true, segment));
 
         }
-        return newLine;
+        return l;
     }
 
     /**
@@ -2501,9 +2563,13 @@ class Model implements Observable {
         arcNew.setId(arc);
         arcNew.setType(ArcType.ROUND);//тип арки
         arcNew.setOpacity(0.5);//прозрачность
-        //Передать в View для вывода
-        arcGo = arcNew;
-        notifyObservers("ColorArc");//задаем цвет арки дуги и цвет фона
+        setColorStroke(Color.DARKSLATEBLUE);
+        setColorFill(Color.DEEPSKYBLUE);
+        setShapeColor(arcNew);//установить цвет
+        notifyObservers("StrokeShape"); //Передаем в View для вывода
+        notifyObservers("FillShape");
+        //Контекстное меню
+        newContextMenu(arcNew, 3);
         arcVertexGo(o1, o2, o3, arcNew);//вывести на доску
         String nameAngle = indexAngledAdd();//увеличить индекс
         nameArcAdd(o2, nameAngle, arcNew);//вывести имя угла
@@ -3044,7 +3110,7 @@ class Model implements Observable {
      * @param i  - номер объекта в коллекции PoindCircle (4- медиана, 5 - биссектриса, 6 - высота)
      */
     private Line createMedianaBisectorHeight(Circle c, Circle c1, Circle c2, Point2D mc, int i) {
-        Line newLineTreangle = createLineAdd(i);//создать новую линию
+        Line lineTreangle = createLineAdd(i);//создать новую линию
         Circle newPoindTreangle = createPoindAdd(false);//создать новую расчетную точку
         setScreenXY(new Point2D(mc.getX(), mc.getY()));
         //Передать в View для вывода
@@ -3053,19 +3119,19 @@ class Model implements Observable {
         findCirclesUpdateXY(newPoindTreangle.getId(), gridViews.revAccessX(getScreenXY().getX()), gridViews.revAccessY(getScreenXY().getY()));
         segmentStartX = c.getCenterX();
         segmentStartY = c.getCenterY();
-        line = newLineTreangle;
+        line = lineTreangle;
         notifyObservers("SideGo");
-        findLinesUpdateXY(newLineTreangle.getId());
+        findLinesUpdateXY(lineTreangle.getId());
         //paneBoards.getChildren().addAll(newLineTreangle, newPoindTreangle);//добавить на доску
-        newLineTreangle.toBack();
-        findNameId(c.getId() + "_" + newPoindTreangle.getId(), newLineTreangle.getId());
+        lineTreangle.toBack();
+        findNameId(c.getId() + "_" + newPoindTreangle.getId(), lineTreangle.getId());
         //Связывание созданных отрезков и точки с вершинами треугольника
         switch (i) {
-            case 4 -> mbhBindCircles(c, c1, c2, newPoindTreangle, newLineTreangle, 4);
-            case 5 -> mbhBindCircles(c, c1, c2, newPoindTreangle, newLineTreangle, 5);
-            case 6 -> mbhBindCircles(c, c1, c2, newPoindTreangle, newLineTreangle, 6);
+            case 4 -> mbhBindCircles(c, c1, c2, newPoindTreangle, lineTreangle, 4);
+            case 5 -> mbhBindCircles(c, c1, c2, newPoindTreangle, lineTreangle, 5);
+            case 6 -> mbhBindCircles(c, c1, c2, newPoindTreangle, lineTreangle, 6);
         }
-        return newLineTreangle;
+        return lineTreangle;
     }
 
     /**
@@ -3310,16 +3376,16 @@ class Model implements Observable {
     }
 
     /**
-     * Метод closeLine(Line newLine).
+     * Метод closeLine(Line l).
      * Предназначен для запрета линий на перемещение от мышки.
      * К этим линиям относятся высота, медиана, биссектриса треугольника.
      *
-     * @param newLine - ссылка на линию
+     * @param l - ссылка на линию
      */
-    public void closeLine(Line newLine) {
+    public void closeLine(Line l) {
         for (PoindLine p : poindLines) {
             if (p != null) {
-                if (p.getLine().getId().equals(newLine.getId())) {
+                if (p.getLine().getId().equals(l.getId())) {
                     p.setBMove(false);
                 }
             }
@@ -3359,40 +3425,40 @@ class Model implements Observable {
     }
 
     /**
-     * Метод middleBindSegment(Circle newCircle, Line newLine).
+     * Метод middleBindSegment(Circle newCircle, Line l).
      * Предназначен для связывания середины отрезка с линией
      *
-     * @param newCircle - ссылка на точку
-     * @param newLine   - ссылка на линию
+     * @param c - ссылка на точку
+     * @param l   - ссылка на линию
      */
-    public void middleBindSegment(Circle newCircle, Line newLine) {
-        newLine.startXProperty().addListener((old, oldValue, newValue) -> {
-            Point2D p1 = new Point2D(newLine.startXProperty().get(), newLine.startYProperty().get());
-            Point2D p2 = new Point2D(newLine.endXProperty().get(), newLine.endYProperty().get());
-            newCircle.setCenterX(p1.midpoint(p2).getX());
-            newCircle.setCenterY(p1.midpoint(p2).getY());
-            findCirclesUpdateXY(newCircle.getId(), gridViews.revAccessX(newCircle.getCenterX()), gridViews.revAccessY(newCircle.getCenterY()));
+    public void middleBindSegment(Circle c, Line l) {
+        l.startXProperty().addListener((old, oldValue, newValue) -> {
+            Point2D p1 = new Point2D(l.startXProperty().get(), l.startYProperty().get());
+            Point2D p2 = new Point2D(l.endXProperty().get(), l.endYProperty().get());
+            c.setCenterX(p1.midpoint(p2).getX());
+            c.setCenterY(p1.midpoint(p2).getY());
+            findCirclesUpdateXY(c.getId(), gridViews.revAccessX(c.getCenterX()), gridViews.revAccessY(c.getCenterY()));
         });
-        newLine.startYProperty().addListener((old, oldValue, newValue) -> {
-            Point2D p1 = new Point2D(newLine.startXProperty().get(), newLine.startYProperty().get());
-            Point2D p2 = new Point2D(newLine.endXProperty().get(), newLine.endYProperty().get());
-            newCircle.setCenterX(p1.midpoint(p2).getX());
-            newCircle.setCenterY(p1.midpoint(p2).getY());
-            findCirclesUpdateXY(newCircle.getId(), gridViews.revAccessX(newCircle.getCenterX()), gridViews.revAccessY(newCircle.getCenterY()));
+        l.startYProperty().addListener((old, oldValue, newValue) -> {
+            Point2D p1 = new Point2D(l.startXProperty().get(), l.startYProperty().get());
+            Point2D p2 = new Point2D(l.endXProperty().get(), l.endYProperty().get());
+            c.setCenterX(p1.midpoint(p2).getX());
+            c.setCenterY(p1.midpoint(p2).getY());
+            findCirclesUpdateXY(c.getId(), gridViews.revAccessX(c.getCenterX()), gridViews.revAccessY(c.getCenterY()));
         });
-        newLine.endXProperty().addListener((old, oldValue, newValue) -> {
-            Point2D p1 = new Point2D(newLine.startXProperty().get(), newLine.startYProperty().get());
-            Point2D p2 = new Point2D(newLine.endXProperty().get(), newLine.endYProperty().get());
-            newCircle.setCenterX(p1.midpoint(p2).getX());
-            newCircle.setCenterY(p1.midpoint(p2).getY());
-            findCirclesUpdateXY(newCircle.getId(), gridViews.revAccessX(newCircle.getCenterX()), gridViews.revAccessY(newCircle.getCenterY()));
+        l.endXProperty().addListener((old, oldValue, newValue) -> {
+            Point2D p1 = new Point2D(l.startXProperty().get(), l.startYProperty().get());
+            Point2D p2 = new Point2D(l.endXProperty().get(), l.endYProperty().get());
+            c.setCenterX(p1.midpoint(p2).getX());
+            c.setCenterY(p1.midpoint(p2).getY());
+            findCirclesUpdateXY(c.getId(), gridViews.revAccessX(c.getCenterX()), gridViews.revAccessY(c.getCenterY()));
         });
-        newLine.endYProperty().addListener((old, oldValue, newValue) -> {
-            Point2D p1 = new Point2D(newLine.startXProperty().get(), newLine.startYProperty().get());
-            Point2D p2 = new Point2D(newLine.endXProperty().get(), newLine.endYProperty().get());
-            newCircle.setCenterX(p1.midpoint(p2).getX());
-            newCircle.setCenterY(p1.midpoint(p2).getY());
-            findCirclesUpdateXY(newCircle.getId(), gridViews.revAccessX(newCircle.getCenterX()), gridViews.revAccessY(newCircle.getCenterY()));
+        l.endYProperty().addListener((old, oldValue, newValue) -> {
+            Point2D p1 = new Point2D(l.startXProperty().get(), l.startYProperty().get());
+            Point2D p2 = new Point2D(l.endXProperty().get(), l.endYProperty().get());
+            c.setCenterX(p1.midpoint(p2).getX());
+            c.setCenterY(p1.midpoint(p2).getY());
+            findCirclesUpdateXY(c.getId(), gridViews.revAccessX(c.getCenterX()), gridViews.revAccessY(c.getCenterY()));
         });
     }
 

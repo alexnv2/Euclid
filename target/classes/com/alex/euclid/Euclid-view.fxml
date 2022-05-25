@@ -103,8 +103,8 @@
         <StackPane fx:id="Cartesian">
             <Pane fx:id="paneGrid" />
             <Pane fx:id="paneShape" accessibleRole="NODE" onMouseDragged="#onMouseDragged" onMouseMoved="#onMouseMoved" onMousePressed="#onMousePressed" onScroll="#onScroll">
-                <Line fx:id="newLine" disable="true" stroke="DARKSLATEBLUE" strokeWidth="2" />
-
+                <Line fx:id="newLine" disable="true" stroke="DARKSLATEBLUE" fill="deepskyblue" opacity="1" strokeWidth="2" />
+                <Circle fx:id="circleFill" visible="false" fill="deepskyblue" opacity="0.4" radius="12" stroke="TRANSPARENT" />
             </Pane>
         </StackPane>
         <AnchorPane>
