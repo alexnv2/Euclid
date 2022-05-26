@@ -4,6 +4,7 @@ import javafx.geometry.Point2D;
 import javafx.geometry.Pos;
 import javafx.scene.Cursor;
 import javafx.scene.control.*;
+import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
@@ -1662,12 +1663,12 @@ class Model implements Observable {
         MenuItem mCol4 = new MenuItem();
         MenuItem mCol5 = new MenuItem();
 
-        mCol1.setGraphic(new ImageView(Objects.requireNonNull(getClass().getResource("/com/alex/euclid/Images/RedColor.png")).toString()));
-        mCol2.setGraphic(new ImageView(Objects.requireNonNull(getClass().getResource("/com/alex/euclid/Images/BlueColor.png")).toString()));
-        mCol3.setGraphic(new ImageView(Objects.requireNonNull(getClass().getResource("/com/alex/euclid/Images/GreenColor.png")).toString()));
-        mCol4.setGraphic(new ImageView(Objects.requireNonNull(getClass().getResource("/com/alex/euclid/Images/YellowColor.png")).toString()));
-        mCol5.setGraphic(new ImageView(Objects.requireNonNull(getClass().getResource("/com/alex/euclid/Images/BlackColor.png")).toString()));
-        menuItem2.getItems().addAll(mCol1, mCol2, mCol3, mCol4, mCol5);
+        mCol1.setGraphic(new ImageView(new Image(Objects.requireNonNull(getClass().getResourceAsStream("/com/alex/euclid/Images/RedColor.png")))));
+        mCol2.setGraphic(new ImageView(new Image(Objects.requireNonNull(getClass().getResourceAsStream("/com/alex/euclid/Images/BlueColor.png")))));
+        mCol3.setGraphic(new ImageView(new Image(Objects.requireNonNull(getClass().getResourceAsStream("/com/alex/euclid/Images/GreenColor.png")))));
+        mCol4.setGraphic(new ImageView(new Image(Objects.requireNonNull(getClass().getResourceAsStream("/com/alex/euclid/Images/YellowColor.png")))));
+        mCol5.setGraphic(new ImageView(new Image(Objects.requireNonNull(getClass().getResourceAsStream("/com/alex/euclid/Images/BlackColor.png")))));
+        menuItem2.getItems().addAll(mCol1, mCol2, mCol3, mCol4, mCol5 );
         mCol1.setOnAction(event -> tableColor(c, shape, 0));
         mCol2.setOnAction(event -> tableColor(c, shape, 2));
         mCol3.setOnAction(event -> tableColor(c, shape, 4));
@@ -1680,11 +1681,11 @@ class Model implements Observable {
         MenuItem mIt3 = new MenuItem();
         MenuItem mIt4 = new MenuItem();
         MenuItem mIt5 = new MenuItem();
-        mIt1.setGraphic(new ImageView(Objects.requireNonNull(getClass().getResource("/com/alex/euclid/Images/Line1.png")).toString()));
-        mIt2.setGraphic(new ImageView(Objects.requireNonNull(getClass().getResource("/com/alex/euclid/Images/Line2.png")).toString()));
-        mIt3.setGraphic(new ImageView(Objects.requireNonNull(getClass().getResource("/com/alex/euclid/Images/Line3.png")).toString()));
-        mIt4.setGraphic(new ImageView(Objects.requireNonNull(getClass().getResource("/com/alex/euclid/Images/Line4.png")).toString()));
-        mIt5.setGraphic(new ImageView(Objects.requireNonNull(getClass().getResource("/com/alex/euclid/Images/Line5.png")).toString()));
+        mIt1.setGraphic(new ImageView(new Image(Objects.requireNonNull(getClass().getResourceAsStream("/com/alex/euclid/Images/Line1.png")))));
+        mIt2.setGraphic(new ImageView(new Image(Objects.requireNonNull(getClass().getResourceAsStream("/com/alex/euclid/Images/Line2.png")))));
+        mIt3.setGraphic(new ImageView(new Image(Objects.requireNonNull(getClass().getResourceAsStream("/com/alex/euclid/Images/Line3.png")))));
+        mIt4.setGraphic(new ImageView(new Image(Objects.requireNonNull(getClass().getResourceAsStream("/com/alex/euclid/Images/Line4.png")))));
+        mIt5.setGraphic(new ImageView(new Image(Objects.requireNonNull(getClass().getResourceAsStream("/com/alex/euclid/Images/line5.png")))));
         menuItem3.getItems().addAll(mIt1, mIt2, mIt3, mIt4, mIt5);
 
         mIt1.setOnAction(event -> {
@@ -1751,9 +1752,9 @@ class Model implements Observable {
         MenuItem mCt1 = new MenuItem();
         MenuItem mCt2 = new MenuItem();
         MenuItem mCt3 = new MenuItem();
-        mCt1.setGraphic(new ImageView(Objects.requireNonNull(getClass().getResource("/com/alex/euclid/Images/circle_1.png")).toString()));
-        mCt2.setGraphic(new ImageView(Objects.requireNonNull(getClass().getResource("/com/alex/euclid/Images/circle_2.png")).toString()));
-        mCt3.setGraphic(new ImageView(Objects.requireNonNull(getClass().getResource("/com/alex/euclid/Images/circle_3.png")).toString()));
+        mCt1.setGraphic(new ImageView(new Image(Objects.requireNonNull(getClass().getResourceAsStream("/com/alex/euclid/Images/circle_1.png")))));
+        mCt2.setGraphic(new ImageView(new Image(Objects.requireNonNull(getClass().getResourceAsStream("/com/alex/euclid/Images/circle_2.png")))));
+        mCt3.setGraphic(new ImageView(new Image(Objects.requireNonNull(getClass().getResourceAsStream("/com/alex/euclid/Images/circle_3.png")))));
         menuItem5.getItems().addAll(mCt1, mCt2, mCt3);
         mCt1.setOnAction(e -> poindForm(c, 0));
         mCt2.setOnAction(e -> poindForm(c, 1));

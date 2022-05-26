@@ -4,6 +4,7 @@ module com.alex.euclid {
     requires javafx.web;
     requires lombok;
 
+
     opens com.alex.euclid to javafx.fxml;
     exports com.alex.euclid;
     exports ContstantString;
