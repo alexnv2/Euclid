@@ -13,12 +13,11 @@ import lombok.Data;
 @Data
 @AllArgsConstructor
 public class PoindCircle {
-
     private Circle circle; //точка
     private String id; //номер
     private Point2D XY;
-  //  private double x; //координата x мировая
-  //  private double y; //координата y мировая
+    private int colorX; //форма точки в цветовой таблицы
+    private int colorY; //цвет точки цветовой таблицы
     private boolean bMove;// true- разрешено перемещение, false - точка расчетная, перемещение запрещено
     private boolean bTreangle;//true - точка принадлежит треугольнику, false - по умолчанию
     private Line line;//линия к которой принадлежит точка

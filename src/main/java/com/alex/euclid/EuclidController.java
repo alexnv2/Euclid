@@ -140,8 +140,39 @@ public class EuclidController extends View {
         model.setGridViews(gridViews);//Передать ссылку для пересчета координат класса модели.
         model.setPaneBoards(paneShape);//Передать ссылку на доску для класса модели.
         model.setNewLine(newLine);//Передать ссылку для построения отрезка, луча, прямой
-        model.setCircleFill(circleFill);//Передать ссылук для точки при наведении на точку
+        model.setCircleFill(circleFill);//Передать ссылку для точки при наведении на точку
         model.webHTML(webViewLeft, "geometry.html");//Вывод в web файла html (что такое геометрия)
+        //Формируем цветовую таблицу
+        model.tableColor[0][0]="0xff0000ff";
+        model.tableColor[1][0]="0xff0000ff";
+        model.tableColor[2][0]="0x00000000";
+        model.tableColor[0][1]="0x00000000";
+        model.tableColor[1][1]="0xffb6c1ff";
+        model.tableColor[2][1]="0xff0000ff";
+        model.tableColor[0][2]="0x00008bff";
+        model.tableColor[1][2]="0x00008bff";
+        model.tableColor[2][2]="0x00000000";
+        model.tableColor[0][3]="0x00000000";
+        model.tableColor[1][3]="0x87cefaff";
+        model.tableColor[2][3]="0x00008bff";
+        model.tableColor[0][4]="0x006400ff";
+        model.tableColor[1][4]="0x006400ff";
+        model.tableColor[2][4]="0x00000000";
+        model.tableColor[0][5]="0x00000000";
+        model.tableColor[1][5]="0xadff2fff";
+        model.tableColor[2][5]="0x006400ff";
+        model.tableColor[0][6]="0xffd700ff";
+        model.tableColor[1][6]="0xffd700ff";
+        model.tableColor[2][6]="0x00000000";
+        model.tableColor[0][7]="0x00000000";
+        model.tableColor[1][7]="0xffffe0ff";
+        model.tableColor[2][7]="0xffd700ff";
+        model.tableColor[0][8]="0x000000ff";
+        model.tableColor[1][8]="0x000000ff";
+        model.tableColor[2][8]="0x00000000";
+        model.tableColor[0][9]="0x00000000";
+        model.tableColor[1][9]="0xd3d3d3ff";
+        model.tableColor[2][9]="0x000000ff";
         //формирование линий координат и сетки, перерасчет при изменении размеров доски
         gridViews.setPaneGrid(paneGrid);
         gridViews.setCartesian(Cartesian);

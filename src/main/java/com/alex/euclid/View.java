@@ -85,7 +85,7 @@ class View implements Observer {
      * Метод SrokeColor(Line l)
      * Предназначен для изменения цвета обводки.
      *
-     * @param sh - объект circle, line, arc, text
+     * @param sh - объект circle, line, arc
      */
     private void SrokeColor(Shape sh) {
         sh.setStroke(model.getColorStroke());

@@ -42,6 +42,7 @@ public final class StringStatus {
     public static final String STA_37="Точка не является вершиной треугольника, выберите другую точку или нажмите ESC.";
     public static final String STA_38="Укажите на доске треугольник, в который надо вписать окружность.";
     public static final String STA_39="Укажите на доске треугольник, вокруг которого описана окружность.";
+
     //Конструктор
     private StringStatus(){}
 }
