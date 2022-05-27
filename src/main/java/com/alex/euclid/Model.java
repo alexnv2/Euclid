@@ -315,7 +315,7 @@ class Model implements Observable {
         String[] name = s.split("_");
         StringBuilder sb = new StringBuilder();
         for (String n : name) {
-            sb.append(n);
+            sb.append(findNameShape(n));
         }
         return sb;
     }
@@ -329,7 +329,7 @@ class Model implements Observable {
         //Информация о точках
         for (PoindCircle p : poindCircles) {
             if (p.getCircle() != null) {
-                String s1 = p.getId();
+                String s1 = findNameShape(p.getId());
                 double s2 = p.getXY().getX();
                 double s3 = p.getXY().getY();
                 txtShape = MessageFormat.format("{0}Точка: {1} ({2,number, #.#}, {3,number, #.#})\n", txtShape, s1, s2, s3);
@@ -345,9 +345,9 @@ class Model implements Observable {
                         txtShape = MessageFormat.format("{0}{1}{2} Длина:{3,number, #.#}\n", txtShape, STA_10, nameSplitRemove(p.getId()), lengthSegment);
                     }
                     case 1 ->
-                            txtShape = txtShape + STA_11 + p.getLine().getId() + " или " + nameSplitRemove(p.getId()) + "\n";
+                            txtShape = txtShape + STA_11 + findNameShape(p.getLine().getId()) + " или " + nameSplitRemove(p.getId()) + "\n";
                     case 2 ->
-                            txtShape = txtShape + STA_12 + p.getLine().getId() + " или " + nameSplitRemove(p.getId()) + "\n";
+                            txtShape = txtShape + STA_12 + findNameShape(p.getLine().getId()) + " или " + nameSplitRemove(p.getId()) + "\n";
                     case 3 -> {
                         double lengthSegment = Math.round(distance(p.getStX(), p.getStY(), p.getEnX(), p.getEnY()) * 100);
                         txtShape = txtShape + STA_17 + nameSplitRemove(p.getId()) + " Длина:" + lengthSegment / 100 + "\n";
@@ -1144,7 +1144,7 @@ class Model implements Observable {
     private void nameCircleAdd(Circle circle) {
         Text textCircle = createNameShapes(circle.getId());//создать объект текст (имя точки)
         //Добавить в коллекцию NamePoindLine
-        namePoindLines.add(new NamePoindLine(textCircle, circle.getId(), -1, 1, gridViews.revAccessX(circle.getCenterX()), gridViews.revAccessY(circle.getCenterY()), showPoindName, showLineName, showAngleName, "poind"));
+        namePoindLines.add(new NamePoindLine(textCircle, circle.getId(), -1, 1, gridViews.revAccessX(circle.getCenterX()), gridViews.revAccessY(circle.getCenterY()), showPoindName, showLineName, showAngleName, "poind",textCircle.getId()));
         textCircle.setText(circle.getId());//Имя для вывода на доску
         textX = circle.getCenterX() - 20;//место вывода Х при создании
         textY = circle.getCenterY() + 20;//место вывода Y при создании
@@ -1171,7 +1171,7 @@ class Model implements Observable {
         //Добавить в коллекцию NamePoindLine
         textAngle.setText(s);//Имя для вывода на доску
         Point2D arcXY = nameArcShow(circle, arc, textAngle);//рассчитать место буквы
-        namePoindLines.add(new NamePoindLine(textAngle, circle.getId(), arcXY.getX(), arcXY.getY(), gridViews.revAccessX(circle.getCenterX()), gridViews.revAccessY(circle.getCenterY()), showPoindName, showLineName, showAngleName, "arc"));
+        namePoindLines.add(new NamePoindLine(textAngle, circle.getId(), arcXY.getX(), arcXY.getY(), gridViews.revAccessX(circle.getCenterX()), gridViews.revAccessY(circle.getCenterY()), showPoindName, showLineName, showAngleName, "arc",textAngle.getId()));
         //Добавить в коллекцию объектов на доске
         paneBoards.getChildren().add(textAngle);
     }
@@ -1246,7 +1246,7 @@ class Model implements Observable {
         Text nameLine = createNameShapes(line.getId());
         //Вызвать метод расчета координат перпендикуляра к середине линии
         nameLineRatchet(line, nameLine);
-        namePoindLines.add(new NamePoindLine(nameLine, line.getId(), 0, 0, gridViews.revAccessX(textX), gridViews.revAccessY(textY), showPoindName, showLineName, showAngleName, "line"));
+        namePoindLines.add(new NamePoindLine(nameLine, line.getId(), 0, 0, gridViews.revAccessX(textX), gridViews.revAccessY(textY), showPoindName, showLineName, showAngleName, "line",nameLine.getId()));
         //Связать линию с именем
         nameBindLines(line, nameLine);
         //Добавить в коллекцию объектов на доске
@@ -1611,7 +1611,7 @@ class Model implements Observable {
             circleFill.setFill(Color.valueOf(tableColor[1][findColorPoind(newPoind.getId()) + 1]));
             circleFill.setOpacity(0.4);
             //Установить статус "Точка + выбранная точка"
-            setStringLeftStatus(STA_9 + newPoind.getId());
+            setStringLeftStatus(STA_9 + findNameShape(newPoind.getId()));
             notifyObservers("LeftStatusGo");
         });
         //Уход с точки
@@ -1629,6 +1629,56 @@ class Model implements Observable {
     }
 
     /**
+     * Предназначен для поиска имени точки или линии
+     * @param sName - имя точки или линии
+     * @return - возвращает имя из коллекции
+     */
+    private String findNameShape(String sName){
+        String name="";
+        for (NamePoindLine np : namePoindLines) {
+            if (np != null) {
+                if (np.getText().getId().equals(sName)) {
+                   name=np.getText().getText();
+                }
+            }
+        }
+        return name;
+    }
+
+    /**
+     * Предназначен для поиска имени угла по трем точкам.
+     * @param sName - имя угла типа А_В_С
+     * @return - возвращает имя из коллекции.
+     */
+    private String findNameAngle(String sName){
+        String nameAngle="";
+        for (VertexArc v: vertexArcs){
+            if(v!=null){
+                if(v.getId().equals(sName)){
+                    nameAngle=v.getNameAngle();
+                }
+            }
+        }
+        return nameAngle;
+    }
+
+    /**
+     * Предназначен для замены имени, которое выводится на доску.
+     * @param oldName - постоянное имя объекта
+     * @param newName - изменяемое имя объекта
+     */
+    private void updateName(String oldName, String newName){
+        for (NamePoindLine np : namePoindLines) {
+            if (np != null) {
+                if (np.getText().getId().equals(oldName)) {
+                    np.getText().setText(newName);
+                }
+            }
+        }
+        setTxtShape("");
+        txtAreaOutput();
+    }
+    /**
      * Метод newContextMenu(Shape c).
      * Предназначен для добавления контекстного меню
      * отрезку, прямой, луча.
@@ -1639,22 +1689,31 @@ class Model implements Observable {
     private void newContextMenu(Shape c, int shape) {
         //Контекстное меню
         MenuItem menuItem = new MenuItem("Переименовать");
-        menuItem.setOnAction(event -> {
+        menuItem.setOnAction(ev -> {
             TextField text = new TextField();
-            text.setText(c.getId());
+            //Получить имя объекта
+            if(shape!=3) {
+                text.setText(findNameShape(c.getId()));
+            }else{
+                text.setText(findNameShape(findNameAngle(c.getId())));
+            }
             text.setAlignment(Pos.CENTER);
             text.setLayoutX(getScreenXY().getX());
             text.setLayoutY(getScreenXY().getY());
+            text.setMaxWidth(50);
+            String oldName=text.getText();//запомнить имя объекта
+            setStringLeftStatus("Измените имя геометрической фигуры и нажмите Enter, для отмены переименования нажмите ESC.");
+            notifyObservers("LeftStatusGo");
             paneBoards.getChildren().add(text);
-
+            text.requestFocus();//получить фокус
             text.addEventFilter(KeyEvent.KEY_PRESSED, e -> {
-                if (e.getCode() == KeyCode.ENTER) {
-                    event.consume();
+                if (e.getCode() == KeyCode.ENTER || e.getCode()==KeyCode.ESCAPE) {
+                    //вызов метода для замены имени фигуры
+                    updateName(oldName,text.getText());
+                    ev.consume();
                     paneBoards.getChildren().remove(text);
-
                 }
             });
-
         });
         Menu menuItem2 = new Menu("Изменить цвет ");
         MenuItem mCol1 = new MenuItem();
@@ -1715,38 +1774,18 @@ class Model implements Observable {
         MenuItem m3 = new MenuItem();
         MenuItem m4 = new MenuItem();
         MenuItem m5 = new MenuItem();
-        m1.setText("2 px");
-        m2.setText("3 px");
-        m3.setText("4 px");
-        m4.setText("5 px");
-        m5.setText("6 px");
+        m1.setText("1 px");
+        m2.setText("2 px");
+        m3.setText("3 px");
+        m4.setText("4 px");
+        m5.setText("5 px");
         menuItem4.getItems().addAll(m1, m2, m3, m4, m5);
 
-        m1.setOnAction(event -> {
-            setLineStokeWidth(2);
-            setShapeColor(c);
-            notifyObservers("StrokeWidth");
-        });
-        m2.setOnAction(event -> {
-            setLineStokeWidth(3);
-            setShapeColor(c);
-            notifyObservers("StrokeWidth");
-        });
-        m3.setOnAction(event -> {
-            setLineStokeWidth(4);
-            setShapeColor(c);
-            notifyObservers("StrokeWidth");
-        });
-        m4.setOnAction(event -> {
-            setLineStokeWidth(5);
-            setShapeColor(c);
-            notifyObservers("StrokeWidth");
-        });
-        m5.setOnAction(event -> {
-            setLineStokeWidth(6);
-            setShapeColor(c);
-            notifyObservers("StrokeWidth");
-        });
+        m1.setOnAction(event -> lineWidth(c,1));
+        m2.setOnAction(event -> lineWidth(c,2));
+        m3.setOnAction(event -> lineWidth(c,3));
+        m4.setOnAction(event -> lineWidth(c,4));
+        m5.setOnAction(event -> lineWidth(c,5));
 
         Menu menuItem5 = new Menu("Форма точек");
         MenuItem mCt1 = new MenuItem();
@@ -1775,6 +1814,17 @@ class Model implements Observable {
         });
     }
 
+    /**
+     * Метод lineWidth(Shape c,int w).
+     * Предназначен для изменения толщины линий.
+     * @param c - объект линия
+     * @param w -толщина линии (по умолчанию -2 рх)
+     */
+    private void lineWidth(Shape c,int w){
+        setLineStokeWidth(w);
+        setShapeColor(c);
+        notifyObservers("StrokeWidth");
+    }
     /**
      * Метод poindForm(Shape c, int form).
      * Предназначен для изменения формы точки.
@@ -2647,7 +2697,7 @@ class Model implements Observable {
         //При наведении мышки на дугу, вывод статусной строки
         arcNew.setOnMouseEntered(e -> {
             //Установить статус "Угол + выбранный угол + длина дуги в градусах"
-            setStringLeftStatus(STA_16 + arcNew.getId() + " = " + arcNew.getLength() + " гр.");
+            setStringLeftStatus(STA_16 + findNameShape(findNameAngle(arcNew.getId())) + " = " + arcNew.getLength() + " гр.");
             notifyObservers("LeftStatusGo");
         });
         //При выходе мышки из дуги, сбросить статусную стоку.

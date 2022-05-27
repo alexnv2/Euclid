@@ -143,36 +143,36 @@ public class EuclidController extends View {
         model.setCircleFill(circleFill);//Передать ссылку для точки при наведении на точку
         model.webHTML(webViewLeft, "geometry.html");//Вывод в web файла html (что такое геометрия)
         //Формируем цветовую таблицу
-        model.tableColor[0][0]="0xff0000ff";
-        model.tableColor[1][0]="0xff0000ff";
-        model.tableColor[2][0]="0x00000000";
-        model.tableColor[0][1]="0x00000000";
-        model.tableColor[1][1]="0xffb6c1ff";
-        model.tableColor[2][1]="0xff0000ff";
-        model.tableColor[0][2]="0x00008bff";
-        model.tableColor[1][2]="0x00008bff";
-        model.tableColor[2][2]="0x00000000";
-        model.tableColor[0][3]="0x00000000";
-        model.tableColor[1][3]="0x87cefaff";
-        model.tableColor[2][3]="0x00008bff";
-        model.tableColor[0][4]="0x006400ff";
-        model.tableColor[1][4]="0x006400ff";
-        model.tableColor[2][4]="0x00000000";
-        model.tableColor[0][5]="0x00000000";
-        model.tableColor[1][5]="0xadff2fff";
-        model.tableColor[2][5]="0x006400ff";
-        model.tableColor[0][6]="0xffd700ff";
-        model.tableColor[1][6]="0xffd700ff";
-        model.tableColor[2][6]="0x00000000";
-        model.tableColor[0][7]="0x00000000";
-        model.tableColor[1][7]="0xffffe0ff";
-        model.tableColor[2][7]="0xffd700ff";
-        model.tableColor[0][8]="0x000000ff";
-        model.tableColor[1][8]="0x000000ff";
-        model.tableColor[2][8]="0x00000000";
-        model.tableColor[0][9]="0x00000000";
-        model.tableColor[1][9]="0xd3d3d3ff";
-        model.tableColor[2][9]="0x000000ff";
+        model.tableColor[0][0] = "0xff0000ff";
+        model.tableColor[1][0] = "0xff0000ff";
+        model.tableColor[2][0] = "0x00000000";
+        model.tableColor[0][1] = "0x00000000";
+        model.tableColor[1][1] = "0xffb6c1ff";
+        model.tableColor[2][1] = "0xff0000ff";
+        model.tableColor[0][2] = "0x00008bff";
+        model.tableColor[1][2] = "0x00008bff";
+        model.tableColor[2][2] = "0x00000000";
+        model.tableColor[0][3] = "0x00000000";
+        model.tableColor[1][3] = "0x87cefaff";
+        model.tableColor[2][3] = "0x00008bff";
+        model.tableColor[0][4] = "0x006400ff";
+        model.tableColor[1][4] = "0x006400ff";
+        model.tableColor[2][4] = "0x00000000";
+        model.tableColor[0][5] = "0x00000000";
+        model.tableColor[1][5] = "0xadff2fff";
+        model.tableColor[2][5] = "0x006400ff";
+        model.tableColor[0][6] = "0xffd700ff";
+        model.tableColor[1][6] = "0xffd700ff";
+        model.tableColor[2][6] = "0x00000000";
+        model.tableColor[0][7] = "0x00000000";
+        model.tableColor[1][7] = "0xffffe0ff";
+        model.tableColor[2][7] = "0xffd700ff";
+        model.tableColor[0][8] = "0x000000ff";
+        model.tableColor[1][8] = "0x000000ff";
+        model.tableColor[2][8] = "0x00000000";
+        model.tableColor[0][9] = "0x00000000";
+        model.tableColor[1][9] = "0xd3d3d3ff";
+        model.tableColor[2][9] = "0x000000ff";
         //формирование линий координат и сетки, перерасчет при изменении размеров доски
         gridViews.setPaneGrid(paneGrid);
         gridViews.setCartesian(Cartesian);
@@ -275,7 +275,7 @@ public class EuclidController extends View {
      */
     public void onMouseMoved(MouseEvent mouseEvent) {
         //Координаты мышки экрана
-        model.setScreenXY(new Point2D(mouseEvent.getX(),mouseEvent.getY()));
+        model.setScreenXY(new Point2D(mouseEvent.getX(), mouseEvent.getY()));
         //Координаты мышки пересчитанные в декартовые
         model.setDecartX(gridViews.revAccessX(mouseEvent.getX()));
         model.setDecartY(gridViews.revAccessY(mouseEvent.getY()));
@@ -310,14 +310,13 @@ public class EuclidController extends View {
         if (model.getCreateGeometric() == 14 && model.isPoindOne()) {
             //Насчитать радиус
             double r = model.distance(model.getSegmentStartX(), model.getScreenXY().getY(), model.getScreenXY().getX(), model.getScreenXY().getY());
-            double rw=model.accessRadiusW(new Point2D(gridViews.revAccessX(model.getSegmentStartX()), gridViews.revAccessY(model.getSegmentStartY())),r);
+            double rw = model.accessRadiusW(new Point2D(gridViews.revAccessX(model.getSegmentStartX()), gridViews.revAccessY(model.getSegmentStartY())), r);
             model.setRadiusCircle(r);
             model.setRadiusCircleW(rw);
             model.setPoindTwo(true);
             model.notifyObservers("CircleGo");
         }
     }
-
 
     /**
      * Метод onMouseDragged()
@@ -404,7 +403,7 @@ public class EuclidController extends View {
             //обновление точек
             model.getPoindCircles().forEach(p -> {
                 if (p != null) {
-                    model.setScreenXY(new Point2D(gridViews.accessX(p.getXY().getX()),gridViews.accessY(p.getXY().getY())));
+                    model.setScreenXY(new Point2D(gridViews.accessX(p.getXY().getX()), gridViews.accessY(p.getXY().getY())));
                     model.setVertex(p.getCircle());
                     model.notifyObservers("VertexGo");
                 }
@@ -415,7 +414,7 @@ public class EuclidController extends View {
                 if (p != null) {
                     model.setSegmentStartX(gridViews.accessX(p.getX()));
                     model.setSegmentStartY(gridViews.accessY(p.getY()));
-                    model.setRadiusCircle(model.accessRadius( new Point2D(p.getX(), p.getY()), p.getRadius()));
+                    model.setRadiusCircle(model.accessRadius(new Point2D(p.getX(), p.getY()), p.getRadius()));
                     model.setCircle(p.getCircle());
                     model.notifyObservers("CircleGo");
                 }

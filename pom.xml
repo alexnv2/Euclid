@@ -14,6 +14,16 @@
         <junit.version>5.8.2</junit.version>
     </properties>
 
+    <reporting>
+    <plugins>
+        <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-javadoc-plugin</artifactId>
+            <version>3.4.0</version>
+        </plugin>
+    </plugins>
+    </reporting>
+
     <dependencies>
         <dependency>
             <groupId>org.openjfx</groupId>
@@ -53,6 +63,11 @@
 
     <build>
         <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-javadoc-plugin</artifactId>
+                <version>3.4.0</version>
+            </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
