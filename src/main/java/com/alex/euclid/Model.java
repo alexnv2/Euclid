@@ -20,6 +20,7 @@ import lombok.Data;
 
 import java.text.MessageFormat;
 import java.util.*;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import static ContstantString.StringStatus.*;
 import static java.lang.Math.abs;
@@ -574,6 +575,7 @@ class Model implements Observable {
                     l1.toBack();
                     //заменить имя отрезка
                     findNameId(newSegment.substring(segmentLength, segmentLength + 3), l1.getId());
+                    nameLineAdd(l1);//добавить имя
                     segmentLength += 2;
                     notifyObservers("SideGo");
                     setPoindTwo(false);
@@ -594,6 +596,7 @@ class Model implements Observable {
                     l1.toBack();
                     //заменить имя отрезка
                     findNameId(vertexTr1.getId() + "_" + vertexTr3.getId(), l1.getId());
+                    nameLineAdd(l1);//добавить имя
                     notifyObservers("SideGo");
                     newSegment.delete(newSegment.length() - 1, newSegment.length());//удалить последнее _
                     //связать имена вершин с линиями
@@ -603,7 +606,7 @@ class Model implements Observable {
                     //Добавить многоугольник в форме треугольника, добавить треугольник в коллекцию
                     Polygon t = treangleAdd(vertexTr1, vertexTr2, vertexTr3, newSegment.toString());
                     paneBoards.getChildren().add(t);
-                    //   t.toBack();
+                    t.toBack();
                     //Внести в коллекцию точек, что точки являются вершинами треугольника
                     vertexTreangle(vertexTr1.getId(), vertexTr2.getId(), vertexTr3.getId());
                     //закончить построение
@@ -619,7 +622,7 @@ class Model implements Observable {
             //Медиана
             case 9 -> {
                 Circle cMediana = getTimeVer();
-                if (findVertexTreangle(cMediana.getId())) {
+                if (findBCircle(cMediana.getId(), 3)) {
                     line = mbhLineAdd(cMediana, 4);
                     line.toFront();
                     mouseLine(line);//привязка событий мыши
@@ -633,7 +636,7 @@ class Model implements Observable {
             //Высота
             case 10 -> {
                 Circle cHeight = getTimeVer();
-                if (findVertexTreangle(cHeight.getId())) {
+                if (findBCircle(cHeight.getId(), 3)) {
                     line = mbhLineAdd(cHeight, 6);
                     line.toFront();
                     mouseLine(line);//привязка событий мыши
@@ -647,7 +650,7 @@ class Model implements Observable {
             //Биссектриса
             case 11 -> {
                 Circle cBisector = getTimeVer();
-                if (findVertexTreangle(cBisector.getId())) {
+                if (findBCircle(cBisector.getId(), 3)) {
                     line = mbhLineAdd(cBisector, 5);
                     line.toFront();
                     mouseLine(line);//привязка событий мыши
@@ -706,7 +709,7 @@ class Model implements Observable {
             case 15 -> {
                 vertex = getTimeVer();
                 //Проверить, принадлежит ли точка окружности
-                if (findBCircle(vertex.getId())) {
+                if (findBCircle(vertex.getId(), 1)) {
                     circleStack.push(vertex);
                     newSegment.append(vertex.getId());
                     newSegment.append("_");
@@ -948,25 +951,6 @@ class Model implements Observable {
         }
     }
 
-    /**
-     * Метод findVertexTreangle(String id).
-     * Предназначен для поиска вершин треугольника
-     *
-     * @param id - точка
-     * @return - true- если точка принадлежит вершине треугольника
-     */
-    private boolean findVertexTreangle(String id) {
-        boolean vertexTr = false;
-        for (PoindCircle p : poindCircles) {
-            if (p != null) {
-                if (p.getId().equals(id)) {
-                    vertexTr = p.isBTreangle();
-                }
-            }
-        }
-        return vertexTr;
-    }
-
 
     /**
      * Метод newPoindShape().
@@ -1015,9 +999,7 @@ class Model implements Observable {
             case 1 -> rayBindCircles(findCircle(nameP[0]), findCircle(nameP[1]), l);
             case 2 -> circlesBindLine(findCircle(nameP[0]), findCircle(nameP[1]), l);
         }
-        if (segment != 0) {
-            nameLineAdd(l);//добавить имя
-        }
+             nameLineAdd(l);//добавить имя
     }
 
     /**
@@ -1059,38 +1041,51 @@ class Model implements Observable {
      *
      * @return - возвращает созданный объект
      */
-    Text createNameShapes(String name) {
+    private Text createNameShapes(String name) {
         Text nameText = new Text();//создать новый объект
         nameText.setId(name);//присвоить имя
+        nameText.setText(name);
         nameText.setFont(Font.font("Alexander", FontWeight.BOLD, FontPosture.REGULAR, 14));
         nameText.setFill(getColorStroke());//цвет букв
         //Привязка к событию мышки
         nameText.setOnMouseDragged(e -> {//перемещение
             //Найти точку с которой связано имя
-            Circle circle = findCircle(nameText.getId());
-            if (circle != null) {//проверить, выбрани имя точки или линии
+            Circle c = findCircle(nameText.getId());
+            if (c != null) {//проверить, выбрани имя точки или линии
                 if (nameText.xProperty().isBound()) {//проверить на связь
                     textUnBindCircle(nameText);//снять связь для перемещения
                 }
                 //Максимальное расстояние при перемещении от точки
-                double maxRadius = distance(e.getX(), e.getY(), circle.getCenterX(), circle.getCenterY());
+                double maxRadius = distance(e.getX(), e.getY(), c.getCenterX(), c.getCenterY());
                 if (maxRadius < 80) {
                     //Перемещаем имя точки
                     nameText.setX(e.getX());
                     nameText.setY(e.getY());
                 }
-                nameUpdateXY(nameText.getId());//обновляем данные коллекции
+                double dX=nameText.getX() - c.getCenterX();
+                double dY=nameText.getY() - c.getCenterY();
+                nameUpdateXY(nameText.getId(),dX, dY);//обновляем данные коллекции
                 //устанавливаем связь с точкой
-                textBindCircle(circle, nameText, (int) (nameText.getX() - circle.getCenterX()), (int) (nameText.getY() - circle.getCenterY()));
+                textBindCircle(c, nameText, (int) (dX), (int) (dY));
             }
             //Если выбрано имя линии
-            Line line = findLineForPoind(nameText.getId());
-            if (line != null) {
-                //Перемещаем имя точки
-                nameText.setX(e.getX());
-                nameText.setY(e.getY());
-                nameUpdateXY(nameText.getId());//обновляем данные коллекции
-            }
+            Line l = findNameLine(nameText.getId());
+            if (l != null) {
+                Point2D p0=new Point2D(l.getStartX(),l.getStartY());
+                Point2D p1=new Point2D(l.getEndX(),l.getEndY());
+                Point2D c0=p0.midpoint(p1);
+                double maxRadius = distance(e.getX(), e.getY(), c0.getX(), c0.getY());
+                if (maxRadius < 80) {
+                    //Перемещаем имя точки
+                    nameText.setX(e.getX());
+                    nameText.setY(e.getY());
+                    double dX=e.getX()-c0.getX();
+                    double dY=e.getY()-c0.getY();
+                    nameUpdateXY(nameText.getId(),dX, dY);//обновляем данные коллекции
+                    //Устанавливаем связь с линией
+                    nameBindLines(l, nameText);
+                }
+             }
         });
         //Наведение мышки на объект
         nameText.setOnMouseEntered(e -> nameText.setCursor(Cursor.HAND));
@@ -1100,39 +1095,40 @@ class Model implements Observable {
     }
 
     /**
+     * Предназначен для поиска линии по её имени
+     * @param nameLine - имя линии
+     * @return - объект линия
+     */
+    private Line findNameLine(String nameLine){
+        for (PoindLine p : poindLines) {
+            if (p != null) {
+                if (p.getLine().getId().equals(nameLine)) {
+                    return p.getLine();
+                }
+            }
+        }
+        return null;
+    }
+
+    /**
      * Метод nameUpdateXY(String id).
      * Предназначен для обновления мировых координат и расстояния до точки при
      * перемещении объекта Text. Вызывается из метода createNameShapes(String name).
      *
      * @param id - строка имя объекта Text.
      */
-    private void nameUpdateXY(String id) {
+    private void nameUpdateXY(String id, double dX, double dY ) {
         //Найти точку в коллекции
-        Circle circle = findCircle(id);
-        if (circle != null) {
-            for (NamePoindLine np : namePoindLines) {
-                if (np != null) {
-                    if (np.getId().equals(id)) {
-                        np.setDX(gridViews.revAccessX(np.getText().getX()) - gridViews.revAccessX(circle.getCenterX()));
-                        np.setDY(gridViews.revAccessY(np.getText().getY()) - gridViews.revAccessY(circle.getCenterY()));
-                        np.setX(gridViews.revAccessX(circle.getCenterX()));
-                        np.setY(gridViews.revAccessY(circle.getCenterY()));
-                    }
-                }
-            }
-        }
-        Line line = findLineForPoind(id);//Объект имя линии
-        if (line != null) {
-            for (NamePoindLine np : namePoindLines) {
-                if (np != null) {
-                    if (np.getText().getId().equals(id)) {
-                        np.setX(decartX);
-                        np.setY(decartY);
-                    }
+        for (NamePoindLine np : namePoindLines) {
+            if (np != null) {
+                if (np.getId().equals(id)) {
+                    np.setDX(dX);
+                    np.setDY(dY);
                 }
             }
         }
     }
+
 
     /**
      * Метод nameCircleAdd().
@@ -1144,7 +1140,7 @@ class Model implements Observable {
     private void nameCircleAdd(Circle circle) {
         Text textCircle = createNameShapes(circle.getId());//создать объект текст (имя точки)
         //Добавить в коллекцию NamePoindLine
-        namePoindLines.add(new NamePoindLine(textCircle, circle.getId(), -1, 1, gridViews.revAccessX(circle.getCenterX()), gridViews.revAccessY(circle.getCenterY()), showPoindName, showLineName, showAngleName, "poind",textCircle.getId()));
+        namePoindLines.add(new NamePoindLine(textCircle, circle.getId(), -1, 1, gridViews.revAccessX(circle.getCenterX()), gridViews.revAccessY(circle.getCenterY()), showPoindName, showLineName, showAngleName, "poind"));
         textCircle.setText(circle.getId());//Имя для вывода на доску
         textX = circle.getCenterX() - 20;//место вывода Х при создании
         textY = circle.getCenterY() + 20;//место вывода Y при создании
@@ -1171,7 +1167,7 @@ class Model implements Observable {
         //Добавить в коллекцию NamePoindLine
         textAngle.setText(s);//Имя для вывода на доску
         Point2D arcXY = nameArcShow(circle, arc, textAngle);//рассчитать место буквы
-        namePoindLines.add(new NamePoindLine(textAngle, circle.getId(), arcXY.getX(), arcXY.getY(), gridViews.revAccessX(circle.getCenterX()), gridViews.revAccessY(circle.getCenterY()), showPoindName, showLineName, showAngleName, "arc",textAngle.getId()));
+        namePoindLines.add(new NamePoindLine(textAngle, circle.getId(), arcXY.getX(), arcXY.getY(), gridViews.revAccessX(circle.getCenterX()), gridViews.revAccessY(circle.getCenterY()), showPoindName, showLineName, showAngleName, "arc"));
         //Добавить в коллекцию объектов на доске
         paneBoards.getChildren().add(textAngle);
     }
@@ -1245,12 +1241,13 @@ class Model implements Observable {
         //Создать текстовый объект
         Text nameLine = createNameShapes(line.getId());
         //Вызвать метод расчета координат перпендикуляра к середине линии
-        nameLineRatchet(line, nameLine);
-        namePoindLines.add(new NamePoindLine(nameLine, line.getId(), 0, 0, gridViews.revAccessX(textX), gridViews.revAccessY(textY), showPoindName, showLineName, showAngleName, "line",nameLine.getId()));
+        namePoindLines.add(new NamePoindLine(nameLine, line.getId(), 0, 0, gridViews.revAccessX(textX), gridViews.revAccessY(textY), showPoindName, showLineName, showAngleName, "line"));
+        nameLineRatchet(line, nameLine);//рассчитать место для имени линии
         //Связать линию с именем
         nameBindLines(line, nameLine);
         //Добавить в коллекцию объектов на доске
         paneBoards.getChildren().add(nameLine);
+        nameLine.toFront();
     }
 
     /**
@@ -1274,26 +1271,59 @@ class Model implements Observable {
         double dlina = sqrt((pow((aX - bX), 2)) + (pow((aY - bY), 2)));
         textX = cX - 15 * ((aY - bY) / dlina);//место вывода Х при создании
         textY = cY + 15 * ((aX - bX) / dlina);//место вывода Y при создании
-        nameLine.setText(line.getId());//Имя для вывода на доску
+        nameLine.setText(findNameShape(line.getId()));//Имя для вывода на доску
+        nameUpdateXY(nameLine.getId(),textX-cX, textY-cY);
         nameLine.setVisible(showLineName);//показывать не показывать, зависит от меню "Настройка"
         //Передать для вывода в View
         textGo = nameLine;
         notifyObservers("TextGo");
+
     }
 
     /**
-     * Метод nameBindLines().
      * Предназначен для связывания имени линии с началом и концом линии.
-     * Для задания перемещения имени луча и прямой.
+     * Для задания перемещения имени луча и прямой, отрезка.
      *
      * @param line     - объект линия.
      * @param nameLine - объект текст.
      */
     private void nameBindLines(Line line, Text nameLine) {
-        line.startXProperty().addListener((obj, oldValue, newValue) -> nameLineRatchet(line, nameLine));
-        line.startYProperty().addListener((obj, oldValue, newValue) -> nameLineRatchet(line, nameLine));
-        line.endYProperty().addListener((obj, oldValue, newValue) -> nameLineRatchet(line, nameLine));
-        line.endXProperty().addListener((obj, oldValue, newValue) -> nameLineRatchet(line, nameLine));
+        line.startXProperty().addListener((obj, oldValue, newValue) -> nameLineR(line, nameLine));
+        line.startYProperty().addListener((obj, oldValue, newValue) -> nameLineR(line, nameLine));
+        line.endYProperty().addListener((obj, oldValue, newValue) -> nameLineR(line, nameLine));
+        line.endXProperty().addListener((obj, oldValue, newValue) -> nameLineR(line, nameLine));
+    }
+
+    /**
+     * Предназначен для расчета местоположения имени линии при перемещениях.
+     * @param l - объект линия
+     * @param nameLine - объект имя линии
+     */
+    private void nameLineR(Line l, Text nameLine) {
+        Point2D p0=new Point2D(l.getStartX(),l.getStartY());
+        Point2D p1=new Point2D(l.getEndX(),l.getEndY());
+        Point2D c0=p0.midpoint(p1);
+        setTextGo(nameLine);
+        setTextX(c0.getX()+findNameXY(nameLine.getId()).getX());
+        setTextY(c0.getY()+findNameXY(nameLine.getId()).getY());
+        notifyObservers("TextGo");
+    }
+
+    /**
+     * Предназначен для поиска координат смещения для имени линии.
+     * @param nameText - имя линии
+     * @return - координаты смещения
+     */
+    private Point2D findNameXY(String nameText ) {
+        Point2D XY=new Point2D(0,0);
+        for (NamePoindLine np : namePoindLines) {
+            if (np != null) {
+                if (np.getId().equals(nameText)) {
+                    XY=new Point2D(np.getDX(), np.getDY());
+                }
+            }
+        }
+        return XY;
     }
 
     /**
@@ -1524,14 +1554,14 @@ class Model implements Observable {
         //Перемещение с нажатой клавишей
         newPoind.setOnMouseDragged(e -> {
             if (!createShape) {
-                if (findPoindCircleMove(newPoind.getId())) {
+                if (findBCircle(newPoind.getId(), 4)) {
                     //Найти по точке имя в коллекции
                     Text txt = findNameText(newPoind);
                     if (!Objects.requireNonNull(txt).xProperty().isBound()) {//проверить на связь, если нет связать
                         textBindCircle(newPoind, txt, (int) (txt.getX() - newPoind.getCenterX()), (int) (txt.getY() - newPoind.getCenterY()));//если нет, связать
                     }
                     //Проверить, принадлежит ли точка линии
-                    if (findBLine(newPoind.getId())) {
+                    if (findBCircle(newPoind.getId(), 2)) {
                         Line l = findLineForPoind(newPoind.getId());
                         if (l != null) {
                             Point2D A1 = new Point2D(e.getX(), e.getY());
@@ -1566,7 +1596,7 @@ class Model implements Observable {
                         }
                     }
                     //Проверить принадлежит ли точка окружности
-                    if (findBCircle(newPoind.getId())) {
+                    if (findBCircle(newPoind.getId(), 1)) {
                         Circle c = findCirclePoind(newPoind.getId());
                         Point2D b = new Point2D(e.getX(), e.getY());
                         assert c != null;
@@ -1630,15 +1660,16 @@ class Model implements Observable {
 
     /**
      * Предназначен для поиска имени точки или линии
+     *
      * @param sName - имя точки или линии
      * @return - возвращает имя из коллекции
      */
-    private String findNameShape(String sName){
-        String name="";
+    private String findNameShape(String sName) {
+        String name = "";
         for (NamePoindLine np : namePoindLines) {
             if (np != null) {
                 if (np.getText().getId().equals(sName)) {
-                   name=np.getText().getText();
+                    name = np.getText().getText();
                 }
             }
         }
@@ -1647,15 +1678,16 @@ class Model implements Observable {
 
     /**
      * Предназначен для поиска имени угла по трем точкам.
+     *
      * @param sName - имя угла типа А_В_С
      * @return - возвращает имя из коллекции.
      */
-    private String findNameAngle(String sName){
-        String nameAngle="";
-        for (VertexArc v: vertexArcs){
-            if(v!=null){
-                if(v.getId().equals(sName)){
-                    nameAngle=v.getNameAngle();
+    private String findNameAngle(String sName) {
+        String nameAngle = "";
+        for (VertexArc v : vertexArcs) {
+            if (v != null) {
+                if (v.getId().equals(sName)) {
+                    nameAngle = v.getNameAngle();
                 }
             }
         }
@@ -1664,10 +1696,11 @@ class Model implements Observable {
 
     /**
      * Предназначен для замены имени, которое выводится на доску.
+     *
      * @param oldName - постоянное имя объекта
      * @param newName - изменяемое имя объекта
      */
-    private void updateName(String oldName, String newName){
+    private void updateName(String oldName, String newName) {
         for (NamePoindLine np : namePoindLines) {
             if (np != null) {
                 if (np.getText().getId().equals(oldName)) {
@@ -1678,6 +1711,7 @@ class Model implements Observable {
         setTxtShape("");
         txtAreaOutput();
     }
+
     /**
      * Метод newContextMenu(Shape c).
      * Предназначен для добавления контекстного меню
@@ -1692,24 +1726,24 @@ class Model implements Observable {
         menuItem.setOnAction(ev -> {
             TextField text = new TextField();
             //Получить имя объекта
-            if(shape!=3) {
+            if (shape != 3) {
                 text.setText(findNameShape(c.getId()));
-            }else{
+            } else {
                 text.setText(findNameShape(findNameAngle(c.getId())));
             }
             text.setAlignment(Pos.CENTER);
             text.setLayoutX(getScreenXY().getX());
             text.setLayoutY(getScreenXY().getY());
             text.setMaxWidth(50);
-            String oldName=text.getText();//запомнить имя объекта
+            String oldName = text.getText();//запомнить имя объекта
             setStringLeftStatus("Измените имя геометрической фигуры и нажмите Enter, для отмены переименования нажмите ESC.");
             notifyObservers("LeftStatusGo");
             paneBoards.getChildren().add(text);
             text.requestFocus();//получить фокус
             text.addEventFilter(KeyEvent.KEY_PRESSED, e -> {
-                if (e.getCode() == KeyCode.ENTER || e.getCode()==KeyCode.ESCAPE) {
+                if (e.getCode() == KeyCode.ENTER || e.getCode() == KeyCode.ESCAPE) {
                     //вызов метода для замены имени фигуры
-                    updateName(oldName,text.getText());
+                    updateName(oldName, text.getText());
                     ev.consume();
                     paneBoards.getChildren().remove(text);
                 }
@@ -1727,7 +1761,7 @@ class Model implements Observable {
         mCol3.setGraphic(new ImageView(new Image(Objects.requireNonNull(getClass().getResourceAsStream("/com/alex/euclid/Images/GreenColor.png")))));
         mCol4.setGraphic(new ImageView(new Image(Objects.requireNonNull(getClass().getResourceAsStream("/com/alex/euclid/Images/YellowColor.png")))));
         mCol5.setGraphic(new ImageView(new Image(Objects.requireNonNull(getClass().getResourceAsStream("/com/alex/euclid/Images/BlackColor.png")))));
-        menuItem2.getItems().addAll(mCol1, mCol2, mCol3, mCol4, mCol5 );
+        menuItem2.getItems().addAll(mCol1, mCol2, mCol3, mCol4, mCol5);
         mCol1.setOnAction(event -> tableColor(c, shape, 0));
         mCol2.setOnAction(event -> tableColor(c, shape, 2));
         mCol3.setOnAction(event -> tableColor(c, shape, 4));
@@ -1781,11 +1815,11 @@ class Model implements Observable {
         m5.setText("5 px");
         menuItem4.getItems().addAll(m1, m2, m3, m4, m5);
 
-        m1.setOnAction(event -> lineWidth(c,1));
-        m2.setOnAction(event -> lineWidth(c,2));
-        m3.setOnAction(event -> lineWidth(c,3));
-        m4.setOnAction(event -> lineWidth(c,4));
-        m5.setOnAction(event -> lineWidth(c,5));
+        m1.setOnAction(event -> lineWidth(c, 1));
+        m2.setOnAction(event -> lineWidth(c, 2));
+        m3.setOnAction(event -> lineWidth(c, 3));
+        m4.setOnAction(event -> lineWidth(c, 4));
+        m5.setOnAction(event -> lineWidth(c, 5));
 
         Menu menuItem5 = new Menu("Форма точек");
         MenuItem mCt1 = new MenuItem();
@@ -1817,14 +1851,16 @@ class Model implements Observable {
     /**
      * Метод lineWidth(Shape c,int w).
      * Предназначен для изменения толщины линий.
+     *
      * @param c - объект линия
      * @param w -толщина линии (по умолчанию -2 рх)
      */
-    private void lineWidth(Shape c,int w){
+    private void lineWidth(Shape c, int w) {
         setLineStokeWidth(w);
         setShapeColor(c);
         notifyObservers("StrokeWidth");
     }
+
     /**
      * Метод poindForm(Shape c, int form).
      * Предназначен для изменения формы точки.
@@ -2007,20 +2043,43 @@ class Model implements Observable {
     }
 
     /**
-     * Метод findBCircle(String id).
-     * Предназначен для поиска точки принадлежащей окружности.
+     * Метод findBCircle(String namePoind, int shape).
+     * Предназначен для поиска логических значений принадлежности точки окружности, линии, треугольнику, а
+     * также разрешено ли перемещение.
      *
-     * @param id - имя точки
+     * @param namePoind - имя точки
+     * @param shape     - nип фигуры: 1 - окружность, 2 - линия, 3 - треугольник, 4 - разрешение на перемещение
      */
-    private boolean findBCircle(String id) {
-        for (PoindCircle p : poindCircles) {
-            if (p != null) {
-                if (p.getId().equals(id)) {
-                    return p.isBCircle();
+    private boolean findBCircle(String namePoind, int shape) {
+        AtomicBoolean val = new AtomicBoolean(false);
+        poindCircles.forEach(p -> {
+            if (p.getId().equals(namePoind)) {
+                switch (shape) {
+                    case 1 -> val.set(p.isBCircle());
+                    case 2 -> val.set(p.isBLine());
+                    case 3 -> val.set(p.isBTreangle());
+                    case 4 -> val.set(p.isBMove());
                 }
             }
-        }
-        return false;
+        });
+        return val.get();
+    }
+
+    /**
+     * Метод indLineMove(Line line).
+     * Предназначен для поиска разрешения на перемещение линии.
+     *
+     * @param nameLine - ссылка на линию
+     * @return - true - перемещение разрешено, false - перемещение запрещено
+     */
+    private boolean findBLine(String nameLine) {
+        AtomicBoolean val = new AtomicBoolean(false);
+        poindLines.forEach(p -> {
+            if (p.getLine().getId().equals(nameLine)) {
+                val.set(p.isBMove());
+            }
+        });
+        return val.get();
     }
 
     /**
@@ -2068,23 +2127,6 @@ class Model implements Observable {
         }
     }
 
-    /**
-     * Метод findBLine(String poind).
-     * Предназначен для поиска принадлежности точки линии
-     *
-     * @param poind - имя точка
-     * @return - если точка принадлежит линии true, иначе false
-     */
-    private boolean findBLine(String poind) {
-        for (PoindCircle p : poindCircles) {
-            if (p != null) {
-                if (p.getId().equals(poind)) {
-                    return p.isBLine();
-                }
-            }
-        }
-        return false;
-    }
 
     /**
      * Метод findLineForPoind(String poind).
@@ -2275,13 +2317,13 @@ class Model implements Observable {
             //Блокировать, если режим построения
             if (!createShape) {
                 //Определить, разрешено ли перемещение линии
-                if (findLineMove(mLine)) {
+                if (findBLine(mLine.getId())) {
                     newLine.setVisible(false);
                     String[] nameId = findID(mLine).split("_");
                     Circle A = findCircle(nameId[0]);
                     Circle B = findCircle(nameId[1]);
                     //Перемещение линии
-                    if (findPoindMove(nameId[0]) && findPoindMove(nameId[1])) {
+                    if (findBCircle(nameId[0], 4) && findBCircle(nameId[1], 4)) {
                         //Если не расчетная, пересчитать координаты.
                         A.setCenterX(e.getX() + getDXStart());
                         A.setCenterY(e.getY() + getDYStart());
@@ -2367,7 +2409,7 @@ class Model implements Observable {
             timeLine = mLine;//выбрана данная линия, для построения
             lineOldAdd = true;//линия выбрана
             //Определить, разрешено ли перемещение линии
-            if (findLineMove(mLine)) {
+            if (findBLine(mLine.getId())) {
                 //Вычислить смещение для перемещения всех линий
                 // if (!createLine) {
                 String[] nameId = findID(mLine).split("_");
@@ -2379,35 +2421,6 @@ class Model implements Observable {
                 //}
             }
         });
-    }
-
-    /**
-     * Метод findPoindMove(String vertex).
-     * Предназначен для поиска принадлежности точки линии
-     *
-     * @param vertex - ссылка на линию
-     * @return - true-точка принадлежит линии
-     */
-    private boolean findPoindMove(String vertex) {
-        return poindCircles.stream().filter(p -> p.getId().equals(vertex)).findFirst().filter(PoindCircle::isBLine).isEmpty();
-    }
-
-    /**
-     * Метод indLineMove(Line line).
-     * Предназначен для поиска разрешения на перемещение линии.
-     *
-     * @param line - ссылка на линию
-     * @return - true - перемещение разрешено, false - перемещение запрещено
-     */
-    private boolean findLineMove(Line line) {
-        for (PoindLine p : poindLines) {
-            if (p != null) {
-                if (p.getLine().getId().equals(line.getId())) {
-                    return p.isBMove();
-                }
-            }
-        }
-        return false;
     }
 
 
@@ -2585,6 +2598,8 @@ class Model implements Observable {
             }
         }
         return null;//ничего не найдено
+
+
     }
 
     /**
@@ -2646,25 +2661,6 @@ class Model implements Observable {
 
     }
 
-    /**
-     * Метод findPoindCircleMove(String id).
-     * Предназначен для поиска по коллекции PoindCircle по имени точки разрешения на
-     * перемещение точки по доске.
-     *
-     * @param id - имя точки
-     * @return true- перемещение точки разрешено, false - точка расчетная, перемещение запрещено
-     */
-    private boolean findPoindCircleMove(String id) {
-        boolean bfMove = false;//всегда запрещено
-        for (PoindCircle p : poindCircles) {
-            if (p != null) {
-                if (p.getId().equals(id)) {
-                    bfMove = p.isBMove();//определяется в коллекции
-                }
-            }
-        }
-        return bfMove;
-    }
 
     /**
      * Метод createVertexAdd(String arc).
