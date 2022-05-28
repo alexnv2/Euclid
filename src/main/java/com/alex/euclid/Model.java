@@ -392,7 +392,7 @@ class Model implements Observable {
      * 0-сбросить режим, 1- точка, 2- отрезок, 3-прямая, 4-луч, 5-угол
      * 6- перпендикуляр, 7 - параллельные прямые, 8-треугольник
      * 9- медиана 10-высота, 11-биссектриса, 12-середина отрезка, 14-окружность
-     * 15-касательная к окружности
+     * 15-касательная к окружности, 16- вписанная окружность, 17 - описанная окружность
      */
     public void createGeometrics() {
         switch (createGeometric) {
@@ -889,38 +889,49 @@ class Model implements Observable {
         for (PoindCircle p : poindCircles) {
             if (p != null) {
                 if (p.getId().equals(id)) {
-                    p.setBCircle(true);
-                    p.setCircleName(c);
-                    double angle = newAngle(new Point2D(c.getCenterX(), c.getCenterY()), new Point2D(p.getCircle().getCenterX(), p.getCircle().getCenterY()));
-                    if (findCircle(id).getCenterY() < c.getCenterY()) {
-                        updateAngle(360 - angle, id);
+                    if (p.isBCircle()) {
+                        p.setBMove(false);
                     } else {
-                        updateAngle(angle, id);
+                        p.setBCircle(true);
+                        p.setCircleName(c);
+                        double angle = newAngle(new Point2D(c.getCenterX(), c.getCenterY()), new Point2D(p.getCircle().getCenterX(), p.getCircle().getCenterY()));
+                        if (findCircle(id).getCenterY() < c.getCenterY()) {
+                            updateAngle(360 - angle, id);
+                        } else {
+                            updateAngle(angle, id);
+                        }
+                        poindBindOnCircles(p.getCircle(), c);//связать точку с окружностью
                     }
-                    poindBindOnCircles(p.getCircle(), c);//связать точку с окружностью
-
                 }
                 if (p.getId().equals(id1)) {
-                    p.setBCircle(true);
-                    p.setCircleName(c);
-                    double angle = newAngle(new Point2D(c.getCenterX(), c.getCenterY()), new Point2D(p.getCircle().getCenterX(), p.getCircle().getCenterY()));
-                    if (findCircle(id1).getCenterY() < c.getCenterY()) {
-                        updateAngle(360 - angle, id1);
+                    if (p.isBCircle()) {
+                        p.setBMove(false);
                     } else {
-                        updateAngle(angle, id1);
+                        p.setBCircle(true);
+                        p.setCircleName(c);
+                        double angle = newAngle(new Point2D(c.getCenterX(), c.getCenterY()), new Point2D(p.getCircle().getCenterX(), p.getCircle().getCenterY()));
+                        if (findCircle(id1).getCenterY() < c.getCenterY()) {
+                            updateAngle(360 - angle, id1);
+                        } else {
+                            updateAngle(angle, id1);
+                        }
+                        poindBindOnCircles(p.getCircle(), c);//связать точку с окружностью
                     }
-                    poindBindOnCircles(p.getCircle(), c);//связать точку с окружностью
                 }
                 if (p.getId().equals(id2)) {
-                    p.setBCircle(true);
-                    p.setCircleName(c);
-                    double angle = newAngle(new Point2D(c.getCenterX(), c.getCenterY()), new Point2D(p.getCircle().getCenterX(), p.getCircle().getCenterY()));
-                    if (findCircle(id2).getCenterY() < c.getCenterY()) {
-                        updateAngle(360 - angle, id2);
+                    if (p.isBCircle()) {
+                        p.setBMove(false);
                     } else {
-                        updateAngle(angle, id2);
+                        p.setBCircle(true);
+                        p.setCircleName(c);
+                        double angle = newAngle(new Point2D(c.getCenterX(), c.getCenterY()), new Point2D(p.getCircle().getCenterX(), p.getCircle().getCenterY()));
+                        if (findCircle(id2).getCenterY() < c.getCenterY()) {
+                            updateAngle(360 - angle, id2);
+                        } else {
+                            updateAngle(angle, id2);
+                        }
+                        poindBindOnCircles(p.getCircle(), c);//связать точку с окружностью
                     }
-                    poindBindOnCircles(p.getCircle(), c);//связать точку с окружностью
                 }
             }
         }
@@ -999,7 +1010,7 @@ class Model implements Observable {
             case 1 -> rayBindCircles(findCircle(nameP[0]), findCircle(nameP[1]), l);
             case 2 -> circlesBindLine(findCircle(nameP[0]), findCircle(nameP[1]), l);
         }
-             nameLineAdd(l);//добавить имя
+        nameLineAdd(l);//добавить имя
     }
 
     /**
@@ -1062,30 +1073,30 @@ class Model implements Observable {
                     nameText.setX(e.getX());
                     nameText.setY(e.getY());
                 }
-                double dX=nameText.getX() - c.getCenterX();
-                double dY=nameText.getY() - c.getCenterY();
-                nameUpdateXY(nameText.getId(),dX, dY);//обновляем данные коллекции
+                double dX = nameText.getX() - c.getCenterX();
+                double dY = nameText.getY() - c.getCenterY();
+                nameUpdateXY(nameText.getId(), dX, dY);//обновляем данные коллекции
                 //устанавливаем связь с точкой
                 textBindCircle(c, nameText, (int) (dX), (int) (dY));
             }
             //Если выбрано имя линии
             Line l = findNameLine(nameText.getId());
             if (l != null) {
-                Point2D p0=new Point2D(l.getStartX(),l.getStartY());
-                Point2D p1=new Point2D(l.getEndX(),l.getEndY());
-                Point2D c0=p0.midpoint(p1);
+                Point2D p0 = new Point2D(l.getStartX(), l.getStartY());
+                Point2D p1 = new Point2D(l.getEndX(), l.getEndY());
+                Point2D c0 = p0.midpoint(p1);
                 double maxRadius = distance(e.getX(), e.getY(), c0.getX(), c0.getY());
                 if (maxRadius < 80) {
                     //Перемещаем имя точки
                     nameText.setX(e.getX());
                     nameText.setY(e.getY());
-                    double dX=e.getX()-c0.getX();
-                    double dY=e.getY()-c0.getY();
-                    nameUpdateXY(nameText.getId(),dX, dY);//обновляем данные коллекции
+                    double dX = e.getX() - c0.getX();
+                    double dY = e.getY() - c0.getY();
+                    nameUpdateXY(nameText.getId(), dX, dY);//обновляем данные коллекции
                     //Устанавливаем связь с линией
                     nameBindLines(l, nameText);
                 }
-             }
+            }
         });
         //Наведение мышки на объект
         nameText.setOnMouseEntered(e -> nameText.setCursor(Cursor.HAND));
@@ -1096,10 +1107,11 @@ class Model implements Observable {
 
     /**
      * Предназначен для поиска линии по её имени
+     *
      * @param nameLine - имя линии
      * @return - объект линия
      */
-    private Line findNameLine(String nameLine){
+    private Line findNameLine(String nameLine) {
         for (PoindLine p : poindLines) {
             if (p != null) {
                 if (p.getLine().getId().equals(nameLine)) {
@@ -1117,7 +1129,7 @@ class Model implements Observable {
      *
      * @param id - строка имя объекта Text.
      */
-    private void nameUpdateXY(String id, double dX, double dY ) {
+    private void nameUpdateXY(String id, double dX, double dY) {
         //Найти точку в коллекции
         for (NamePoindLine np : namePoindLines) {
             if (np != null) {
@@ -1182,8 +1194,8 @@ class Model implements Observable {
      * @return - смещение координат для имени от вершины угла
      */
     private Point2D nameArcShow(Circle circle, Arc arc, Text textAngle) {
-        double x = 15 * Math.cos(Math.toRadians(arc.getStartAngle() + arc.getLength() / 2));
-        double y = 15 * Math.sin(Math.toRadians(arc.getStartAngle() + arc.getLength() / 2));
+        double x = 35 * Math.cos(Math.toRadians(arc.getStartAngle() + arc.getLength() / 2));
+        double y = 35 * Math.sin(Math.toRadians(arc.getStartAngle() + arc.getLength() / 2));
         Point2D arcXY = new Point2D(x, y);
         textX = circle.getCenterX() + x;//место вывода Х при создании
         textY = circle.getCenterY() - y;//место вывода Y при создании
@@ -1272,7 +1284,7 @@ class Model implements Observable {
         textX = cX - 15 * ((aY - bY) / dlina);//место вывода Х при создании
         textY = cY + 15 * ((aX - bX) / dlina);//место вывода Y при создании
         nameLine.setText(findNameShape(line.getId()));//Имя для вывода на доску
-        nameUpdateXY(nameLine.getId(),textX-cX, textY-cY);
+        nameUpdateXY(nameLine.getId(), textX - cX, textY - cY);
         nameLine.setVisible(showLineName);//показывать не показывать, зависит от меню "Настройка"
         //Передать для вывода в View
         textGo = nameLine;
@@ -1296,30 +1308,32 @@ class Model implements Observable {
 
     /**
      * Предназначен для расчета местоположения имени линии при перемещениях.
-     * @param l - объект линия
+     *
+     * @param l        - объект линия
      * @param nameLine - объект имя линии
      */
     private void nameLineR(Line l, Text nameLine) {
-        Point2D p0=new Point2D(l.getStartX(),l.getStartY());
-        Point2D p1=new Point2D(l.getEndX(),l.getEndY());
-        Point2D c0=p0.midpoint(p1);
+        Point2D p0 = new Point2D(l.getStartX(), l.getStartY());
+        Point2D p1 = new Point2D(l.getEndX(), l.getEndY());
+        Point2D c0 = p0.midpoint(p1);
         setTextGo(nameLine);
-        setTextX(c0.getX()+findNameXY(nameLine.getId()).getX());
-        setTextY(c0.getY()+findNameXY(nameLine.getId()).getY());
+        setTextX(c0.getX() + findNameXY(nameLine.getId()).getX());
+        setTextY(c0.getY() + findNameXY(nameLine.getId()).getY());
         notifyObservers("TextGo");
     }
 
     /**
      * Предназначен для поиска координат смещения для имени линии.
+     *
      * @param nameText - имя линии
      * @return - координаты смещения
      */
-    private Point2D findNameXY(String nameText ) {
-        Point2D XY=new Point2D(0,0);
+    private Point2D findNameXY(String nameText) {
+        Point2D XY = new Point2D(0, 0);
         for (NamePoindLine np : namePoindLines) {
             if (np != null) {
                 if (np.getId().equals(nameText)) {
-                    XY=new Point2D(np.getDX(), np.getDY());
+                    XY = new Point2D(np.getDX(), np.getDY());
                 }
             }
         }
@@ -2707,16 +2721,15 @@ class Model implements Observable {
     /**
      * Метод arcVertex(Circle o1, Circle o2, Circle o3, double r).
      * Предназначен для расчета угла по координатам трех точек. Построения дуги, перемещения дуги.
+     * Устанавливает для класса View, следующие переменные:
+     * angleLength - длину дуги в градусах
+     * arcRadius - радиус дуги
+     * angleStart - начальный угол в градусах
+     * screenX screenY - координаты центра дуги
      *
      * @param o1 -первая точка А
      * @param o2 - вторая точка В (центр угла)
      * @param o3 - третья точка С
-     *           <p>
-     *           Устанавливает, для класса View, следующие переменные:
-     *           angleLength - длину дуги в градусах
-     *           arcRadius - радиус дуги
-     *           angleStart - начальный угол в градусах
-     *           screenX screenY - координаты центра дуги
      */
     public void arcVertex(Circle o1, Circle o2, Circle o3) {
         //Длина дуги в градусах

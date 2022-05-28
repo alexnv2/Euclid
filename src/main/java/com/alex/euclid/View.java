@@ -68,13 +68,14 @@ class View implements Observer {
             case "TextGo" -> this.TextGo(model.getTextGo());//буквы
             case "ToolTip" -> this.ToolTipGo(model.getBtnToolTip());//добавить всплывающие подсказки
             case "CircleGo" -> this.CircleGo(model.getCircle());//вывод окружности
-            case "StrokeWidth" ->this.LineStrokeWidth(model.getLine());
+            case "StrokeWidth" -> this.LineStrokeWidth(model.getLine());
         }
     }
 
     /**
      * Метод LineStrokeWidth(Line line).
      * Предназначен для задания толщины линий
+     *
      * @param line - объект линия
      */
     private void LineStrokeWidth(Line line) {
@@ -90,15 +91,17 @@ class View implements Observer {
     private void SrokeColor(Shape sh) {
         sh.setStroke(model.getColorStroke());
     }
+
     /**
      * Метод FillColor(Shape sh)
      * Предназначен для изменения цвета заливки.
      *
      * @param sh - объект circle, line, arc, text
      */
-    private void FillColor(Shape sh){
+    private void FillColor(Shape sh) {
         sh.setFill(model.getColorFill());
     }
+
     /**
      * Метод ToolTipGo(Button btnToolTip)
      * Предназначен для вывода всплывающих подсказок
@@ -154,7 +157,7 @@ class View implements Observer {
         ray.setStartX(model.getRayStartX());
         ray.setStartY(model.getRayStartY());
         ray.setEndX(model.getRayEndX());
-        ray.setEndY(model. getRayEndY());
+        ray.setEndY(model.getRayEndY());
     }
 
 
@@ -188,8 +191,8 @@ class View implements Observer {
      * @param arc - объект Arc
      */
     private void arcGo(Arc arc) {
-       arc.setCenterX(model.getScreenXY().getX());
-       arc.setCenterY(model.getScreenXY().getY());
+        arc.setCenterX(model.getScreenXY().getX());
+        arc.setCenterY(model.getScreenXY().getY());
         arc.setRadiusX(model.getArcRadius());
         arc.setRadiusY(model.getArcRadius());
         arc.setStartAngle(model.getAngleStart());
