@@ -1130,15 +1130,12 @@ class Model implements Observable {
      * @param id - строка имя объекта Text.
      */
     private void nameUpdateXY(String id, double dX, double dY) {
-        //Найти точку в коллекции
-        for (NamePoindLine np : namePoindLines) {
-            if (np != null) {
-                if (np.getId().equals(id)) {
-                    np.setDX(dX);
-                    np.setDY(dY);
-                }
+        namePoindLines.forEach(np -> {
+            if (np.getId().equals(id)) {
+                np.setDX(dX);
+                np.setDY(dY);
             }
-        }
+        });
     }
 
 
@@ -1416,15 +1413,13 @@ class Model implements Observable {
      * @return - возвращает параметрический параметр
      */
     private double findT(Circle c) {
-        double t = 0;
-        for (PoindCircle p : poindCircles) {
-            if (p != null) {
-                if (p.getId().equals(c.getId())) {
-                    t = p.getT();
-                }
+        AtomicReference<Double> t = new AtomicReference<>((double) 0);
+        poindCircles.forEach(p -> {
+            if (p.getId().equals(c.getId())) {
+                t.set(p.getT());
             }
-        }
-        return t;
+        });
+        return t.get();
     }
 
     /**
@@ -1713,13 +1708,11 @@ class Model implements Observable {
      * @param newName - изменяемое имя объекта
      */
     private void updateName(String oldName, String newName) {
-        for (NamePoindLine np : namePoindLines) {
-            if (np != null) {
-                if (np.getText().getId().equals(oldName)) {
-                    np.getText().setText(newName);
-                }
+        namePoindLines.forEach(np -> {
+            if (np.getText().getId().equals(oldName)) {
+                np.getText().setText(newName);
             }
-        }
+        });
         setTxtShape("");
         txtAreaOutput();
     }
@@ -1934,32 +1927,28 @@ class Model implements Observable {
      * @return тип формы точки
      */
     private int findFormPoind(String id) {
-        int form = 1;
-        for (PoindCircle p : poindCircles) {
-            if (p != null) {
-                if (p.getId().equals(id)) {
-                    form = p.getColorX();
-                }
+        AtomicInteger form = new AtomicInteger(1);
+        poindCircles.forEach(p -> {
+            if (p.getId().equals(id)) {
+                form.set(p.getColorX());
             }
-        }
-        return form;
+        });
+        return form.get();
     }
 
     /**
      * Метод updateFormPoind(String id, int form).
      * Предназначен для обновления типа формы в коллекции.
      *
-     * @param id   - тмя точки
+     * @param id   - имя точки
      * @param form - тип формы
      */
     private void updateFormPoind(String id, int form) {
-        for (PoindCircle p : poindCircles) {
-            if (p != null) {
-                if (p.getId().equals(id)) {
-                    p.setColorX(form);
-                }
+        poindCircles.forEach(p -> {
+            if (p.getId().equals(id)) {
+                p.setColorX(form);
             }
-        }
+        });
     }
 
     /**
@@ -1970,15 +1959,13 @@ class Model implements Observable {
      * @return - возвращает цвет точки
      */
     private int findColorPoind(String id) {
-        int colorPoind = 2;
-        for (PoindCircle p : poindCircles) {
-            if (p != null) {
-                if (p.getId().equals(id)) {
-                    colorPoind = p.getColorY();
-                }
+        AtomicInteger colorPoind = new AtomicInteger(2);
+        poindCircles.forEach(p -> {
+            if (p.getId().equals(id)) {
+                colorPoind.set(p.getColorY());
             }
-        }
-        return colorPoind;
+        });
+        return colorPoind.get();
     }
 
     /**
@@ -1989,13 +1976,11 @@ class Model implements Observable {
      * @param colorPoind - цвет точки
      */
     private void updateColorPoind(String id, int colorPoind) {
-        for (PoindCircle p : poindCircles) {
-            if (p != null) {
-                if (p.getId().equals(id)) {
-                    p.setColorY(colorPoind);
-                }
+        poindCircles.forEach(p -> {
+            if (p.getId().equals(id)) {
+                p.setColorY(colorPoind);
             }
-        }
+        });
     }
 
     /**
@@ -2006,13 +1991,11 @@ class Model implements Observable {
      * @param angle - угол
      */
     private void updateAngle(double angle, String id) {
-        for (PoindCircle p : poindCircles) {
-            if (p != null) {
-                if (p.getId().equals(id)) {
-                    p.setAngle(angle);
-                }
+        poindCircles.forEach(p -> {
+            if (p.getId().equals(id)) {
+                p.setAngle(angle);
             }
-        }
+        });
     }
 
     /**
@@ -2129,14 +2112,12 @@ class Model implements Observable {
      * @param c - ссылка на точку
      */
     private void updateT(Circle c, double t) {
-        for (PoindCircle p : poindCircles) {
-            if (p != null) {
-                if (p.getId().equals(c.getId())) {
-                    p.setT(t);
-                    p.setXY(new Point2D(gridViews.revAccessX(c.getCenterX()), gridViews.revAccessY(c.getCenterY())));
-                }
+        poindCircles.forEach(p -> {
+            if (p.getId().equals(c.getId())) {
+                p.setT(t);
+                p.setXY(new Point2D(gridViews.revAccessX(c.getCenterX()), gridViews.revAccessY(c.getCenterY())));
             }
-        }
+        });
     }
 
 
@@ -2211,19 +2192,21 @@ class Model implements Observable {
 
     /**
      * Предназначен для поиска имени центра окружности по имени окружности.
+     *
      * @param c - имя окружности
      * @return - имя центра окружности
      */
-     private String nameCenterCircle(String c){
-       String nameCenter = "";
-         for (CircleLine p : circleLines) {
-             if (p.getId().equals(c)) {
-                 assert false;
-                 nameCenter = p.getPoindID();
-             }
-         }
-         return nameCenter;
-     }
+    private String nameCenterCircle(String c) {
+        String nameCenter = "";
+        for (CircleLine p : circleLines) {
+            if (p.getId().equals(c)) {
+                assert false;
+                nameCenter = p.getPoindID();
+            }
+        }
+        return nameCenter;
+    }
+
     /**
      * Метод updateCircle(Circle c, Circle c0).
      * Предназначен для обновления мировых координат и радиуса окружности в коллекции.
@@ -3229,7 +3212,6 @@ class Model implements Observable {
         line = lineTreangle;
         notifyObservers("SideGo");
         findLinesUpdateXY(lineTreangle.getId());
-        //paneBoards.getChildren().addAll(newLineTreangle, newPoindTreangle);//добавить на доску
         lineTreangle.toBack();
         findNameId(c.getId() + "_" + newPoindTreangle.getId(), lineTreangle.getId());
         //Связывание созданных отрезков и точки с вершинами треугольника
@@ -3629,8 +3611,8 @@ class Model implements Observable {
      * @return возвращает координаты центра описанной окружности.
      */
     private Point2D middlePerpendicular(Point2D v1, Point2D v2, Point2D v3) {
-        Point2D smA=v2.midpoint(v3);
-        Point2D smC=v1.midpoint(v2);
+        Point2D smA = v2.midpoint(v3);
+        Point2D smC = v1.midpoint(v2);
         double sxAB = v1.getX() - v2.getX();
         double syAB = v1.getY() - v2.getY();
         double sAB = smC.getX() * sxAB + smC.getY() * syAB;

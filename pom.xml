@@ -6,7 +6,7 @@
 
     <groupId>com.alex</groupId>
     <artifactId>Euclid</artifactId>
-    <version>1.5</version>
+    <version>1.5.5</version>
     <name>Euclid</name>
 
     <properties>
