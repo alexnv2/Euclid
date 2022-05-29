@@ -3629,19 +3629,14 @@ class Model implements Observable {
      * @return возвращает координаты центра описанной окружности.
      */
     private Point2D middlePerpendicular(Point2D v1, Point2D v2, Point2D v3) {
-        double smAx = (v2.getX() + v3.getX()) / 2;//середина
-        double smAy = (v2.getY() + v3.getY()) / 2;
-        double smCx = (v1.getX() + v2.getX()) / 2;
-        double smCy = (v1.getY() + v2.getY()) / 2;
+        Point2D smA=v2.midpoint(v3);
+        Point2D smC=v1.midpoint(v2);
         double sxAB = v1.getX() - v2.getX();
-        double syAB = -(v2.getY() - v1.getY());
-        double sAB = smCx * sxAB + smCy * syAB;
+        double syAB = v1.getY() - v2.getY();
+        double sAB = smC.getX() * sxAB + smC.getY() * syAB;
         double sxBC = v2.getX() - v3.getX();
         double syBC = v2.getY() - v3.getY();
-        double sBC = smAx * sxBC + smAy * syBC;
-        double d = sxAB * syBC - sxBC * syAB;
-        double dx = sAB * syBC - sBC * syAB;
-        double dy = sxAB * sBC - sxBC * sAB;
-        return new Point2D(dx / d, dy / d);
+        double sBC = smA.getX() * sxBC + smA.getY() * syBC;
+        return new Point2D((sAB * syBC - sBC * syAB) / (sxAB * syBC - sxBC * syAB), (sxAB * sBC - sxBC * sAB) / (sxAB * syBC - sxBC * syAB));
     }
 }
