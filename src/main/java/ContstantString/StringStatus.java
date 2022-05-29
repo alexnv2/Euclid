@@ -31,7 +31,6 @@ public final class StringStatus {
     public static final String STA_26="Укажите на доске точку и перпендикулярную прямую";
     public static final String STA_27="Перпендикуляр ";
     public static final String STA_28="Укажите на доске центр окружности";
-    public static final String STA_29="Окружность радиусом: ";
     public static final String STA_30="Данную линию запрещено перемещать!";
     public static final String STA_31="Укажите на доске отрезок, для которого надо найти середину.";
     public static final String STA_32="Середина отрезка строится только для отрезков. Операция не выполнена.";

@@ -2373,36 +2373,16 @@ class Model implements Observable {
             for (PoindLine p : poindLines) {
                 if (p.getLine().getId().equals(mLine.getId())) {
                     switch (p.getSegment()) {
-                        case 0 -> {
-                            setStringLeftStatus(STA_10 + nameSplitRemove(p.getId()));
-                        }
-                        case 1 -> {
-                            setStringLeftStatus(STA_11 + nameSplitRemove(p.getId()));
-                        }
-                        case 2 -> {
-                            setStringLeftStatus(STA_12 + nameSplitRemove(p.getId()));
-                        }
-                        case 3 -> {
-                            setStringLeftStatus(STA_17 + nameSplitRemove(p.getId()));
-                        }
-                        case 4 -> {
-                            setStringLeftStatus(STA_20 + nameSplitRemove(p.getId()));
-                        }
-                        case 5 -> {
-                            setStringLeftStatus(STA_23 + nameSplitRemove(p.getId()));
-                        }
-                        case 6 -> {
-                            setStringLeftStatus(STA_25 + nameSplitRemove(p.getId()));
-                        }
-                        case 7 -> {
-                            setStringLeftStatus(STA_27 + nameSplitRemove(p.getId()));
-                        }
-                        case 8 -> {
-                            setStringLeftStatus(STA_35 + nameSplitRemove(p.getId()));
-                        }
-                        case 9 -> {
-                            setStringLeftStatus(STA_36 + nameSplitRemove(p.getId()));
-                        }
+                        case 0 -> setStringLeftStatus(STA_10 + nameSplitRemove(p.getId()));
+                        case 1 -> setStringLeftStatus(STA_11 + nameSplitRemove(p.getId()));
+                        case 2 -> setStringLeftStatus(STA_12 + nameSplitRemove(p.getId()));
+                        case 3 -> setStringLeftStatus(STA_17 + nameSplitRemove(p.getId()));
+                        case 4 -> setStringLeftStatus(STA_20 + nameSplitRemove(p.getId()));
+                        case 5 -> setStringLeftStatus(STA_23 + nameSplitRemove(p.getId()));
+                        case 6 -> setStringLeftStatus(STA_25 + nameSplitRemove(p.getId()));
+                        case 7 -> setStringLeftStatus(STA_27 + nameSplitRemove(p.getId()));
+                        case 8 -> setStringLeftStatus(STA_35 + nameSplitRemove(p.getId()));
+                        case 9 -> setStringLeftStatus(STA_36 + nameSplitRemove(p.getId()));
                     }
                     notifyObservers("LeftStatusGo");
                 }
