@@ -771,52 +771,6 @@ public class EuclidController extends View {
     }
 
     /**
-     * Метод menuAbout().
-     * Нажат пункт меню "Помощь-> О программе"
-     */
-
-    public void menuAbout() {
-        Stage window = new Stage();
-        window.initModality(Modality.APPLICATION_MODAL);//Блокирует все окна приложения
-        window.initStyle(StageStyle.UTILITY);//Только кнопка закрыть
-        VBox root = new VBox();
-        Image imAbout = new Image(Objects.requireNonNull(getClass().getResourceAsStream("Images/About.png")));
-        root.setBackground(new Background(new BackgroundImage(imAbout, BackgroundRepeat.REPEAT,
-                BackgroundRepeat.REPEAT, BackgroundPosition.DEFAULT,
-                BackgroundSize.DEFAULT)));
-        root.setAlignment(Pos.TOP_CENTER);
-        Label label2 = new Label("МБОУ \"Центр образования Опочецкого района\"\nСтруктурное подразделение \"Средняя школа № 4\"\n\n\n ");
-        label2.setFont(Font.font("Verdana", FontWeight.BOLD, 24.0));
-        label2.setTextFill(Color.SANDYBROWN);
-        label2.setTextAlignment(TextAlignment.CENTER);
-        Label label = new Label("Учебно-справочное пособие");
-        label.setFont(Font.font("Arial", FontWeight.BOLD, 34.0));
-        label.setTextFill(Color.YELLOW);
-        label.setTextAlignment(TextAlignment.CENTER);
-        Label label1 = new Label("Геометрия\n\n");
-        label1.setFont(Font.font("TimesRoman", FontWeight.BOLD, 58.0));
-        label1.setTextFill(Color.RED);
-        label1.setTextAlignment(TextAlignment.CENTER);
-        Label label3 = new Label("""
-                Разработка ученика 8Б класса\s
-                 Носова Алексея\s
-                 Программа по лицензии GPU v2.1 \t
-
-                Версия 1.5    2022 г.\s
-                \s""");
-        label3.setFont(Font.font("Courier", FontWeight.BOLD, 24.0));
-        label3.setTextFill(Color.YELLOW);
-        label3.setTextAlignment(TextAlignment.CENTER);
-
-        root.getChildren().addAll(label2, label, label1, label3);
-        Scene scene = new Scene(root, 864, 520);
-        window.setScene(scene);
-        window.setTitle("О программе");
-        window.show();
-
-    }
-
-    /**
      * Метод menuHelp_1()
      * Для вывода видео о работе с программой.
      */
@@ -1249,6 +1203,10 @@ public class EuclidController extends View {
             //разблокировать кнопки
             disableButton(false);
         }
+        //Вывод информации по коллекции (Alt+T)
+        if ((key.isAltDown()) && (KeyCode.T == key.getCode())) {
+            model.ColTest();
+        }
     }
 
     /**
@@ -1268,11 +1226,51 @@ public class EuclidController extends View {
         }
     }
 
-    //Тестовая кнопка вывод информации по всем коллекциям для тестирования системы
-    public void btnTest() {
-        model.ColTest();
-    }
+    /**
+     * Метод menuAbout().
+     * Нажат пункт меню "Помощь-> О программе"
+     */
 
+    public void menuAbout() {
+        Stage window = new Stage();
+        window.initModality(Modality.APPLICATION_MODAL);//Блокирует все окна приложения
+        window.initStyle(StageStyle.UTILITY);//Только кнопка закрыть
+        VBox root = new VBox();
+        Image imAbout = new Image(Objects.requireNonNull(getClass().getResourceAsStream("Images/About.png")));
+        root.setBackground(new Background(new BackgroundImage(imAbout, BackgroundRepeat.REPEAT,
+                BackgroundRepeat.REPEAT, BackgroundPosition.DEFAULT,
+                BackgroundSize.DEFAULT)));
+        root.setAlignment(Pos.TOP_CENTER);
+        Label label2 = new Label("МБОУ \"Центр образования Опочецкого района\"\nСтруктурное подразделение \"Средняя школа № 4\"\n\n\n ");
+        label2.setFont(Font.font("Verdana", FontWeight.BOLD, 24.0));
+        label2.setTextFill(Color.SANDYBROWN);
+        label2.setTextAlignment(TextAlignment.CENTER);
+        Label label = new Label("Учебно-справочное пособие");
+        label.setFont(Font.font("Arial", FontWeight.BOLD, 34.0));
+        label.setTextFill(Color.YELLOW);
+        label.setTextAlignment(TextAlignment.CENTER);
+        Label label1 = new Label("Геометрия\n\n");
+        label1.setFont(Font.font("TimesRoman", FontWeight.BOLD, 58.0));
+        label1.setTextFill(Color.RED);
+        label1.setTextAlignment(TextAlignment.CENTER);
+        Label label3 = new Label("""
+                Разработка ученика 8Б класса\s
+                 Носова Алексея\s
+                 Программа по лицензии GPU v2.1 \t
+
+                Версия 1.5    2022 г.\s
+                \s""");
+        label3.setFont(Font.font("Courier", FontWeight.BOLD, 24.0));
+        label3.setTextFill(Color.YELLOW);
+        label3.setTextAlignment(TextAlignment.CENTER);
+
+        root.getChildren().addAll(label2, label, label1, label3);
+        Scene scene = new Scene(root, 864, 520);
+        window.setScene(scene);
+        window.setTitle("О программе");
+        window.show();
+
+    }
 }
 
 

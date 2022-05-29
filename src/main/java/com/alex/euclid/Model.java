@@ -21,6 +21,8 @@ import lombok.Data;
 import java.text.MessageFormat;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.AtomicReference;
 
 import static ContstantString.StringStatus.*;
 import static java.lang.Math.abs;
@@ -379,7 +381,7 @@ class Model implements Observable {
         //Информация об окружностях
         for (CircleLine p : circleLines)
             if (p != null) {
-                txtShape = MessageFormat.format("{0}{1}{2}{3}{4,number, #.#} \n", txtShape, "Окружность: ", p.getId(), ", R=", p.getRadius());
+                txtShape = MessageFormat.format("{0}{1}{2}{3}{4,number, #.#} \n", txtShape, "Окружность: ", findNameShape(p.getPoindID()), ", R=", p.getRadius());
             }
         //Передать в View для вывода
         notifyObservers("TextShapeGo");
@@ -665,7 +667,7 @@ class Model implements Observable {
                 // Построение середины отрезка
                 Line l = getTimeLine();//получаем отрезок, для которого надо построить середину
                 //проверить, является ли данная линия отрезком, исключаем прямые и лучи
-                if (findTypeLine(l) == 0) {
+                if (findTypeLine(l.getId()) == 0) {
                     String[] namePoind = findID(l).split("_");//получить имена точек отрезка
                     Circle c1 = findCircle(namePoind[0]);
                     Circle c2 = findCircle(namePoind[1]);
@@ -947,19 +949,17 @@ class Model implements Observable {
      * @param id2 - третья вершина треугольника
      */
     private void vertexTreangle(String id, String id1, String id2) {
-        for (PoindCircle p : poindCircles) {
-            if (p != null) {
-                if (p.getId().equals(id)) {
-                    p.setBTreangle(true);
-                }
-                if (p.getId().equals(id1)) {
-                    p.setBTreangle(true);
-                }
-                if (p.getId().equals(id2)) {
-                    p.setBTreangle(true);
-                }
+        poindCircles.forEach(p -> {
+            if (p.getId().equals(id)) {
+                p.setBTreangle(true);
             }
-        }
+            if (p.getId().equals(id1)) {
+                p.setBTreangle(true);
+            }
+            if (p.getId().equals(id2)) {
+                p.setBTreangle(true);
+            }
+        });
     }
 
 
@@ -1435,15 +1435,13 @@ class Model implements Observable {
      * @return - возвращает угол
      */
     private double findAngle(Circle c) {
-        double angle = 0;
-        for (PoindCircle p : poindCircles) {
-            if (p != null) {
-                if (p.getId().equals(c.getId())) {
-                    angle = p.getAngle();
-                }
+        AtomicReference<Double> angle = new AtomicReference<>((double) 0);
+        poindCircles.forEach(p -> {
+            if (p.getId().equals(c.getId())) {
+                angle.set(p.getAngle());
             }
-        }
-        return angle;
+        });
+        return angle.get();
     }
 
     /**
@@ -1590,7 +1588,7 @@ class Model implements Observable {
                             }
                             setScreenXY(new Point2D(D1.getX(), D1.getY()));
                             //Определить тип линии
-                            double typeL = findTypeLine(l);
+                            double typeL = findTypeLine(l.getId());
                             if (typeL == 0 || typeL == 1 || typeL == 3 || typeL == 4 || typeL == 5 || typeL == 6 || typeL == 7) {
                                 //Проверить дошла ли точка до начала линии
                                 if (t <= 0) {
@@ -2171,14 +2169,14 @@ class Model implements Observable {
         Circle newCircle = new Circle(getScreenXY().getX(), getScreenXY().getY(), 0, Color.TRANSPARENT);
         newCircle.setStroke(Color.CHOCOLATE);
         newCircle.setStrokeWidth(2.0);
-        newCircle.setId(indexLineAdd());//добавить имя окружности
+        newCircle.setId(indexPoindAdd());//добавить имя окружности
         //привязать события мышки
         //При наведении
         newCircle.setOnMouseEntered(e -> {
             newCircle.setCursor(Cursor.HAND);
             newCircle.setStrokeWidth(3.0);
             //Установить статус "Окружность"
-            setStringLeftStatus(MessageFormat.format("{0}{1}{2}{3,number, #.#} \n", "Окружность ", newCircle.getId(), ", R=", findCircleRadiusW(newCircle)));
+            setStringLeftStatus(MessageFormat.format("{0}{1}{2}{3,number, #.#} \n", "Окружность с центром ", findNameShape(nameCenterCircle(newCircle.getId())), ", R=", findCircleRadiusW(newCircle)));
             notifyObservers("LeftStatusGo");
         });
         //При уходе
@@ -2211,6 +2209,21 @@ class Model implements Observable {
         return newCircle;
     }
 
+    /**
+     * Предназначен для поиска имени центра окружности по имени окружности.
+     * @param c - имя окружности
+     * @return - имя центра окружности
+     */
+     private String nameCenterCircle(String c){
+       String nameCenter = "";
+         for (CircleLine p : circleLines) {
+             if (p.getId().equals(c)) {
+                 assert false;
+                 nameCenter = p.getPoindID();
+             }
+         }
+         return nameCenter;
+     }
     /**
      * Метод updateCircle(Circle c, Circle c0).
      * Предназначен для обновления мировых координат и радиуса окружности в коллекции.
@@ -2604,16 +2617,13 @@ class Model implements Observable {
      * @return объект Circle или null если не найден.
      */
     Circle findCircle(String c) {
-        for (PoindCircle c0 : poindCircles) {
-            if (c0 != null) {
-                if (c0.getId().equals(String.valueOf(c))) {
-                    return c0.getCircle();
-                }
+        AtomicReference<Circle> c1 = new AtomicReference<>();
+        poindCircles.forEach(c0 -> {
+            if (c0.getId().equals(String.valueOf(c))) {
+                c1.set(c0.getCircle());
             }
-        }
-        return null;//ничего не найдено
-
-
+        });
+        return c1.get();//ничего не найдено
     }
 
     /**
@@ -2644,13 +2654,11 @@ class Model implements Observable {
      * @param y  -мировые координаты точки
      */
     public void findCirclesUpdateXY(String id, double x, double y) {
-        for (PoindCircle p : poindCircles) {
-            if (p != null) {
-                if (p.getId().equals(id)) {
-                    p.setXY(new Point2D(x, y));
-                }
+        poindCircles.forEach(p -> {
+            if (p.getId().equals(id)) {
+                p.setXY(new Point2D(x, y));
             }
-        }
+        });
     }
 
     /**
@@ -2662,17 +2670,14 @@ class Model implements Observable {
      *           меняет имя в коллекции PoindLines.
      */
     public void findLinesUpdateXY(String id) {
-        for (PoindLine p : poindLines) {
-            if (p != null) {
-                if (p.getLine().getId().equals(id)) {
-                    p.setStX(gridViews.revAccessX(p.getLine().getStartX()));
-                    p.setStY(gridViews.revAccessY(p.getLine().getStartY()));
-                    p.setEnX(gridViews.revAccessX(p.getLine().getEndX()));
-                    p.setEnY(gridViews.revAccessY(p.getLine().getEndY()));
-                }
+        poindLines.forEach(p -> {
+            if (p.getLine().getId().equals(id)) {
+                p.setStX(gridViews.revAccessX(p.getLine().getStartX()));
+                p.setStY(gridViews.revAccessY(p.getLine().getStartY()));
+                p.setEnX(gridViews.revAccessX(p.getLine().getEndX()));
+                p.setEnY(gridViews.revAccessY(p.getLine().getEndY()));
             }
-        }
-
+        });
     }
 
 
@@ -2782,16 +2787,14 @@ class Model implements Observable {
      * @param arc- ссылка на арку
      */
     private void findArcUpdate(Arc arc) {
-        for (VertexArc v : vertexArcs) {
-            if (v != null) {
-                if (v.getId().equals(arc.getId())) {
-                    v.setCenterX(gridViews.revAccessX(arc.getCenterX()));
-                    v.setCenterY(gridViews.revAccessY(arc.getCenterY()));
-                    v.setStartAngle(arc.getStartAngle());
-                    v.setLengthAngle(arc.getLength());
-                }
+        vertexArcs.forEach(v -> {
+            if (v.getId().equals(arc.getId())) {
+                v.setCenterX(gridViews.revAccessX(arc.getCenterX()));
+                v.setCenterY(gridViews.revAccessY(arc.getCenterY()));
+                v.setStartAngle(arc.getStartAngle());
+                v.setLengthAngle(arc.getLength());
             }
-        }
+        });
     }
 
     /**
@@ -3094,22 +3097,20 @@ class Model implements Observable {
     }
 
     /**
-     * Метод findTypeLine(Line line).
      * Предназначен для поиска в коллекции и возвращения типа линии
      * Необходим для проверки при построении середины отрезка
      *
-     * @param line - ссылка на линию
+     * @param nameLine - ссылка на линию
      * @return - тип линии, нужно 0 - отрезок
      */
-    public int findTypeLine(Line line) {
-        for (PoindLine p : poindLines) {
-            if (p != null) {
-                if (p.getLine().getId().equals(line.getId())) {
-                    return p.getSegment();
-                }
+    public int findTypeLine(String nameLine) {
+        AtomicInteger t = new AtomicInteger();
+        poindLines.forEach(p -> {
+            if (p.getLine().getId().equals(nameLine)) {
+                t.set(p.getSegment());
             }
-        }
-        return -1;
+        });
+        return t.get();
     }
 
     /**
@@ -3389,21 +3390,17 @@ class Model implements Observable {
      * @param lm - объект линия медианы.
      */
     private void findMedianaUpdateXY(Circle md, Line lm) {
-        for (PoindCircle p : poindCircles) {
-            if (p != null) {
-                if (p.getCircle().getId().equals(md.getId())) {
-                    p.setXY(new Point2D(gridViews.revAccessX(md.getCenterX()), gridViews.revAccessY(md.getCenterY())));
-                }
+        poindCircles.forEach(p -> {
+            if (p.getCircle().getId().equals(md.getId())) {
+                p.setXY(new Point2D(gridViews.revAccessX(md.getCenterX()), gridViews.revAccessY(md.getCenterY())));
             }
-        }
-        for (PoindLine pl : poindLines) {
-            if (pl != null) {
-                if (pl.getLine().getId().equals(lm.getId())) {
-                    pl.setEnX(gridViews.revAccessX(lm.getEndX()));
-                    pl.setEnY(gridViews.revAccessY(lm.getEndY()));
-                }
+        });
+        poindLines.forEach(pl -> {
+            if (pl.getLine().getId().equals(lm.getId())) {
+                pl.setEnX(gridViews.revAccessX(lm.getEndX()));
+                pl.setEnY(gridViews.revAccessY(lm.getEndY()));
             }
-        }
+        });
     }
 
     /**
@@ -3510,21 +3507,22 @@ class Model implements Observable {
      * @param l - ссылка на линию
      */
     public void closeLine(Line l) {
-        for (PoindLine p : poindLines) {
-            if (p != null) {
-                if (p.getLine().getId().equals(l.getId())) {
-                    p.setBMove(false);
-                }
+        poindLines.forEach(p -> {
+            if (p.getLine().getId().equals(l.getId())) {
+                p.setBMove(false);
             }
-        }
-
+        });
     }
 
+    /**
+     * Предназначен для отладки, выводит информации из коллекций.
+     */
     //Тестовый метод для вывода информации по коллекциям
     public void ColTest() {
         //Взято из книги Кэн Коузен "Современный Java. Рецепты программирования".
         //Глава 2. Пакет java.util.function
         // стр.40 Пример 2.3
+        System.out.println("Начало вывода");
         System.out.println("Коллекция PoindCircle");
         //ссылка на метод
         for (PoindCircle poindCircle : poindCircles) {
@@ -3548,6 +3546,7 @@ class Model implements Observable {
 
         System.out.println("Коллекция объектов");
         paneBoards.getChildren().forEach(System.out::println);
+        System.out.println("Конец вывода");
 
     }
 

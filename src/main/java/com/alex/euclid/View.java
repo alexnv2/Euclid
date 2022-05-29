@@ -130,7 +130,7 @@ class View implements Observer {
      * @param ver - объект Окружность
      */
     private void vertexGo(Circle ver) {
-        ver.setCenterX(model.getScreenXY().getX());
+        ver.  setCenterX(model.getScreenXY().getX());
         ver.setCenterY(model.getScreenXY().getY());
     }
 

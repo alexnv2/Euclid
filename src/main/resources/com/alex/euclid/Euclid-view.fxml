@@ -91,7 +91,6 @@
         <Button fx:id="btnCircleInTreangle" disable="true" mnemonicParsing="false" onAction="#btnCircleInTreangle" onMouseEntered="#onMouseEnteredCircleInTreangle" />
         <Button fx:id="btnCircleOutTreangle" disable="true" mnemonicParsing="false" onAction="#btnCircleOutTreangle" onMouseEntered="#onMouseEnteredCircleOutTreangle" />
         <Button fx:id="btnDelete" mnemonicParsing="false" onAction="#btnDelete" onMouseEntered="#onMouseEnteredDelete" prefHeight="20.0" prefWidth="40.0" />
-        <Button mnemonicParsing="false" onAction="#btnTest" text="Тест" visible="false" />
     </HBox>
     <SplitPane dividerPositions="0.25, 0.85" focusTraversable="true" VBox.vgrow="ALWAYS">
         <AnchorPane>
