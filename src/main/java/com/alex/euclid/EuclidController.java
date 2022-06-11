@@ -409,7 +409,6 @@ public class EuclidController extends View {
                 }
             });
 //            Обновление окружностей
-
             model.getCircleLines().forEach(p -> {
                 if (p != null) {
                     model.setSegmentStartX(gridViews.accessX(p.getX()));
@@ -1269,8 +1268,5 @@ public class EuclidController extends View {
         window.setScene(scene);
         window.setTitle("О программе");
         window.show();
-
     }
 }
-
-
