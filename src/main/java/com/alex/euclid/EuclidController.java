@@ -8,7 +8,6 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.image.Image;
-import javafx.scene.image.ImageView;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
@@ -196,43 +195,7 @@ public class EuclidController extends View {
             gridViews.gridCartesian();//Вывод сетки
             updateShape();//обновить координаты геометрических фигур
         });
-
         gridViews.gridCartesian();//Вывод сетки
-        //Добавить изображение к кнопкам
-        Image imPoind = new Image(Objects.requireNonNull(getClass().getResourceAsStream("Images/point.png")));
-        btnPoind.graphicProperty().setValue(new ImageView(imPoind));
-        Image imSegment = new Image(Objects.requireNonNull(getClass().getResourceAsStream("Images/point&line.png")));
-        btnSegment.graphicProperty().setValue(new ImageView(imSegment));
-        Image imAngle = new Image(Objects.requireNonNull(getClass().getResourceAsStream("Images/angle.png")));
-        btnAngle.graphicProperty().setValue(new ImageView(imAngle));
-        Image imVertical = new Image(Objects.requireNonNull(getClass().getResourceAsStream("Images/vertical.png")));
-        btnVertical.graphicProperty().setValue(new ImageView(imVertical));
-        Image imDelete = new Image(Objects.requireNonNull(getClass().getResourceAsStream("Images/delete.png")));
-        btnDelete.graphicProperty().setValue(new ImageView(imDelete));
-        Image imLine = new Image(Objects.requireNonNull(getClass().getResourceAsStream("Images/line.png")));
-        btnLine.graphicProperty().setValue(new ImageView(imLine));
-        Image imRay = new Image(Objects.requireNonNull(getClass().getResourceAsStream("Images/ray.png")));
-        btnRay.graphicProperty().setValue(new ImageView(imRay));
-        Image imTreangle = new Image(Objects.requireNonNull(getClass().getResourceAsStream("Images/triangle.png")));
-        btnTreangle.graphicProperty().setValue(new ImageView(imTreangle));
-        Image imHeight = new Image(Objects.requireNonNull(getClass().getResourceAsStream("Images/triangle_height.png")));
-        btnHeight.graphicProperty().setValue(new ImageView(imHeight));
-        Image imMediana = new Image(Objects.requireNonNull(getClass().getResourceAsStream("Images/mediana.png")));
-        btnMediana.graphicProperty().setValue(new ImageView(imMediana));
-        Image imBisector = new Image(Objects.requireNonNull(getClass().getResourceAsStream("Images/bisector.png")));
-        btnBisector.graphicProperty().setValue(new ImageView(imBisector));
-        Image imParallelLines = new Image(Objects.requireNonNull(getClass().getResourceAsStream("Images/parallel.png")));
-        btnParallelLines.graphicProperty().setValue(new ImageView(imParallelLines));
-        Image imCircle = new Image(Objects.requireNonNull(getClass().getResourceAsStream("Images/circle.png")));
-        btnCircle.graphicProperty().setValue(new ImageView(imCircle));
-        Image imMiddleSegment = new Image(Objects.requireNonNull(getClass().getResourceAsStream("Images/middle.png")));
-        btnMiddleSegment.graphicProperty().setValue(new ImageView(imMiddleSegment));
-        Image imTangent = new Image(Objects.requireNonNull(getClass().getResourceAsStream("Images/tangent.png")));
-        btnTangent.graphicProperty().setValue(new ImageView(imTangent));
-        Image imInCircle = new Image(Objects.requireNonNull(getClass().getResourceAsStream("Images/TrOutCircle.png")));
-        btnCircleInTreangle.graphicProperty().setValue(new ImageView(imInCircle));
-        Image imOutCircle = new Image(Objects.requireNonNull(getClass().getResourceAsStream("Images/TrInCircle.png")));
-        btnCircleOutTreangle.graphicProperty().setValue(new ImageView(imOutCircle));
     }
 
 

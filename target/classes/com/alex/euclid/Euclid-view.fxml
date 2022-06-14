@@ -1,13 +1,28 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.geometry.*?>
-<?import javafx.scene.control.*?>
-<?import javafx.scene.layout.*?>
-<?import javafx.scene.shape.*?>
-<?import javafx.scene.text.*?>
-<?import javafx.scene.web.*?>
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.CheckMenuItem?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.Menu?>
+<?import javafx.scene.control.MenuBar?>
+<?import javafx.scene.control.MenuItem?>
+<?import javafx.scene.control.SeparatorMenuItem?>
+<?import javafx.scene.control.SplitPane?>
+<?import javafx.scene.control.TextArea?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Pane?>
+<?import javafx.scene.layout.StackPane?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.shape.Circle?>
+<?import javafx.scene.shape.Line?>
+<?import javafx.scene.text.Font?>
+<?import javafx.scene.web.WebView?>
 
-<VBox onKeyPressed="#onKeyPressed" prefHeight="600.0" prefWidth="1000.0" xmlns="http://javafx.com/javafx/11.0.14-internal" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.alex.euclid.EuclidController">
+<VBox onKeyPressed="#onKeyPressed" prefHeight="600.0" prefWidth="1000.0" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.alex.euclid.EuclidController">
     <MenuBar VBox.vgrow="NEVER">
         <Menu mnemonicParsing="false" text="Фигуры">
             <MenuItem mnemonicParsing="false" onAction="#menuPoindClick" text="Точка, Прямая, Отрезок" />
@@ -74,23 +89,108 @@
         </Menu>
     </MenuBar>
     <HBox prefHeight="25.0" prefWidth="900.0">
-        <Button fx:id="btnPoind" mnemonicParsing="false" onAction="#btnPoindClick" onMouseEntered="#onMouseEnteredPoind" prefHeight="20.0" prefWidth="40.0" textAlignment="CENTER" />
-        <Button fx:id="btnSegment" mnemonicParsing="false" onAction="#btnSegmentClick" onMouseEntered="#onMoseEnteredSegment" prefHeight="20.0" prefWidth="40.0" />
-        <Button fx:id="btnMiddleSegment" mnemonicParsing="false" onAction="#btnMiddleSegment" onMouseEntered="#onMouseEnteredMiddleSegment" prefHeight="20.0" prefWidth="40.0" />
-        <Button fx:id="btnRay" mnemonicParsing="false" onAction="#btnRay" onMouseEntered="#onMouseEnteredRay" prefHeight="20.0" prefWidth="40.0" />
-        <Button fx:id="btnLine" mnemonicParsing="false" onAction="#btnLine" onMouseEntered="#onMouseEnteredLine" prefHeight="20.0" prefWidth="40.0" />
-        <Button fx:id="btnCircle" mnemonicParsing="false" onAction="#btnCircleClick" onMouseEntered="#onMouseEnteredCircle" prefHeight="20.0" prefWidth="40.0" />
-        <Button fx:id="btnTangent" mnemonicParsing="false" onAction="#btnTangentClick" onMouseEntered="#onMousseEnteredTangent" prefHeight="20.0" prefWidth="40.0" />
-        <Button fx:id="btnAngle" mnemonicParsing="false" onAction="#btnAngle" onMouseEntered="#onMouseEnteredAngle" prefHeight="20.0" prefWidth="40.0" />
-        <Button fx:id="btnVertical" mnemonicParsing="false" onAction="#btnVertical" onMouseEntered="#onMouseEnteredVertical" prefHeight="20.0" prefWidth="40.0" />
-        <Button fx:id="btnParallelLines" mnemonicParsing="false" onAction="#btnParallelLines" onMouseEntered="#onMouseEnteredParallelLines" prefHeight="20.0" prefWidth="40.0" />
-        <Button fx:id="btnTreangle" mnemonicParsing="false" onAction="#btnTreangle" onMouseEntered="#onMouseEnteredTreangle" prefHeight="20.0" prefWidth="40.0" />
-        <Button fx:id="btnMediana" disable="true" mnemonicParsing="false" onAction="#btnMedian" onMouseEntered="#onMouseEnteredMediana" prefHeight="20.0" prefWidth="40.0" />
-        <Button fx:id="btnHeight" disable="true" mnemonicParsing="false" onAction="#btnHeight" onMouseEntered="#onMouseEnteredHeight" prefHeight="20.0" prefWidth="40.0" />
-        <Button fx:id="btnBisector" disable="true" mnemonicParsing="false" onAction="#btnBisector" onMouseEntered="#onMouseEnteredBisector" prefHeight="20.0" prefWidth="40.0" />
-        <Button fx:id="btnCircleInTreangle" disable="true" mnemonicParsing="false" onAction="#btnCircleInTreangle" onMouseEntered="#onMouseEnteredCircleInTreangle" />
-        <Button fx:id="btnCircleOutTreangle" disable="true" mnemonicParsing="false" onAction="#btnCircleOutTreangle" onMouseEntered="#onMouseEnteredCircleOutTreangle" />
-        <Button fx:id="btnDelete" mnemonicParsing="false" onAction="#btnDelete" onMouseEntered="#onMouseEnteredDelete" prefHeight="20.0" prefWidth="40.0" />
+        <Button fx:id="btnPoind" mnemonicParsing="false" onAction="#btnPoindClick" onMouseEntered="#onMouseEnteredPoind" prefHeight="20.0" prefWidth="40.0">
+         <graphic>
+             <ImageView>
+                 <Image url="@Images/point.png"/>
+             </ImageView>
+         </graphic></Button>
+        <Button fx:id="btnSegment" mnemonicParsing="false" onAction="#btnSegmentClick" onMouseEntered="#onMoseEnteredSegment" prefHeight="20.0" prefWidth="40.0" >
+            <graphic>
+                <ImageView>
+                    <Image url="@Images/point_line.png"/>
+                </ImageView>
+            </graphic></Button>
+        <Button fx:id="btnMiddleSegment" mnemonicParsing="false" onAction="#btnMiddleSegment" onMouseEntered="#onMouseEnteredMiddleSegment" prefHeight="20.0" prefWidth="40.0" >
+            <graphic>
+                <ImageView>
+                    <Image url="@Images/middle.png"/>
+                </ImageView>
+            </graphic></Button>
+        <Button fx:id="btnRay" mnemonicParsing="false" onAction="#btnRay" onMouseEntered="#onMouseEnteredRay" prefHeight="20.0" prefWidth="40.0" >
+            <graphic>
+                <ImageView>
+                    <Image url="@Images/ray.png"/>
+                </ImageView>
+            </graphic></Button>
+        <Button fx:id="btnLine" mnemonicParsing="false" onAction="#btnLine" onMouseEntered="#onMouseEnteredLine" prefHeight="20.0" prefWidth="40.0" >
+            <graphic>
+                <ImageView>
+                    <Image url="@Images/line.png"/>
+                </ImageView>
+            </graphic></Button>
+        <Button fx:id="btnCircle" mnemonicParsing="false" onAction="#btnCircleClick" onMouseEntered="#onMouseEnteredCircle" prefHeight="20.0" prefWidth="40.0" >
+            <graphic>
+                <ImageView>
+                    <Image url="@Images/circle.png"/>
+                </ImageView>
+            </graphic></Button>
+        <Button fx:id="btnTangent" mnemonicParsing="false" onAction="#btnTangentClick" onMouseEntered="#onMousseEnteredTangent" prefHeight="20.0" prefWidth="40.0" >
+            <graphic>
+                <ImageView>
+                    <Image url="@Images/tangent.png"/>
+                </ImageView>
+            </graphic></Button>
+        <Button fx:id="btnAngle" mnemonicParsing="false" onAction="#btnAngle" onMouseEntered="#onMouseEnteredAngle" prefHeight="20.0" prefWidth="40.0" >
+            <graphic>
+                <ImageView>
+                    <Image url="@Images/angle.png"/>
+                </ImageView>
+            </graphic></Button>
+        <Button fx:id="btnVertical" mnemonicParsing="false" onAction="#btnVertical" onMouseEntered="#onMouseEnteredVertical" prefHeight="20.0" prefWidth="40.0" >
+            <graphic>
+                <ImageView>
+                    <Image url="@Images/vertical.png"/>
+                </ImageView>
+            </graphic></Button>
+        <Button fx:id="btnParallelLines" mnemonicParsing="false" onAction="#btnParallelLines" onMouseEntered="#onMouseEnteredParallelLines" prefHeight="20.0" prefWidth="40.0" >
+            <graphic>
+                <ImageView>
+                    <Image url="@Images/parallel.png"/>
+                </ImageView>
+            </graphic></Button>
+        <Button fx:id="btnTreangle" mnemonicParsing="false" onAction="#btnTreangle" onMouseEntered="#onMouseEnteredTreangle" prefHeight="20.0" prefWidth="40.0" >
+            <graphic>
+                <ImageView>
+                    <Image url="@Images/triangle.png"/>
+                </ImageView>
+            </graphic></Button>
+        <Button fx:id="btnMediana" disable="true" mnemonicParsing="false" onAction="#btnMedian" onMouseEntered="#onMouseEnteredMediana" prefHeight="20.0" prefWidth="40.0" >
+            <graphic>
+                <ImageView>
+                    <Image url="@Images/mediana.png"/>
+                </ImageView>
+            </graphic></Button>
+        <Button fx:id="btnHeight" disable="true" mnemonicParsing="false" onAction="#btnHeight" onMouseEntered="#onMouseEnteredHeight" prefHeight="20.0" prefWidth="40.0" >
+            <graphic>
+                <ImageView>
+                    <Image url="@Images/triangle_height.png"/>
+                </ImageView>
+            </graphic></Button>
+        <Button fx:id="btnBisector" disable="true" mnemonicParsing="false" onAction="#btnBisector" onMouseEntered="#onMouseEnteredBisector" prefHeight="20.0" prefWidth="40.0" >
+            <graphic>
+                <ImageView>
+                    <Image url="@Images/bisector.png"/>
+                </ImageView>
+            </graphic></Button>
+        <Button fx:id="btnCircleInTreangle" disable="true" mnemonicParsing="false" onAction="#btnCircleInTreangle" onMouseEntered="#onMouseEnteredCircleInTreangle" >
+            <graphic>
+                <ImageView>
+                    <Image url="@Images/TrOutCircle.png"/>
+                </ImageView>
+            </graphic></Button>
+        <Button fx:id="btnCircleOutTreangle" disable="true" mnemonicParsing="false" onAction="#btnCircleOutTreangle" onMouseEntered="#onMouseEnteredCircleOutTreangle" >
+            <graphic>
+                <ImageView>
+                    <Image url="@Images/TrInCircle.png"/>
+                </ImageView>
+            </graphic></Button>
+        <Button fx:id="btnDelete" mnemonicParsing="false" onAction="#btnDelete" onMouseEntered="#onMouseEnteredDelete" prefHeight="20.0" prefWidth="40.0" >
+            <graphic>
+                <ImageView>
+                    <Image url="@Images/delete.png"/>
+                </ImageView>
+            </graphic></Button>
     </HBox>
     <SplitPane dividerPositions="0.25, 0.85" focusTraversable="true" VBox.vgrow="ALWAYS">
         <AnchorPane>
@@ -102,8 +202,8 @@
         <StackPane fx:id="Cartesian">
             <Pane fx:id="paneGrid" />
             <Pane fx:id="paneShape" accessibleRole="NODE" onMouseDragged="#onMouseDragged" onMouseMoved="#onMouseMoved" onMousePressed="#onMousePressed" onScroll="#onScroll">
-                <Line fx:id="newLine" disable="true" stroke="DARKSLATEBLUE" fill="deepskyblue"/>
-                <Circle fx:id="circleFill" visible="false" fill="deepskyblue" opacity="0.4" radius="12" stroke="TRANSPARENT" />
+                <Line fx:id="newLine" disable="true" fill="deepskyblue" stroke="DARKSLATEBLUE" />
+                <Circle fx:id="circleFill" fill="deepskyblue" opacity="0.4" radius="12" stroke="TRANSPARENT" visible="false" />
             </Pane>
         </StackPane>
         <AnchorPane>
