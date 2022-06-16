@@ -396,7 +396,7 @@ class Model implements Observable {
      * 6- перпендикуляр, 7 - параллельные прямые, 8-треугольник
      * 9- медиана 10-высота, 11-биссектриса, 12-середина отрезка, 14-окружность
      * 15-касательная к окружности, 16- вписанная окружность, 17 - описанная окружность
-     * 18 - добавить заметку на доске
+     *
      */
     public void createGeometrics() {
         switch (createGeometric) {
@@ -425,6 +425,7 @@ class Model implements Observable {
                     newPoindShapeEnd();
                 }
             }
+            //Угол
             case 5 -> {
                 vertexTr1 = newCirclePoind();
                 newSegment.append(vertexTr1.getId());
@@ -1178,7 +1179,8 @@ class Model implements Observable {
         //Добавить в коллекцию NamePoindLine
         textAngle.setText(s);//Имя для вывода на доску
         Point2D arcXY = nameArcShow(circle, arc, textAngle);//рассчитать место буквы
-        namePoindLines.add(new NamePoindLine(textAngle, circle.getId(), arcXY.getX(), arcXY.getY(), gridViews.revAccessX(circle.getCenterX()), gridViews.revAccessY(circle.getCenterY()), showPoindName, showLineName, showAngleName, "arc"));
+        namePoindLines.add(new NamePoindLine(textAngle,  arc.getId(), arcXY.getX(), arcXY.getY(), gridViews.revAccessX(circle.getCenterX()), gridViews.revAccessY(circle.getCenterY()), showPoindName, showLineName, showAngleName, "arc"));
+
         //Добавить в коллекцию объектов на доске
         paneBoards.getChildren().add(textAngle);
     }
@@ -1740,6 +1742,7 @@ class Model implements Observable {
                     text.setText(findNameShape(findNameAngle(c.getId())));
                 }
                 String oldName = c.getId();
+                System.out.println(oldName);
                 text.setAlignment(Pos.CENTER_LEFT);
                 text.setLayoutX(getScreenXY().getX());
                 text.setLayoutY(getScreenXY().getY());
