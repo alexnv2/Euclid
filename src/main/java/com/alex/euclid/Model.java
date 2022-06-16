@@ -17,6 +17,7 @@ import javafx.scene.text.FontWeight;
 import javafx.scene.text.Text;
 import javafx.scene.web.WebView;
 import lombok.Data;
+import org.controlsfx.control.textfield.TextFields;
 
 import java.text.MessageFormat;
 import java.util.*;
@@ -395,6 +396,7 @@ class Model implements Observable {
      * 6- перпендикуляр, 7 - параллельные прямые, 8-треугольник
      * 9- медиана 10-высота, 11-биссектриса, 12-середина отрезка, 14-окружность
      * 15-касательная к окружности, 16- вписанная окружность, 17 - описанная окружность
+     * 18 - добавить заметку на доске
      */
     public void createGeometrics() {
         switch (createGeometric) {
@@ -818,6 +820,9 @@ class Model implements Observable {
                 setTxtShape("");
                 txtAreaOutput();
                 createGeometric = 0;
+            }
+            case 18 -> {
+                System.out.println("Add label");
             }
         }
     }
@@ -1709,7 +1714,7 @@ class Model implements Observable {
      */
     private void updateName(String oldName, String newName) {
         namePoindLines.forEach(np -> {
-            if (np.getText().getId().equals(oldName)) {
+            if (np.getId().equals(oldName)) {
                 np.getText().setText(newName);
             }
         });
@@ -1717,7 +1722,7 @@ class Model implements Observable {
         txtAreaOutput();
     }
 
-    /**
+    /**cx 8i2\
      * Метод newContextMenu(Shape c).
      * Предназначен для добавления контекстного меню
      * отрезку, прямой, луча.
@@ -1726,131 +1731,134 @@ class Model implements Observable {
      * @param shape - тип графической фигуры 1-точка, 2-линия, 3 - угол
      */
     private void newContextMenu(Shape c, int shape) {
-        //Контекстное меню
-        MenuItem menuItem = new MenuItem("Переименовать");
-        menuItem.setOnAction(ev -> {
-            TextField text = new TextField();
-            //Получить имя объекта
-            if (shape != 3) {
-                text.setText(findNameShape(c.getId()));
-            } else {
-                text.setText(findNameShape(findNameAngle(c.getId())));
-            }
-            text.setAlignment(Pos.CENTER);
-            text.setLayoutX(getScreenXY().getX());
-            text.setLayoutY(getScreenXY().getY());
-            text.setMaxWidth(50);
-            String oldName = text.getText();//запомнить имя объекта
-            setStringLeftStatus("Измените имя геометрической фигуры и нажмите Enter, для отмены переименования нажмите ESC.");
-            notifyObservers("LeftStatusGo");
-            paneBoards.getChildren().add(text);
-            text.requestFocus();//получить фокус
-            text.addEventFilter(KeyEvent.KEY_PRESSED, e -> {
-                if (e.getCode() == KeyCode.ENTER || e.getCode() == KeyCode.ESCAPE) {
-                    //вызов метода для замены имени фигуры
-                    updateName(oldName, text.getText());
-                    ev.consume();
-                    paneBoards.getChildren().remove(text);
+            //Контекстное меню
+            MenuItem menuItem = new MenuItem("Переименовать");
+            menuItem.setOnAction(ev -> {
+                //Сторонняя библиотека Controls FX для техтового поля ввода
+                TextField text = TextFields.createClearableTextField();
+                //Получить имя объекта
+                if (shape != 3) {
+                    text.setText(findNameShape(c.getId()));
+                } else {
+                    text.setText(findNameShape(findNameAngle(c.getId())));
                 }
+                String oldName = c.getId();
+                text.setAlignment(Pos.CENTER_LEFT);
+                text.setLayoutX(getScreenXY().getX());
+                text.setLayoutY(getScreenXY().getY());
+                text.setMaxWidth(80);
+                //запомнить имя объекта
+                setStringLeftStatus("Измените имя геометрической фигуры и нажмите Enter, для отмены переименования нажмите ESC.");
+                notifyObservers("LeftStatusGo");
+                paneBoards.getChildren().add(text);
+                text.requestFocus();//получить фокус
+                text.addEventFilter(KeyEvent.KEY_PRESSED, e -> {
+                    if (e.getCode() == KeyCode.ENTER || e.getCode() == KeyCode.ESCAPE) {
+                        //вызов метода для замены имени фигуры
+                        updateName(oldName, text.getText());
+                        ev.consume();
+                        paneBoards.getChildren().remove(text);
+                    }
+                });
             });
-        });
-        Menu menuItem2 = new Menu("Изменить цвет ");
-        MenuItem mCol1 = new MenuItem();
-        MenuItem mCol2 = new MenuItem();
-        MenuItem mCol3 = new MenuItem();
-        MenuItem mCol4 = new MenuItem();
-        MenuItem mCol5 = new MenuItem();
+            Menu menuItem2 = new Menu("Изменить цвет ");
+            MenuItem mCol1 = new MenuItem();
+            MenuItem mCol2 = new MenuItem();
+            MenuItem mCol3 = new MenuItem();
+            MenuItem mCol4 = new MenuItem();
+            MenuItem mCol5 = new MenuItem();
 
-        mCol1.setGraphic(new ImageView(new Image(Objects.requireNonNull(getClass().getResourceAsStream("/com/alex/euclid/Images/RedColor.png")))));
-        mCol2.setGraphic(new ImageView(new Image(Objects.requireNonNull(getClass().getResourceAsStream("/com/alex/euclid/Images/BlueColor.png")))));
-        mCol3.setGraphic(new ImageView(new Image(Objects.requireNonNull(getClass().getResourceAsStream("/com/alex/euclid/Images/GreenColor.png")))));
-        mCol4.setGraphic(new ImageView(new Image(Objects.requireNonNull(getClass().getResourceAsStream("/com/alex/euclid/Images/YellowColor.png")))));
-        mCol5.setGraphic(new ImageView(new Image(Objects.requireNonNull(getClass().getResourceAsStream("/com/alex/euclid/Images/BlackColor.png")))));
-        menuItem2.getItems().addAll(mCol1, mCol2, mCol3, mCol4, mCol5);
-        mCol1.setOnAction(event -> tableColor(c, shape, 0));
-        mCol2.setOnAction(event -> tableColor(c, shape, 2));
-        mCol3.setOnAction(event -> tableColor(c, shape, 4));
-        mCol4.setOnAction(event -> tableColor(c, shape, 6));
-        mCol5.setOnAction(event -> tableColor(c, shape, 8));
+            mCol1.setGraphic(new ImageView(new Image(Objects.requireNonNull(getClass().getResourceAsStream("/com/alex/euclid/Images/RedColor.png")))));
+            mCol2.setGraphic(new ImageView(new Image(Objects.requireNonNull(getClass().getResourceAsStream("/com/alex/euclid/Images/BlueColor.png")))));
+            mCol3.setGraphic(new ImageView(new Image(Objects.requireNonNull(getClass().getResourceAsStream("/com/alex/euclid/Images/GreenColor.png")))));
+            mCol4.setGraphic(new ImageView(new Image(Objects.requireNonNull(getClass().getResourceAsStream("/com/alex/euclid/Images/YellowColor.png")))));
+            mCol5.setGraphic(new ImageView(new Image(Objects.requireNonNull(getClass().getResourceAsStream("/com/alex/euclid/Images/BlackColor.png")))));
+            menuItem2.getItems().addAll(mCol1, mCol2, mCol3, mCol4, mCol5);
+            mCol1.setOnAction(event -> tableColor(c, shape, 0));
+            mCol2.setOnAction(event -> tableColor(c, shape, 2));
+            mCol3.setOnAction(event -> tableColor(c, shape, 4));
+            mCol4.setOnAction(event -> tableColor(c, shape, 6));
+            mCol5.setOnAction(event -> tableColor(c, shape, 8));
 
-        Menu menuItem3 = new Menu("Форма линий");
-        MenuItem mIt1 = new MenuItem();
-        MenuItem mIt2 = new MenuItem();
-        MenuItem mIt3 = new MenuItem();
-        MenuItem mIt4 = new MenuItem();
-        MenuItem mIt5 = new MenuItem();
-        mIt1.setGraphic(new ImageView(new Image(Objects.requireNonNull(getClass().getResourceAsStream("/com/alex/euclid/Images/Line1.png")))));
-        mIt2.setGraphic(new ImageView(new Image(Objects.requireNonNull(getClass().getResourceAsStream("/com/alex/euclid/Images/Line2.png")))));
-        mIt3.setGraphic(new ImageView(new Image(Objects.requireNonNull(getClass().getResourceAsStream("/com/alex/euclid/Images/Line3.png")))));
-        mIt4.setGraphic(new ImageView(new Image(Objects.requireNonNull(getClass().getResourceAsStream("/com/alex/euclid/Images/Line4.png")))));
-        mIt5.setGraphic(new ImageView(new Image(Objects.requireNonNull(getClass().getResourceAsStream("/com/alex/euclid/Images/line5.png")))));
-        menuItem3.getItems().addAll(mIt1, mIt2, mIt3, mIt4, mIt5);
+            Menu menuItem3 = new Menu("Форма линий");
+            MenuItem mIt1 = new MenuItem();
+            MenuItem mIt2 = new MenuItem();
+            MenuItem mIt3 = new MenuItem();
+            MenuItem mIt4 = new MenuItem();
+            MenuItem mIt5 = new MenuItem();
+            mIt1.setGraphic(new ImageView(new Image(Objects.requireNonNull(getClass().getResourceAsStream("/com/alex/euclid/Images/Line1.png")))));
+            mIt2.setGraphic(new ImageView(new Image(Objects.requireNonNull(getClass().getResourceAsStream("/com/alex/euclid/Images/Line2.png")))));
+            mIt3.setGraphic(new ImageView(new Image(Objects.requireNonNull(getClass().getResourceAsStream("/com/alex/euclid/Images/Line3.png")))));
+            mIt4.setGraphic(new ImageView(new Image(Objects.requireNonNull(getClass().getResourceAsStream("/com/alex/euclid/Images/Line4.png")))));
+            mIt5.setGraphic(new ImageView(new Image(Objects.requireNonNull(getClass().getResourceAsStream("/com/alex/euclid/Images/line5.png")))));
+            menuItem3.getItems().addAll(mIt1, mIt2, mIt3, mIt4, mIt5);
 
-        mIt1.setOnAction(event -> {
-            c.getStrokeDashArray().clear();
-            c.getStrokeDashArray().addAll(getLineStokeWidth());
-        });
-        mIt2.setOnAction(event -> {
-            c.getStrokeDashArray().clear();
-            c.getStrokeDashArray().addAll(getLineStokeWidth(), 2 * getLineStokeWidth());
-        });
-        mIt3.setOnAction(event -> {
-            c.getStrokeDashArray().clear();
-            c.getStrokeDashArray().addAll(7 * getLineStokeWidth(), 2 * getLineStokeWidth());
-        });
-        mIt4.setOnAction(event -> {
-            c.getStrokeDashArray().clear();
-            c.getStrokeDashArray().addAll(5.0 * getLineStokeWidth(), getLineStokeWidth(), 5.0 * getLineStokeWidth());
-        });
-        mIt5.setOnAction(event -> {
-            c.getStrokeDashArray().clear();
-            c.getStrokeDashArray().addAll(5.0 * getLineStokeWidth(), getLineStokeWidth(), 2.5 * getLineStokeWidth(), getLineStokeWidth(), 5.0 * getLineStokeWidth());
-        });
+            mIt1.setOnAction(event -> {
+                c.getStrokeDashArray().clear();
+                c.getStrokeDashArray().addAll(getLineStokeWidth());
+            });
+            mIt2.setOnAction(event -> {
+                c.getStrokeDashArray().clear();
+                c.getStrokeDashArray().addAll(getLineStokeWidth(), 2 * getLineStokeWidth());
+            });
+            mIt3.setOnAction(event -> {
+                c.getStrokeDashArray().clear();
+                c.getStrokeDashArray().addAll(7 * getLineStokeWidth(), 2 * getLineStokeWidth());
+            });
+            mIt4.setOnAction(event -> {
+                c.getStrokeDashArray().clear();
+                c.getStrokeDashArray().addAll(5.0 * getLineStokeWidth(), getLineStokeWidth(), 5.0 * getLineStokeWidth());
+            });
+            mIt5.setOnAction(event -> {
+                c.getStrokeDashArray().clear();
+                c.getStrokeDashArray().addAll(5.0 * getLineStokeWidth(), getLineStokeWidth(), 2.5 * getLineStokeWidth(), getLineStokeWidth(), 5.0 * getLineStokeWidth());
+            });
 
-        Menu menuItem4 = new Menu("Толщина линий");
-        MenuItem m1 = new MenuItem();
-        MenuItem m2 = new MenuItem();
-        MenuItem m3 = new MenuItem();
-        MenuItem m4 = new MenuItem();
-        MenuItem m5 = new MenuItem();
-        m1.setText("1 px");
-        m2.setText("2 px");
-        m3.setText("3 px");
-        m4.setText("4 px");
-        m5.setText("5 px");
-        menuItem4.getItems().addAll(m1, m2, m3, m4, m5);
+            Menu menuItem4 = new Menu("Толщина линий");
+            MenuItem m1 = new MenuItem();
+            MenuItem m2 = new MenuItem();
+            MenuItem m3 = new MenuItem();
+            MenuItem m4 = new MenuItem();
+            MenuItem m5 = new MenuItem();
+            m1.setText("1 px");
+            m2.setText("2 px");
+            m3.setText("3 px");
+            m4.setText("4 px");
+            m5.setText("5 px");
+            menuItem4.getItems().addAll(m1, m2, m3, m4, m5);
 
-        m1.setOnAction(event -> lineWidth(c, 1));
-        m2.setOnAction(event -> lineWidth(c, 2));
-        m3.setOnAction(event -> lineWidth(c, 3));
-        m4.setOnAction(event -> lineWidth(c, 4));
-        m5.setOnAction(event -> lineWidth(c, 5));
+            m1.setOnAction(event -> lineWidth(c, 1));
+            m2.setOnAction(event -> lineWidth(c, 2));
+            m3.setOnAction(event -> lineWidth(c, 3));
+            m4.setOnAction(event -> lineWidth(c, 4));
+            m5.setOnAction(event -> lineWidth(c, 5));
 
-        Menu menuItem5 = new Menu("Форма точек");
-        MenuItem mCt1 = new MenuItem();
-        MenuItem mCt2 = new MenuItem();
-        MenuItem mCt3 = new MenuItem();
-        mCt1.setGraphic(new ImageView(new Image(Objects.requireNonNull(getClass().getResourceAsStream("/com/alex/euclid/Images/circle_1.png")))));
-        mCt2.setGraphic(new ImageView(new Image(Objects.requireNonNull(getClass().getResourceAsStream("/com/alex/euclid/Images/circle_2.png")))));
-        mCt3.setGraphic(new ImageView(new Image(Objects.requireNonNull(getClass().getResourceAsStream("/com/alex/euclid/Images/circle_3.png")))));
-        menuItem5.getItems().addAll(mCt1, mCt2, mCt3);
-        mCt1.setOnAction(e -> poindForm(c, 0));
-        mCt2.setOnAction(e -> poindForm(c, 1));
-        mCt3.setOnAction(e -> poindForm(c, 2));
+            Menu menuItem5 = new Menu("Форма точек");
+            MenuItem mCt1 = new MenuItem();
+            MenuItem mCt2 = new MenuItem();
+            MenuItem mCt3 = new MenuItem();
+            mCt1.setGraphic(new ImageView(new Image(Objects.requireNonNull(getClass().getResourceAsStream("/com/alex/euclid/Images/circle_1.png")))));
+            mCt2.setGraphic(new ImageView(new Image(Objects.requireNonNull(getClass().getResourceAsStream("/com/alex/euclid/Images/circle_2.png")))));
+            mCt3.setGraphic(new ImageView(new Image(Objects.requireNonNull(getClass().getResourceAsStream("/com/alex/euclid/Images/circle_3.png")))));
+            menuItem5.getItems().addAll(mCt1, mCt2, mCt3);
+            mCt1.setOnAction(e -> poindForm(c, 0));
+            mCt2.setOnAction(e -> poindForm(c, 1));
+            mCt3.setOnAction(e -> poindForm(c, 2));
 
-        ContextMenu menu = new ContextMenu();
-        if (shape == 2) {
-            menu.getItems().addAll(menuItem, menuItem2, menuItem3, menuItem4);
-        } else if (shape == 1) {
-            menu.getItems().addAll(menuItem, menuItem2, menuItem5);
-        } else {
-            menu.getItems().addAll(menuItem, menuItem2);
-        }
-        //Привязка меню к графическому объекту
-        c.setOnMouseClicked(t -> {
-            if (t.getButton().toString().equals("SECONDARY"))
-                menu.show(c, t.getScreenX(), t.getSceneY());
-        });
+            ContextMenu menu = new ContextMenu();
+            if (shape == 2) {
+                menu.getItems().addAll(menuItem, menuItem2, menuItem3, menuItem4);
+            } else if (shape == 1) {
+                menu.getItems().addAll(menuItem, menuItem2, menuItem5);
+            } else {
+                menu.getItems().addAll(menuItem, menuItem2);
+            }
+            //Привязка меню к графическому объекту
+            c.setOnMouseClicked(t -> {
+                if (t.getButton().toString().equals("SECONDARY"))
+                    menu.show(c, t.getScreenX(), t.getSceneY());
+            });
+
     }
 
     /**
@@ -2894,17 +2902,17 @@ class Model implements Observable {
      * @param cD - точка на параллельной прямой расчетная
      */
     public void parallelBindLine(Circle cA, Circle cB, Circle cC, Circle cD) {
-        cA.centerXProperty().addListener((obj, OldValue, newValue) -> accessParalel(cA, cB, cC, cD));
-        cA.centerYProperty().addListener((obj, OldValue, newValue) -> accessParalel(cA, cB, cC, cD));
-        cB.centerXProperty().addListener((obj, OldValue, newValue) -> accessParalel(cA, cB, cC, cD));
-        cB.centerYProperty().addListener((obj, OldValue, newValue) -> accessParalel(cA, cB, cC, cD));
-        cC.centerXProperty().addListener((obj, OldValue, newValue) -> accessParalel(cA, cB, cC, cD));
-        cC.centerYProperty().addListener((obj, OldValue, newValue) -> accessParalel(cA, cB, cC, cD));
+        cA.centerXProperty().addListener((obj, OldValue, newValue) -> accessParallel(cA, cB, cC, cD));
+        cA.centerYProperty().addListener((obj, OldValue, newValue) -> accessParallel(cA, cB, cC, cD));
+        cB.centerXProperty().addListener((obj, OldValue, newValue) -> accessParallel(cA, cB, cC, cD));
+        cB.centerYProperty().addListener((obj, OldValue, newValue) -> accessParallel(cA, cB, cC, cD));
+        cC.centerXProperty().addListener((obj, OldValue, newValue) -> accessParallel(cA, cB, cC, cD));
+        cC.centerYProperty().addListener((obj, OldValue, newValue) -> accessParallel(cA, cB, cC, cD));
 
     }
 
     /**
-     * Метод accessParalel(Circle cA, Circle cB, Circle cC, Circle cD).
+     * Метод accessParallel(Circle cA, Circle cB, Circle cC, Circle cD).
      * Предназначен для расчета точки для параллельной прямой.
      *
      * @param cA - первая точка прямой
@@ -2912,7 +2920,7 @@ class Model implements Observable {
      * @param cC - первая точка параллельной прямой
      * @param cD - расчетная точка параллельной прямой
      */
-    private void accessParalel(Circle cA, Circle cB, Circle cC, Circle cD) {
+    private void accessParallel(Circle cA, Circle cB, Circle cC, Circle cD) {
         //Рассчитать координаты новой точки
         double a = cB.getCenterY() - cA.getCenterY();
         double b = cA.getCenterX() - cB.getCenterX();
