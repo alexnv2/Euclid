@@ -821,9 +821,6 @@ class Model implements Observable {
                 txtAreaOutput();
                 createGeometric = 0;
             }
-            case 18 -> {
-                System.out.println("Add label");
-            }
         }
     }
 

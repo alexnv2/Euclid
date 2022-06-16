@@ -326,35 +326,6 @@ public class EuclidController extends View {
         if (event.getTarget() == paneShape) {
             gridViews.setVPx(event.getX());
             gridViews.setVPy(event.getY());
-         if (event.isSecondaryButtonDown()) {
-             MenuItem menuItem = new MenuItem("Добавить заметку");
-             TextField text = new TextField();
-             text.setAlignment(Pos.CENTER);
-             text.setLayoutX(model.getScreenXY().getX());
-             text.setLayoutY(model.getScreenXY().getY());
-             text.setMaxWidth(150);
-             text.setStyle("-fx-background-color: #949494;\n" +
-                     "    -fx-scale-shape: false;\n" +
-                     "    -fx-padding: 4.5 4.5 4.5 4.5; /* Graphic is 9x9 px */\n" +
-                     "    -fx-shape: \"M395.992,296.758l1.794-1.794l7.292,7.292l-1.795,1.794 L395.992,296.758z M403.256,294.992l1.794,1.794l-7.292,7.292l-1.794-1.795 L403.256,294.992z\";\n");
-             menuItem.setOnAction(ev -> {
-
-                 String oldName = text.getText();//запомнить имя объекта
-                 model.setStringLeftStatus("Добавте заметку на доску");
-                 model.notifyObservers("LeftStatusGo");
-                 paneShape.getChildren().add(text);
-                 text.requestFocus();//получить фокус
-                 text.addEventFilter(KeyEvent.KEY_PRESSED, e -> {
-                     if (e.getCode() == KeyCode.ENTER || e.getCode() == KeyCode.ESCAPE) {
-                         //вызов метода для замены имени фигуры
-
-                     }
-                 });
-             });
-             ContextMenu menu = new ContextMenu();
-             menu.getItems().add(menuItem);
-             menu.show(paneShape, event.getScreenX(), event.getScreenY());
-         }
         }
         //Вызвать режим построения геометрических фигур
         model.createGeometrics();
@@ -1249,7 +1220,7 @@ public class EuclidController extends View {
                  Носова Алексея\s
                  Программа по лицензии GPU v2.1 \t
 
-                Версия 1.5    2022 г.\s
+                Версия 1.6    2022 г.\s
                 \s""");
         label3.setFont(Font.font("Courier", FontWeight.BOLD, 24.0));
         label3.setTextFill(Color.YELLOW);
