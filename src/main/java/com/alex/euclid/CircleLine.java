@@ -9,7 +9,7 @@ import lombok.Data;
  */
 @Data
 @AllArgsConstructor
-public class CircleLine {
+public class  CircleLine {
     private Circle circle;
     private double x;//мировые координаты центра окружности
     private double y;
