@@ -55,7 +55,6 @@ public class EqualityController extends View{
      */
     @FXML
     private void initialize() {
-        System.out.println(model.getWindShow());
         //1 признак равенства
         if (model.getWindShow() == 0) {
             arcB_1.setVisible(false);
@@ -196,7 +195,6 @@ public class EqualityController extends View{
                 groupTr3.setVisible(true);
                 poindC.setRotate(180);
                 poindB.setRotate(180);
-                //poindB1.setRotate(80);
             });
         } else {
             //Перемещениe для 1 и 2 признаков равенства треугольников
@@ -214,12 +212,10 @@ public class EqualityController extends View{
             rt2.setToAngle(-30.0);
             rt2.setCycleCount(1);
             rt2.setInterpolator(Interpolator.LINEAR);
-
             //Параллельное выполнение
             ParallelTransition pt = new ParallelTransition(groupTriangles);
             pt.getChildren().addAll(tr, rt2);
             pt.play();
-
         }
     }
 }

@@ -133,8 +133,10 @@ public class EuclidController extends View {
     private static final String COLOR_TABLE9 = "0x000000ff";
     private static final String COLOR_TABLE10 = "0xffffe0ff";
     private static final String COLOR_TABLE11 = "0xd3d3d3ff";
-    private static final String TOOL_TIP="ToolTip";
-    private static final String LEFT_STATUS_GO="LeftStatusGo";
+    // Всплывающие сообщения при наведении мыши на кнопки
+    private static final String TOOL_TIP = "ToolTip";
+    // Вывод сообщения в строке статуса.
+    private static final String LEFT_STATUS_GO = "LeftStatusGo";
 
 
     /**
@@ -161,7 +163,7 @@ public class EuclidController extends View {
         model.tableColor[1][2] = COLOR_TABLE4;
         model.tableColor[2][2] = COLOR_TABLE2;
         model.tableColor[0][3] = COLOR_TABLE2;
-        model.tableColor[1][3] = COLOR_TABLE5 ;
+        model.tableColor[1][3] = COLOR_TABLE5;
         model.tableColor[2][3] = COLOR_TABLE4;
         model.tableColor[0][4] = COLOR_TABLE6;
         model.tableColor[1][4] = COLOR_TABLE6;
@@ -206,7 +208,6 @@ public class EuclidController extends View {
         });
         gridViews.gridCartesian();//Вывод сетки
     }
-
 
     /**
      * Метод disableButton(Boolean b)
