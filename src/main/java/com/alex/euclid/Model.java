@@ -51,7 +51,7 @@ class Model implements Observable {
     private Line line;//линия, луч, прямая
     private Shape shapeColor;//графический объект для задания цвета, точка, линия, арка
     private Line newLine;//луча, отрезка, прямой для построения и при наведении на линию
-    private Label Status;//левый статус, вывод действий
+    private Label status;//левый статус, вывод действий
     private Label rightStatus;//правый статус, вывод координат
     private Text textGo;//Для наименования точек, отрезков, прямых и т.д
     private WebView webView; //браузер в левой части доски
@@ -334,8 +334,8 @@ class Model implements Observable {
         for (PoindCircle p : poindCircles) {
             if (p.getCircle() != null) {
                 String s1 = findNameShape(p.getId());
-                double s2 = p.getXY().getX();
-                double s3 = p.getXY().getY();
+                double s2 = p.getXy().getX();
+                double s3 = p.getXy().getY();
                 txtShape = MessageFormat.format("{0}Точка: {1} ({2,number, #.#}, {3,number, #.#})\n", txtShape, s1, s2, s3);
             }
         }
@@ -2106,7 +2106,7 @@ class Model implements Observable {
         poindCircles.forEach(p -> {
             if (p != null) {
                 if (p.getId().equals(pCircle.getId())) {
-                    p.setXY(new Point2D(gridViews.revAccessX(pCircle.getCenterX()), gridViews.revAccessY(pCircle.getCenterY())));
+                    p.setXy(new Point2D(gridViews.revAccessX(pCircle.getCenterX()), gridViews.revAccessY(pCircle.getCenterY())));
                 }
             }
         });
@@ -2123,7 +2123,7 @@ class Model implements Observable {
         poindCircles.forEach(p -> {
             if (p.getId().equals(c.getId())) {
                 p.setT(t);
-                p.setXY(new Point2D(gridViews.revAccessX(c.getCenterX()), gridViews.revAccessY(c.getCenterY())));
+                p.setXy(new Point2D(gridViews.revAccessX(c.getCenterX()), gridViews.revAccessY(c.getCenterY())));
             }
         });
     }
@@ -2626,7 +2626,7 @@ class Model implements Observable {
     public void findCirclesUpdateXY(String id, double x, double y) {
         poindCircles.forEach(p -> {
             if (p.getId().equals(id)) {
-                p.setXY(new Point2D(x, y));
+                p.setXy(new Point2D(x, y));
             }
         });
     }
@@ -3361,7 +3361,7 @@ class Model implements Observable {
     private void findMedianaUpdateXY(Circle md, Line lm) {
         poindCircles.forEach(p -> {
             if (p.getCircle().getId().equals(md.getId())) {
-                p.setXY(new Point2D(gridViews.revAccessX(md.getCenterX()), gridViews.revAccessY(md.getCenterY())));
+                p.setXy(new Point2D(gridViews.revAccessX(md.getCenterX()), gridViews.revAccessY(md.getCenterY())));
             }
         });
         poindLines.forEach(pl -> {
@@ -3505,7 +3505,7 @@ class Model implements Observable {
         vertexArcs.forEach(System.out::println);
 
         System.out.println("Коллекция имен");
-        namePoindLines.forEach(System.out::println);
+        namePoindLines.forEach(x -> System.out.println(x));
 
         System.out.println("Коллекция треугольников");
         treangleNames.forEach(System.out::println);

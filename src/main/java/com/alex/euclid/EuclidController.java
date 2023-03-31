@@ -366,7 +366,7 @@ public class EuclidController extends View {
             //обновление точек
             model.getPoindCircles().forEach(p -> {
                 if (p != null) {
-                    model.setScreenXY(new Point2D(gridViews.accessX(p.getXY().getX()), gridViews.accessY(p.getXY().getY())));
+                    model.setScreenXY(new Point2D(gridViews.accessX(p.getXy().getX()), gridViews.accessY(p.getXy().getY())));
                     model.setVertex(p.getCircle());
                     model.notifyObservers("VertexGo");
                 }

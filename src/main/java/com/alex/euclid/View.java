@@ -14,8 +14,8 @@ import javafx.scene.text.Text;
 import javafx.scene.web.WebEngine;
 import javafx.scene.web.WebView;
 import javafx.util.Duration;
-
 import java.util.Objects;
+import static java.lang.System.*;
 
 /**
  * Класс View расширяет интерфейс Observer.
@@ -56,19 +56,33 @@ class View implements Observer {
     @Override
     public void notification(String message) {
         switch (message) {
-            case "VertexGo" -> this.vertexGo(model.getVertex());//перемещение вершин
-            case "SideGo" -> this.sideGo(model.getLine());//отрисовка сторон отрезков
-            case "RayGo" -> this.rayGo(model.getLine());//для луча и прямой
-            case "LeftStatusGo" -> this.statusGo(model.getStatus());//вывод статуса
-            case "WebGo" -> this.webFileHTMLGo(model.getWebView());//вывод файла HTML
-            case "TextShapeGo" -> this.textShapeGo(model.getTextArea());//для вывода в правое окно
-            case "FillShape" -> this.FillColor(model.getShapeColor());//цвет заливки
-            case "StrokeShape" -> this.SrokeColor(model.getShapeColor());//цвет обводки
-            case "ArcGo" -> this.arcGo(model.getArcGo());//дуги для углов и дуг для треугольников
-            case "TextGo" -> this.TextGo(model.getTextGo());//буквы
-            case "ToolTip" -> this.ToolTipGo(model.getBtnToolTip());//добавить всплывающие подсказки
-            case "CircleGo" -> this.CircleGo(model.getCircle());//вывод окружности
-            case "StrokeWidth" -> this.LineStrokeWidth(model.getLine());
+            //перемещение вершин
+            case "VertexGo" -> this.vertexGo(model.getVertex());
+            //отрисовка сторон отрезков
+            case "SideGo" -> this.sideGo(model.getLine());
+            //для луча и прямой
+            case "RayGo" -> this.rayGo(model.getLine());
+            //вывод статуса
+            case "LeftStatusGo" -> this.statusGo(model.getStatus());
+            //вывод файла HTML
+            case "WebGo" -> this.webFileHTMLGo(model.getWebView());
+            //для вывода в правое окно
+            case "TextShapeGo" -> this.textShapeGo(model.getTextArea());
+            //цвет заливки
+            case "FillShape" -> this.fillColor(model.getShapeColor());
+            //цвет обводки
+            case "StrokeShape" -> this.srokeColor(model.getShapeColor());
+            //дуги для углов и дуг для треугольников
+            case "ArcGo" -> this.arcGo(model.getArcGo());
+            //буквы
+            case "TextGo" -> this.textGo(model.getTextGo());
+            //добавить всплывающие подсказки
+            case "ToolTip" -> this.toolTipGo(model.getBtnToolTip());
+            //вывод окружности
+            case "CircleGo" -> this.circleGo(model.getCircle());
+            //Толщина линии
+            case "StrokeWidth" -> this.lineStrokeWidth(model.getLine());
+            default -> out.println("Неизвестная информация");
         }
     }
 
@@ -78,7 +92,7 @@ class View implements Observer {
      *
      * @param line - объект линия
      */
-    private void LineStrokeWidth(Line line) {
+    private void lineStrokeWidth(Line line) {
         line.setStrokeWidth(model.getLineStokeWidth());
     }
 
@@ -88,7 +102,7 @@ class View implements Observer {
      *
      * @param sh - объект circle, line, arc
      */
-    private void SrokeColor(Shape sh) {
+    private void srokeColor(Shape sh) {
         sh.setStroke(model.getColorStroke());
     }
 
@@ -98,7 +112,7 @@ class View implements Observer {
      *
      * @param sh - объект circle, line, arc, text
      */
-    private void FillColor(Shape sh) {
+    private void fillColor(Shape sh) {
         sh.setFill(model.getColorFill());
     }
 
@@ -108,7 +122,7 @@ class View implements Observer {
      *
      * @param btnToolTip - объект кнопка на которую наведена мышка
      */
-    private void ToolTipGo(Button btnToolTip) {
+    private void toolTipGo(Button btnToolTip) {
         tooltip.setText(model.getTextToolTip());//получить текст подсказки
         btnToolTip.setTooltip(tooltip);//вывести подсказку
     }
@@ -205,7 +219,7 @@ class View implements Observer {
      *
      * @param t - объект текст
      */
-    private void TextGo(Text t) {
+    private void textGo(Text t) {
         t.setX(model.getTextX());
         t.setY(model.getTextY());
     }
@@ -216,7 +230,7 @@ class View implements Observer {
      *
      * @param c объект окружность
      */
-    private void CircleGo(Circle c) {
+    private void circleGo(Circle c) {
         c.setCenterX(model.getSegmentStartX());
         c.setCenterY(model.getSegmentStartY());
         c.setRadius(model.getRadiusCircle());
