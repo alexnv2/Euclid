@@ -13,6 +13,7 @@ import lombok.EqualsAndHashCode;
 
 import static java.lang.Math.abs;
 import static java.lang.Math.pow;
+import static java.lang.System.*;
 
 /**
  * Класс GridView наследует класс WView.
@@ -23,10 +24,11 @@ import static java.lang.Math.pow;
 @Data
 
 public class GridView extends WView {
-    StackPane Cartesian; //начало стека контейнера
+    StackPane cartesian; //начало стека контейнера
     Pane paneGrid;//контейнер для координатной сетки
     boolean gridShow = true; //вывод сетки
     boolean gridLineShow = true; // вывод координатных осей
+
     //Конструктор
     GridView() {
     }
@@ -40,7 +42,10 @@ public class GridView extends WView {
         Group group2 = new Group();
         double mk = getM();//Масштаб
         double rk = getK0() * getK3();
-        int z1, z2, z3, z4;
+        int z1;
+        int z2;
+        int z3;
+        int z4;
         z1 = (int) (abs(getWr() / mk * 2));
         z2 = (int) (abs(getWl() / mk * 2));
         z3 = (int) (abs(getWt() / mk * 2));
@@ -54,7 +59,8 @@ public class GridView extends WView {
         Shape[] shapes4 = new Shape[z3 + z4];
         Shape[] shapes5 = new Shape[z1 + z2];
         //Вертикальная сетка
-        for (int i = 0; i < z1; i++) {
+        int i = 0;
+        while (i < z1) {
             if (gridShow) {
                 shapes0[i] = new Line(gridShowX(i), 0, gridShowX(i), getVb());
                 shapes0[i].setStrokeWidth(1);
@@ -79,7 +85,6 @@ public class GridView extends WView {
                     //Если начало координат выше зоны просмотра
                     if (gridShowY(0) <= 0) {
                         shapes5[i] = new Text(gridShowX(i) - 10, getVt() + 12, doubleString(i * rk));
-
                         //Если начало координат ниже зоны просмотра
                     } else if (gridShowY(0) >= getVb() - 12) {
                         shapes5[i] = new Text(gridShowX(i) - 10, getVb(), doubleString(i * rk));
@@ -93,8 +98,10 @@ public class GridView extends WView {
             if (gridShow) {
                 group.getChildren().add(shapes0[i]);
             }
+            i++;
         }
-        for (int i = 0; i < z2; i++) {
+
+        for (i = 0; i < z2; i++) {
             if (gridShow) {
                 shapes1[i] = new Line(gridShowX(-i), 0, gridShowX(-i), getVb());
                 shapes1[i].setStrokeWidth(1);
@@ -123,7 +130,7 @@ public class GridView extends WView {
             }
         }
         //Горизонтальная сетка положительная
-        for (int i = 0; i < z3; i++) {
+        for (i = 0; i < z3; i++) {
             if (gridShow) {
                 shapes2[i] = new Line(getVl(), gridShowY(i), getVr(), gridShowY(i));
                 shapes2[i].setStroke(Color.LIGHTBLUE);
@@ -149,7 +156,7 @@ public class GridView extends WView {
             }
         }
         //Горизонтальная сетка отрицательная
-        for (int i = 0; i < z4; i++) {
+        for (i = 0; i < z4; i++) {
             if (gridShow) {
                 shapes3[i] = new Line(getVl(), gridShowY(-i), getVr(), gridShowY(-i));
                 shapes3[i].setStroke(Color.LIGHTBLUE);
@@ -200,7 +207,6 @@ public class GridView extends WView {
      * @param sc - количество поворотов колеса мышки
      */
     public void onScrollView(double sc) {
-        //double sc=scrollEvent.getDeltaY();//
         setWl(getWl() + (getVr() / sc));//для пропорциональности
         setWr(getWr() - (getVr() / sc));
         setWt(getWt() - (getVb() / sc));
@@ -222,11 +228,12 @@ public class GridView extends WView {
                     setK3(pow(10, getK2()));
                     setK1(1);
                 }
+                default -> out.println("Неверный коэффициент");
             }
-            setWl(-Cartesian.getWidth() / 2);
-            setWr(Cartesian.getWidth() / 2);
-            setWt(Cartesian.getHeight() / 2);
-            setWb(-Cartesian.getHeight() / 2);
+            setWl(-cartesian.getWidth() / 2);
+            setWr(cartesian.getWidth() / 2);
+            setWt(cartesian.getHeight() / 2);
+            setWb(-cartesian.getHeight() / 2);
         }
         //Уменьшить масштаб
         if (getA() > 1.4) {
@@ -244,12 +251,13 @@ public class GridView extends WView {
                     setK3(pow(10, getK2()));
                     setK1(1);
                 }
+                default -> out.println("Неверный коэффициент");
             }
             //Исходные размеры после изменения масштаба
-            setWl(-Cartesian.getWidth() / 2);
-            setWr(Cartesian.getWidth() / 2);
-            setWt(Cartesian.getHeight() / 2);
-            setWb(-Cartesian.getHeight() / 2);
+            setWl(-cartesian.getWidth() / 2);
+            setWr(cartesian.getWidth() / 2);
+            setWt(cartesian.getHeight() / 2);
+            setWb(-cartesian.getHeight() / 2);
         }
         paneGrid.getChildren().clear();//Очистить экран и память
         gridCartesian();
