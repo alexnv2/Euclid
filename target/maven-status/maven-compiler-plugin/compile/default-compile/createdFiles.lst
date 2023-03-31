@@ -1,4 +1,5 @@
 com\alex\euclid\PoindCircle.class
+contstantString\StringStatus.class
 com\alex\euclid\WView.class
 com\alex\euclid\CircleLine.class
 com\alex\euclid\EqualityController.class
@@ -14,4 +15,3 @@ com\alex\euclid\NamePoindLine.class
 com\alex\euclid\Observable.class
 com\alex\euclid\GridView.class
 com\alex\euclid\EuclidController.class
-ContstantString\StringStatus.class

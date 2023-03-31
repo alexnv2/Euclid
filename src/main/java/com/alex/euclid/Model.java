@@ -1,6 +1,5 @@
 package com.alex.euclid;
 
-import contstantString.StringStatus;
 import javafx.geometry.Point2D;
 import javafx.geometry.Pos;
 import javafx.scene.Cursor;
@@ -173,7 +172,7 @@ class Model implements Observable {
     private LinkedList<NamePoindLine> namePoindLines = new LinkedList<>();//коллекция для имен
     private LinkedList<TreangleName> treangleNames = new LinkedList<>();//коллекция треугольников
     private LinkedList<CircleLine> circleLines = new LinkedList<>();//коллекция окружностей
-    private Stack<Circle> circleStack;//стек для точек при построении треугольников и углов
+    private final ThreadLocal<Stack<Circle>> circleStack = new ThreadLocal<Stack<Circle>>();//стек для точек при построении треугольников и углов
 
     //Определяем связанный список для регистрации классов слушателей
     private LinkedList<Observer> observers = new LinkedList<>();
@@ -191,7 +190,7 @@ class Model implements Observable {
      * Конструктор класса без переменных
      */
     Model() {
-        circleStack = new Stack<>();
+        circleStack.set(new Stack<>());
     }
 
     /**
@@ -437,12 +436,12 @@ class Model implements Observable {
                 vertexTr1 = newCirclePoind();
                 newSegment.append(vertexTr1.getId());
                 newSegment.append("_");
-                circleStack.push(vertexTr1);
+                circleStack.get().push(vertexTr1);
                 setColVertex(getColVertex() - 1);
                 if (getColVertex() == 0) {
-                    vertexTr3 = circleStack.pop();
-                    vertexTr2 = circleStack.pop();
-                    vertexTr1 = circleStack.pop();
+                    vertexTr3 = circleStack.get().pop();
+                    vertexTr2 = circleStack.get().pop();
+                    vertexTr1 = circleStack.get().pop();
                     newSegment.delete(newSegment.length() - 1, newSegment.length());//удалить последнее _
                     Arc arcAngle = createVertexAdd(vertexTr1, vertexTr2, vertexTr3, newSegment.toString());
                     paneBoards.getChildren().add(arcAngle);//рисуем арку дуги
@@ -577,7 +576,7 @@ class Model implements Observable {
                 setPoindOne(true);
                 newSegment.append(vertexTr1.getId());
                 newSegment.append("_");
-                circleStack.push(vertexTr1);
+                circleStack.get().push(vertexTr1);
                 if (poindTwo) {
                     Line l1 = createLineAdd(3);
                     setSegmentStartX(newLine.getStartX());
@@ -596,9 +595,9 @@ class Model implements Observable {
                     setSegmentStartY(newLine.getEndY());
                 }
                 if (getColVertex() == 1) {
-                    vertexTr3 = circleStack.pop();
-                    vertexTr2 = circleStack.pop();
-                    vertexTr1 = circleStack.pop();
+                    vertexTr3 = circleStack.get().pop();
+                    vertexTr2 = circleStack.get().pop();
+                    vertexTr1 = circleStack.get().pop();
                     Line l1 = createLineAdd(3);
                     setSegmentStartX(vertexTr1.getCenterX());
                     setSegmentStartY(vertexTr1.getCenterY());
@@ -722,7 +721,7 @@ class Model implements Observable {
                 vertex = getTimeVer();
                 //Проверить, принадлежит ли точка окружности
                 if (findBCircle(vertex.getId(), 1)) {
-                    circleStack.push(vertex);
+                    circleStack.get().push(vertex);
                     newSegment.append(vertex.getId());
                     newSegment.append("_");
                     //Рассчитать координаты второй точки касательной
@@ -743,7 +742,7 @@ class Model implements Observable {
                     notifyObservers("VertexGo");
                     //построить касательную
                     Line tangentLine = createLineAdd(8);
-                    Circle c = circleStack.pop();
+                    Circle c = circleStack.get().pop();
                     //задать координаты прямой
                     setRayStartX(c.getCenterX() + (newPoind.getCenterX() - c.getCenterX()) * 3);
                     setRayStartY(c.getCenterY() + (newPoind.getCenterY() - c.getCenterY()) * 3);
