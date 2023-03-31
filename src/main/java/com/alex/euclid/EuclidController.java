@@ -670,7 +670,7 @@ public class EuclidController extends View {
      * Метод menuSecantAngle_1().
      * Нажат пункт меню "Теоремы и свойства -> Теорема об углах с соответственно параллельными прямыми->Теорема1".
      */
-    public void menuSecantAngle_1() {
+    public void menuSecantAngle1() {
         model.webHTML(webViewLeft, "perAngle_1.html");//Вывод в браузер файла html
     }
 
