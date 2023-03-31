@@ -10,6 +10,6 @@ module com.alex.euclid {
 
     opens com.alex.euclid to javafx.fxml;
     exports com.alex.euclid;
-    exports ContstantString;
-    opens ContstantString to javafx.fxml;
+    exports contstantString;
+    opens contstantString to javafx.fxml;
 }

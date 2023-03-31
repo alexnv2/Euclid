@@ -29,7 +29,7 @@ import java.text.DecimalFormat;
 import java.util.Objects;
 import java.util.Optional;
 
-import static ContstantString.StringStatus.*;
+import static contstantString.StringStatus.*;
 
 /**
  * Класс управления приложением (Controller), наследует класс View.
@@ -1167,7 +1167,7 @@ public class EuclidController extends View {
         }
         //Вывод информации по коллекции (Alt+T)
         if ((key.isAltDown()) && (KeyCode.T == key.getCode())) {
-            model.ColTest();
+            model.colTest();
         }
     }
 

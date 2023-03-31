@@ -1,11 +1,11 @@
-package ContstantString;
+package contstantString;
 
 /**
  * Класс StringStatus.
  * Предназначен для вывода информации в статусной строке.
  */
 public final class StringStatus {
-    public static int WIND_SHOW=0;
+    public static int windShow =0;
     public static final String STA_1="Укажите на доске место для точки";
     public static final String STA_2="Укажите на доске начало и конец отрезка.";
     public static final String STA_3="Укажите на доске точку начала луча";
@@ -21,7 +21,6 @@ public final class StringStatus {
     public static final String STA_16="Угол ";
     public static final String STA_17="Сторона ";
     public static final String STA_18="Укажите на доске вершину треугольника, из которой надо построить медиану.";
- //   public static final String STA_19="Данную точку запрещено выбирать, так как она является расчетной. Выберите другую точку.";
     public static final String STA_20="Медиана ";
     public static final String STA_21="Треугольник ";
     public static final String STA_22="Укажите на доске вершину треугольника, из которой надо построить биссектрису.";

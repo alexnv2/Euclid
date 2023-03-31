@@ -1,5 +1,6 @@
 package com.alex.euclid;
 
+import contstantString.StringStatus;
 import javafx.geometry.Point2D;
 import javafx.geometry.Pos;
 import javafx.scene.Cursor;
@@ -25,10 +26,11 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReference;
 
-import static ContstantString.StringStatus.*;
+import static contstantString.StringStatus.*;
 import static java.lang.Math.abs;
 import static java.lang.StrictMath.pow;
 import static java.lang.StrictMath.sqrt;
+import static java.lang.System.*;
 
 
 /**
@@ -104,7 +106,7 @@ class Model implements Observable {
     private int indexPoindInt = 0;
     private String indexLine = "a";//Индекс для прямых, отрезков, лучей
     private int indexLineInt = 0;
-    private char indexAngle = '\u03b1';//Индекс для углов, начинается с альфа
+    private char indexAngle = 'α';//Индекс для углов, начинается с альфа
     private int indexAngleInt = 0;
 
     private boolean poindOldAdd = false;//true - Берем существующие точки для построения фигур
@@ -137,7 +139,7 @@ class Model implements Observable {
     private double angleLength;//длина дуги гр.
     private Color colorFill = Color.hsb(195, 0.53, 0.78, 1);//цвет заливки
     private Color colorStroke = Color.hsb(216, 1, 0.62, 1); //цвет обводки
-    public String[][] tableColor = new String[3][10];
+    String[][] tableColor = new String[3][10];
     private double lineStokeWidth = 2;//толщина линий
     private double radiusPoind = 5;//радиус точки
     //Логические переменные из меню настроек
@@ -171,24 +173,25 @@ class Model implements Observable {
     private LinkedList<NamePoindLine> namePoindLines = new LinkedList<>();//коллекция для имен
     private LinkedList<TreangleName> treangleNames = new LinkedList<>();//коллекция треугольников
     private LinkedList<CircleLine> circleLines = new LinkedList<>();//коллекция окружностей
-    private Stack<Circle> circleStack = new Stack<>();//стек для точек при построении треугольников и углов
+    private Stack<Circle> circleStack;//стек для точек при построении треугольников и углов
 
     //Определяем связанный список для регистрации классов слушателей
     private LinkedList<Observer> observers = new LinkedList<>();
 
     //Переменные для передачи в другой контроллер
     public void setWindShow(int w) {
-        WIND_SHOW = w;
+        windShow = w;
     }
 
     public int getWindShow() {
-        return WIND_SHOW;
+        return windShow;
     }
 
     /**
      * Конструктор класса без переменных
      */
     Model() {
+        circleStack = new Stack<>();
     }
 
     /**
@@ -224,7 +227,7 @@ class Model implements Observable {
         setIndexPoindInt(0);
         setIndexLine("a");
         setIndexLineInt(0);
-        setIndexAngle('\u03b1');
+        setIndexAngle('α');
         setIndexAngleInt(0);
     }
 
@@ -286,8 +289,8 @@ class Model implements Observable {
             s = String.valueOf(indexAngle);
         }
         indexAngle++;
-        if (indexAngle == '\u03ca') {
-            indexAngle = '\u03b1';
+        if (indexAngle == 'ϊ') {
+            indexAngle = 'α';
             indexAngleInt++;
         }
         return s;
@@ -348,21 +351,25 @@ class Model implements Observable {
                         double lengthSegment = distance(p.getStX(), p.getStY(), p.getEnX(), p.getEnY());
                         txtShape = MessageFormat.format("{0}{1}{2} Длина:{3,number, #.#}\n", txtShape, STA_10, nameSplitRemove(p.getId()), lengthSegment);
                     }
-                    case 1 ->
-                            txtShape = txtShape + STA_11 + findNameShape(p.getLine().getId()) + " или " + nameSplitRemove(p.getId()) + "\n";
+                    case 1 -> {
+                        txtShape = txtShape + STA_11 + findNameShape(p.getLine().getId()) + " или " + nameSplitRemove(p.getId()) + "\n";
+                    }
                     case 2 ->
                             txtShape = txtShape + STA_12 + findNameShape(p.getLine().getId()) + " или " + nameSplitRemove(p.getId()) + "\n";
                     case 3 -> {
                         double lengthSegment = Math.round(distance(p.getStX(), p.getStY(), p.getEnX(), p.getEnY()) * 100);
                         txtShape = txtShape + STA_17 + nameSplitRemove(p.getId()) + " Длина:" + lengthSegment / 100 + "\n";
                     }
-                    case 4 -> txtShape = txtShape + STA_20 + nameSplitRemove(p.getId()) + "\n";
+                    case 4 -> {
+                        txtShape = txtShape + STA_20 + nameSplitRemove(p.getId()) + "\n";
+                    }
                     case 5 -> txtShape = txtShape + STA_23 + nameSplitRemove(p.getId()) + "\n";
                     case 6 -> txtShape = txtShape + STA_25 + nameSplitRemove(p.getId()) + "\n";
                     case 7 -> txtShape = txtShape + STA_27 + nameSplitRemove(p.getId()) + "\n";
                     case 8 -> txtShape = txtShape + STA_35 + nameSplitRemove(p.getId()) + "\n";
                     case 9 -> txtShape = txtShape + STA_36 + nameSplitRemove(p.getId()) + "\n";
 
+                    default -> throw new IllegalStateException("Unexpected value: " + l);
                 }
             }
         }
@@ -822,6 +829,7 @@ class Model implements Observable {
                 txtAreaOutput();
                 createGeometric = 0;
             }
+
         }
     }
 
@@ -1448,11 +1456,11 @@ class Model implements Observable {
      * Предназначен для расчета радиуса в мировых координатах.
      *
      * @param poind - координаты центра окружности
-     * @param R     - радиус окружности
+     * @param radiosCircle     - радиус окружности
      * @return радиус в мировых координатах
      */
-    public double accessRadiusW(Point2D poind, double R) {
-        return distance(gridViews.revAccessX(poind.getX()), gridViews.revAccessY(poind.getY()), gridViews.revAccessX(poind.getX() + R), gridViews.revAccessY(poind.getY()));
+    public double accessRadiusW(Point2D poind, double radiosCircle) {
+        return distance(gridViews.revAccessX(poind.getX()), gridViews.revAccessY(poind.getY()), gridViews.revAccessX(poind.getX() + radiosCircle), gridViews.revAccessY(poind.getY()));
     }
 
     /**
@@ -1575,17 +1583,17 @@ class Model implements Observable {
                     if (findBCircle(newPoind.getId(), 2)) {
                         Line l = findLineForPoind(newPoind.getId());
                         if (l != null) {
-                            Point2D A1 = new Point2D(e.getX(), e.getY());
-                            Point2D B1 = new Point2D(l.getStartX(), l.getStartY());
-                            Point2D C1 = new Point2D(l.getEndX(), l.getEndY());
-                            Point2D D1 = heightPoind(A1, B1, C1);//координаты точки пересечения
+                            Point2D verA1 = new Point2D(e.getX(), e.getY());
+                            Point2D verB1 = new Point2D(l.getStartX(), l.getStartY());
+                            Point2D verC1 = new Point2D(l.getEndX(), l.getEndY());
+                            Point2D verD1 = heightPoind(verA1, verB1, verC1);//координаты точки пересечения
                             String[] n = findID(l).split("_");
                             if ((findCircle(n[1]).getCenterX() - findCircle(n[0]).getCenterX()) != 0) {
-                                t = (D1.getX() - findCircle(n[0]).getCenterX()) / (findCircle(n[1]).getCenterX() - findCircle(n[0]).getCenterX());
+                                t = (verD1.getX() - findCircle(n[0]).getCenterX()) / (findCircle(n[1]).getCenterX() - findCircle(n[0]).getCenterX());
                             } else {
-                                t = (D1.getY() - findCircle(n[0]).getCenterY()) / (findCircle(n[1]).getCenterY() - findCircle(n[0]).getCenterY());
+                                t = (verD1.getY() - findCircle(n[0]).getCenterY()) / (findCircle(n[1]).getCenterY() - findCircle(n[0]).getCenterY());
                             }
-                            setScreenXY(new Point2D(D1.getX(), D1.getY()));
+                            setScreenXY(new Point2D(verD1.getX(), verD1.getY()));
                             //Определить тип линии
                             double typeL = findTypeLine(l.getId());
                             if (typeL == 0 || typeL == 1 || typeL == 3 || typeL == 4 || typeL == 5 || typeL == 6 || typeL == 7) {
@@ -1742,7 +1750,7 @@ class Model implements Observable {
                     text.setText(findNameShape(findNameAngle(c.getId())));
                 }
                 String oldName = c.getId();
-                System.out.println(oldName);
+                out.println(oldName);
                 text.setAlignment(Pos.CENTER_LEFT);
                 text.setLayoutX(getScreenXY().getX());
                 text.setLayoutY(getScreenXY().getY());
@@ -1915,7 +1923,7 @@ class Model implements Observable {
             setColorFill(Color.valueOf(tableColor[1][color + 1]));
             notifyObservers("FillShape");
         }
-        setColorFill(Color.valueOf(tableColor[1][color]));
+        setColorFill(Color.valueOf(getTableColor()[1][color]));
         if (shape == 3) {
             setShapeColor(findArcNameAngle(c.getId()));
             notifyObservers("FillShape");
@@ -2478,7 +2486,8 @@ class Model implements Observable {
     public void createMoveLine(Line line, int rayLine) {
         if (rayLine == 3) {
             newLine.setVisible(abs(getScreenXY().getX() - getSegmentStartX()) > 5 || abs(getScreenXY().getY() - getSegmentStartY()) > 5);
-            double t1, t2;
+            double t1;
+            double t2;
             if (getScreenXY().getX() - getSegmentStartX() != 0) {
                 t1 = (gridViews.getVr() - getSegmentStartX()) / (getScreenXY().getX() - getSegmentStartX());
                 t2 = (-getSegmentStartX()) / (getScreenXY().getX() - getSegmentStartX());
@@ -3487,35 +3496,35 @@ class Model implements Observable {
      * Предназначен для отладки, выводит информации из коллекций.
      */
     //Тестовый метод для вывода информации по коллекциям
-    public void ColTest() {
+    public void colTest() {
         //Взято из книги Кэн Коузен "Современный Java. Рецепты программирования".
         //Глава 2. Пакет java.util.function
         // стр.40 Пример 2.3
-        System.out.println("Начало вывода");
-        System.out.println("Коллекция PoindCircle");
+        out.println("Начало вывода");
+        out.println("Коллекция PoindCircle");
         //ссылка на метод
         for (PoindCircle poindCircle : poindCircles) {
-            System.out.println(poindCircle);
+            out.println(poindCircle);
         }
 
-        System.out.println("Коллекция PoindLine");
-        poindLines.forEach(System.out::println);//лямбда выражение
+        out.println("Коллекция PoindLine");
+        poindLines.forEach(out::println);//лямбда выражение
 
-        System.out.println("Коллекция дуг");
-        vertexArcs.forEach(System.out::println);
+        out.println("Коллекция дуг");
+        vertexArcs.forEach(out::println);
 
-        System.out.println("Коллекция имен");
-        namePoindLines.forEach(x -> System.out.println(x));
+        out.println("Коллекция имен");
+        namePoindLines.forEach(out::println);
 
-        System.out.println("Коллекция треугольников");
-        treangleNames.forEach(System.out::println);
+        out.println("Коллекция треугольников");
+        treangleNames.forEach(out::println);
 
-        System.out.println("Коллекция окружностей");
-        circleLines.forEach(System.out::println);
+        out.println("Коллекция окружностей");
+        circleLines.forEach(out::println);
 
-        System.out.println("Коллекция объектов");
-        paneBoards.getChildren().forEach(System.out::println);
-        System.out.println("Конец вывода");
+        out.println("Коллекция объектов");
+        paneBoards.getChildren().forEach(out::println);
+        out.println("Конец вывода");
 
     }
 
