@@ -586,10 +586,10 @@ public class EuclidController extends View {
     }
 
     /**
-     * Метод menuShowLine().
+     * Метод showGridLine().
      * Пункт меню "Настройки -> Показывать координатные оси".
      */
-    public void menuShowLine() {
+    public void showGridLine() {
         gridViews.setGridLineShow(menuShowLine.isSelected());
         paneGrid.getChildren().clear();//Очистить экран и память
         gridViews.gridCartesian();//Вывод сетки
