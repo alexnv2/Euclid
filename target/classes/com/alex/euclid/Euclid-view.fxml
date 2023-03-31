@@ -58,7 +58,7 @@
                 <MenuItem mnemonicParsing="false" onAction="#menuPriznak_3" text="Теорема № 3" />
             </Menu>
             <Menu mnemonicParsing="false" text="Теорема об углах с соответственно параллельными прямыми">
-                <MenuItem mnemonicParsing="false" onAction="#menuSecantAngle_1" text="Теорема № 1" />
+                <MenuItem mnemonicParsing="false" onAction="#menuSecantAngle1" text="Теорема № 1" />
                 <MenuItem mnemonicParsing="false" onAction="#menuSecantAngle_2" text="Теорема № 2" />
             </Menu>
             <SeparatorMenuItem mnemonicParsing="false" />
