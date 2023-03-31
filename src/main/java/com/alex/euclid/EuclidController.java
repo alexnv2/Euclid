@@ -37,15 +37,10 @@ import static contstantString.StringStatus.*;
  * Вызывает методы из класса модели для обработки событий
  *
  * @author A. Nosov
- * @version 1.0
+ * @version 1.6
  */
 
 public class EuclidController extends View {
-    public Menu menuTreangleP;
-    public MenuItem menuTreangle;
-    public MenuItem menuMedina;
-    public MenuItem menuEqualTr;
-    public MenuItem menuSecondTr;
     public Font x3;
     public Line newLine;
     public Circle circleFill;
@@ -61,7 +56,7 @@ public class EuclidController extends View {
      * Cartesian - контейнер для декартовых координат
      */
     @FXML
-    private StackPane Cartesian;
+    private StackPane cartesian;
     /**
      * txtShape - контейнер для правой части доски
      */
@@ -126,6 +121,20 @@ public class EuclidController extends View {
     private CheckMenuItem menuAngleName;
     @FXML
     public CheckMenuItem menuShowLine;
+    // Таблица цветов
+    private static final String COLOR_TABLE1 = "0xff0000ff";
+    private static final String COLOR_TABLE2 = "0x00000000";
+    private static final String COLOR_TABLE3 = "0xffb6c1ff";
+    private static final String COLOR_TABLE4 = "0x00008bff";
+    private static final String COLOR_TABLE5 = "0x87cefaff";
+    private static final String COLOR_TABLE6 = "0x006400ff";
+    private static final String COLOR_TABLE7 = "0xadff2fff";
+    private static final String COLOR_TABLE8 = "0xffd700ff";
+    private static final String COLOR_TABLE9 = "0x000000ff";
+    private static final String COLOR_TABLE10 = "0xffffe0ff";
+    private static final String COLOR_TABLE11 = "0xd3d3d3ff";
+    private static final String TOOL_TIP="ToolTip";
+    private static final String LEFT_STATUS_GO="LeftStatusGo";
 
 
     /**
@@ -142,54 +151,54 @@ public class EuclidController extends View {
         model.setCircleFill(circleFill);//Передать ссылку для точки при наведении на точку
         model.webHTML(webViewLeft, "geometry.html");//Вывод в web файла html (что такое геометрия)
         //Формируем цветовую таблицу
-        model.tableColor[0][0] = "0xff0000ff";
-        model.tableColor[1][0] = "0xff0000ff";
-        model.tableColor[2][0] = "0x00000000";
-        model.tableColor[0][1] = "0x00000000";
-        model.tableColor[1][1] = "0xffb6c1ff";
-        model.tableColor[2][1] = "0xff0000ff";
-        model.tableColor[0][2] = "0x00008bff";
-        model.tableColor[1][2] = "0x00008bff";
-        model.tableColor[2][2] = "0x00000000";
-        model.tableColor[0][3] = "0x00000000";
-        model.tableColor[1][3] = "0x87cefaff";
-        model.tableColor[2][3] = "0x00008bff";
-        model.tableColor[0][4] = "0x006400ff";
-        model.tableColor[1][4] = "0x006400ff";
-        model.tableColor[2][4] = "0x00000000";
-        model.tableColor[0][5] = "0x00000000";
-        model.tableColor[1][5] = "0xadff2fff";
-        model.tableColor[2][5] = "0x006400ff";
-        model.tableColor[0][6] = "0xffd700ff";
-        model.tableColor[1][6] = "0xffd700ff";
-        model.tableColor[2][6] = "0x00000000";
-        model.tableColor[0][7] = "0x00000000";
-        model.tableColor[1][7] = "0xffffe0ff";
-        model.tableColor[2][7] = "0xffd700ff";
-        model.tableColor[0][8] = "0x000000ff";
-        model.tableColor[1][8] = "0x000000ff";
-        model.tableColor[2][8] = "0x00000000";
-        model.tableColor[0][9] = "0x00000000";
-        model.tableColor[1][9] = "0xd3d3d3ff";
-        model.tableColor[2][9] = "0x000000ff";
+        model.tableColor[0][0] = COLOR_TABLE1;
+        model.tableColor[1][0] = COLOR_TABLE1;
+        model.tableColor[2][0] = COLOR_TABLE2;
+        model.tableColor[0][1] = COLOR_TABLE2;
+        model.tableColor[1][1] = COLOR_TABLE3;
+        model.tableColor[2][1] = COLOR_TABLE1;
+        model.tableColor[0][2] = COLOR_TABLE1;
+        model.tableColor[1][2] = COLOR_TABLE4;
+        model.tableColor[2][2] = COLOR_TABLE2;
+        model.tableColor[0][3] = COLOR_TABLE2;
+        model.tableColor[1][3] = COLOR_TABLE5 ;
+        model.tableColor[2][3] = COLOR_TABLE4;
+        model.tableColor[0][4] = COLOR_TABLE6;
+        model.tableColor[1][4] = COLOR_TABLE6;
+        model.tableColor[2][4] = COLOR_TABLE2;
+        model.tableColor[0][5] = COLOR_TABLE2;
+        model.tableColor[1][5] = COLOR_TABLE7;
+        model.tableColor[2][5] = COLOR_TABLE6;
+        model.tableColor[0][6] = COLOR_TABLE8;
+        model.tableColor[1][6] = COLOR_TABLE8;
+        model.tableColor[2][6] = COLOR_TABLE2;
+        model.tableColor[0][7] = COLOR_TABLE2;
+        model.tableColor[1][7] = COLOR_TABLE10;
+        model.tableColor[2][7] = COLOR_TABLE8;
+        model.tableColor[0][8] = COLOR_TABLE9;
+        model.tableColor[1][8] = COLOR_TABLE9;
+        model.tableColor[2][8] = COLOR_TABLE2;
+        model.tableColor[0][9] = COLOR_TABLE2;
+        model.tableColor[1][9] = COLOR_TABLE11;
+        model.tableColor[2][9] = COLOR_TABLE9;
         //формирование линий координат и сетки, перерасчет при изменении размеров доски
         gridViews.setPaneGrid(paneGrid);
-        gridViews.setCartesian(Cartesian);
+        gridViews.setCartesian(cartesian);
         //Изменение ширины окна
-        Cartesian.widthProperty().addListener((obs, oldVal, newVal) -> {
-            gridViews.setVr(Cartesian.getWidth());
-            gridViews.setWl(-Cartesian.getWidth() / 2);
-            gridViews.setWr(Cartesian.getWidth() / 2);
+        cartesian.widthProperty().addListener((obs, oldVal, newVal) -> {
+            gridViews.setVr(cartesian.getWidth());
+            gridViews.setWl(-cartesian.getWidth() / 2);
+            gridViews.setWr(cartesian.getWidth() / 2);
             gridViews.rate();//Перерасчет коэффициентов
             paneGrid.getChildren().clear();//Очистить экран и память
             gridViews.gridCartesian();//Вывод сетки
             updateShape();//обновить координаты геометрических фигур
         });
         //Изменение высоты окна
-        Cartesian.heightProperty().addListener((obs, oldVal, newVal) -> {
-            gridViews.setVb(Cartesian.getHeight());
-            gridViews.setWt(Cartesian.getHeight() / 2);
-            gridViews.setWb(-Cartesian.getHeight() / 2);
+        cartesian.heightProperty().addListener((obs, oldVal, newVal) -> {
+            gridViews.setVb(cartesian.getHeight());
+            gridViews.setWt(cartesian.getHeight() / 2);
+            gridViews.setWb(-cartesian.getHeight() / 2);
             gridViews.rate();//Перерасчет коэффициентов
             paneGrid.getChildren().clear();//Очистить экран и память
             gridViews.gridCartesian();//Вывод сетки
@@ -435,7 +444,6 @@ public class EuclidController extends View {
      * Вызывается из пункта меню Фигуры->Треугольник ->Виды треугольников.
      */
     public void menuTr() {
-        // model.webViewLeftString(webViewLeft, 9);
         model.webHTML(webViewLeft, "treangleView.html");
     }
 
@@ -559,11 +567,9 @@ public class EuclidController extends View {
      */
     private void visibleName(boolean bName, String name) {
         for (NamePoindLine pn : model.getNamePoindLines()) {
-            if (pn != null) {
-                if (pn.getType().equals(name)) {
-                    pn.getText().setVisible(bName);
-                    pn.setVisibleLine(bName);
-                }
+            if (pn != null && pn.getType().equals(name)) {
+                pn.getText().setVisible(bName);
+                pn.setVisibleLine(bName);
             }
         }
     }
@@ -589,12 +595,11 @@ public class EuclidController extends View {
         gridViews.gridCartesian();//Вывод сетки
     }
 
-
     /**
      * Метод menuIsosceles_1().
      * Нажат пункт меню "Теоремы и свойства-> Свойства равнобедренного треугольника->Теорема 1".
      */
-    public void menuIsosceles_1() {
+    public void menuIsosceles1() {
         model.webHTML(webViewLeft, "isosceles_1.html");
     }
 
@@ -602,7 +607,7 @@ public class EuclidController extends View {
      * Метод menuIsosceles_2().
      * Нажат пункт меню "Теоремы и свойства-> Свойства равнобедренного треугольника->Теорема 2".
      */
-    public void menuIsosceles_2() {
+    public void menuIsosceles2() {
         model.webHTML(webViewLeft, "isosceles_2.html");
     }
 
@@ -612,7 +617,7 @@ public class EuclidController extends View {
      */
     public void menuEqual() {
         model.setWindShow(0);
-        TwofxmlLoader();
+        twofxmlLoader();
     }
 
     /**
@@ -621,7 +626,7 @@ public class EuclidController extends View {
      */
     public void menuSecond() {
         model.setWindShow(1);
-        TwofxmlLoader();
+        twofxmlLoader();
     }
 
     /**
@@ -630,7 +635,7 @@ public class EuclidController extends View {
      */
     public void menuTread() {
         model.setWindShow(2);
-        TwofxmlLoader();
+        twofxmlLoader();
     }
 
     /**
@@ -645,7 +650,7 @@ public class EuclidController extends View {
      * Метод menuPriznak_1().
      * Нажат пункт меню "Теоремы и свойства -> Теоремы об углах, образованных двумя параллельными прямыми и секущей->Теорема № 1"
      */
-    public void menuPriznak_1() {
+    public void menuPriznak1() {
         model.webHTML(webViewLeft, "priznak_1.html");//Вывод в браузер файла html
     }
 
@@ -653,7 +658,7 @@ public class EuclidController extends View {
      * Метод menuPriznak_2().
      * Нажат пункт меню "Теоремы и свойства -> Теоремы об углах, образованных двумя параллельными прямыми и секущей->Теорема № 2"
      */
-    public void menuPriznak_2() {
+    public void menuPriznak2() {
         model.webHTML(webViewLeft, "priznak_2.html");//Вывод в браузер файла html
     }
 
@@ -661,7 +666,7 @@ public class EuclidController extends View {
      * Метод menuPriznak_3().
      * Нажат пункт меню "Теоремы и свойства -> Теоремы об углах, образованных двумя параллельными прямыми и секущей->Теорема № 3"
      */
-    public void menuPriznak_3() {
+    public void menuPriznak3() {
         model.webHTML(webViewLeft, "priznak_3.html");//Вывод в браузер файла html
     }
 
@@ -678,7 +683,7 @@ public class EuclidController extends View {
      * Метод menuSecantAngle_2()
      * Нажат пункт меню "Теоремы и свойства -> Теорема об углах с соответственно параллельными прямыми->Теорема2".
      */
-    public void menuSecantAngle_2() {
+    public void menuSecantAngle2() {
         model.webHTML(webViewLeft, "perAngle_2.html");//Вывод в браузер файла html
     }
 
@@ -695,7 +700,7 @@ public class EuclidController extends View {
      * Метод treangleTheorem_2().
      * Нажат пункт меню "Теоремы и свойства -> Теорема о соотношениях между сторонами углами треугольника"
      */
-    public void treangleTheorem_2() {
+    public void treangleTheorem2() {
         model.webHTML(webViewLeft, "treangleTheorem_2.html");
     }
 
@@ -703,7 +708,7 @@ public class EuclidController extends View {
      * Метод treangleTheorem_3().
      * Нажат пункт меню "Теоремы и свойства -> Неравенство треугольника
      */
-    public void treangleTheorem_3() {
+    public void treangleTheorem3() {
         model.webHTML(webViewLeft, "treangleTheorem_3.html");
     }
 
@@ -736,7 +741,7 @@ public class EuclidController extends View {
      * Метод menuHelp_1()
      * Для вывода видео о работе с программой.
      */
-    public void menuHelp_1() {
+    public void menuHelp1() {
         model.webHTML(webViewLeft, "help_1.html");
     }
 
@@ -748,7 +753,7 @@ public class EuclidController extends View {
     public void btnPoindClick() {
         //Установить статус
         model.setStringLeftStatus(STA_1);
-        model.notifyObservers("LeftStatusGo");
+        model.notifyObservers(LEFT_STATUS_GO);
         disableButton(true);//блокировать кнопки
         model.setCreateGeometric(1);//Установить режим добавления точки
         model.setCreateShape(true);//Установить режим создания фигуры
@@ -762,7 +767,7 @@ public class EuclidController extends View {
         model.setTextToolTip("Добавить точку");
         //Передать в View для вывода
         model.setBtnToolTip(btnPoind);
-        model.notifyObservers("ToolTip");
+        model.notifyObservers(TOOL_TIP);
     }
 
     /**
@@ -773,7 +778,7 @@ public class EuclidController extends View {
     public void btnSegmentClick() {
         //Установить статус
         model.setStringLeftStatus(STA_2);
-        model.notifyObservers("LeftStatusGo");
+        model.notifyObservers(LEFT_STATUS_GO);
         disableButton(true);//блокировать кнопки
         model.setCreateGeometric(2);//Установить режим добавления отрезка
         model.setCreateShape(true);//Установить режим создания фигуры
@@ -787,7 +792,7 @@ public class EuclidController extends View {
         model.setTextToolTip("Добавить отрезок");
         //Передать в View для вывода
         model.setBtnToolTip(btnMiddleSegment);
-        model.notifyObservers("ToolTip");
+        model.notifyObservers(TOOL_TIP);
     }
 
     /**
@@ -797,7 +802,7 @@ public class EuclidController extends View {
      */
     public void btnMiddleSegment() {
         model.setStringLeftStatus(STA_31);
-        model.notifyObservers("LeftStatusGo");
+        model.notifyObservers(LEFT_STATUS_GO);
         disableButton(true);//блокировать кнопки
         model.setCreateGeometric(12);//Установить режим добавления середины отрезка
         model.setCreateShape(true);//Установить режим создания фигуры
@@ -811,7 +816,7 @@ public class EuclidController extends View {
         model.setTextToolTip("Найти середину отрезка");
         //Передать в View для вывода
         model.setBtnToolTip(btnSegment);
-        model.notifyObservers("ToolTip");
+        model.notifyObservers(TOOL_TIP);
     }
 
     /**
@@ -821,7 +826,7 @@ public class EuclidController extends View {
      */
     public void btnRay() {
         model.setStringLeftStatus(STA_3);
-        model.notifyObservers("LeftStatusGo");
+        model.notifyObservers(LEFT_STATUS_GO);
         disableButton(true);//блокировать кнопки
         model.setCreateGeometric(4);//Установить режим добавления точки
         model.setCreateShape(true);//Установить режим создания фигуры
@@ -835,7 +840,7 @@ public class EuclidController extends View {
         model.setTextToolTip("Добавить луч");
         //Передать в View для вывода
         model.setBtnToolTip(btnRay);
-        model.notifyObservers("ToolTip");
+        model.notifyObservers(TOOL_TIP);
     }
 
     /**
@@ -845,7 +850,7 @@ public class EuclidController extends View {
      */
     public void btnLine() {
         model.setStringLeftStatus(STA_4);
-        model.notifyObservers("LeftStatusGo");
+        model.notifyObservers(LEFT_STATUS_GO);
         disableButton(true);//блокировать кнопки
         model.setCreateGeometric(3);//Установить режим добавления прямой
         model.setCreateShape(true);//Установить режим создания фигуры
@@ -859,7 +864,7 @@ public class EuclidController extends View {
         model.setTextToolTip("Добавить прямую");
         //Передать в View для вывода
         model.setBtnToolTip(btnLine);
-        model.notifyObservers("ToolTip");
+        model.notifyObservers(TOOL_TIP);
     }
 
     /**
@@ -870,7 +875,7 @@ public class EuclidController extends View {
     public void btnAngle() {
         //Установить статус
         model.setStringLeftStatus(STA_14);
-        model.notifyObservers("LeftStatusGo");
+        model.notifyObservers(LEFT_STATUS_GO);
         disableButton(true);//блокировать кнопки
         model.setCreateGeometric(5);//Установить режим добавления угла
         model.setColVertex(3);//Количество вершин для угла
@@ -885,7 +890,7 @@ public class EuclidController extends View {
         model.setTextToolTip("Добавить угол");
         //Передать в View для вывода
         model.setBtnToolTip(btnAngle);
-        model.notifyObservers("ToolTip");
+        model.notifyObservers(TOOL_TIP);
     }
 
     /**
@@ -895,7 +900,7 @@ public class EuclidController extends View {
      */
     public void btnVertical() {
         model.setStringLeftStatus(STA_26);
-        model.notifyObservers("LeftStatusGo");
+        model.notifyObservers(LEFT_STATUS_GO);
         disableButton(true);//блокировать кнопки
         model.setCreateGeometric(6);//Установить режим добавления перпендикуляра
         model.setCreateShape(true);//Установить режим создания фигуры
@@ -908,7 +913,7 @@ public class EuclidController extends View {
      */
     public void btnCircleClick() {
         model.setStringLeftStatus(STA_28);
-        model.notifyObservers("LeftStatusGo");
+        model.notifyObservers(LEFT_STATUS_GO);
         disableButton(true);//блокировать кнопки
         model.setCreateGeometric(14);//Установить режим добавления
         model.setCreateShape(true);//Установить режим создания фигуры
@@ -921,7 +926,7 @@ public class EuclidController extends View {
      */
     public void btnTangentClick() {
         model.setStringLeftStatus(STA_33);
-        model.notifyObservers("LeftStatusGo");
+        model.notifyObservers(LEFT_STATUS_GO);
         disableButton(true);//блокировать кнопки
         model.setCreateGeometric(15);//Установить режим добавления
         model.setCreateShape(true);//Установить режим создания фигуры
@@ -934,7 +939,7 @@ public class EuclidController extends View {
      */
     public void btnParallelLines() {
         model.setStringLeftStatus(STA_15);
-        model.notifyObservers("LeftStatusGo");
+        model.notifyObservers(LEFT_STATUS_GO);
         disableButton(true);//блокировать кнопки
         model.setCreateGeometric(7);//Установить режим добавления параллельных прямых
         model.setCreateShape(true);//Установить режим создания фигуры
@@ -948,9 +953,8 @@ public class EuclidController extends View {
         model.setTextToolTip("Построить перпендикуляр к прямой");
         //Передать в View для вывода
         model.setBtnToolTip(btnVertical);
-        model.notifyObservers("ToolTip");
+        model.notifyObservers(TOOL_TIP);
     }
-
 
     /**
      * Метод onMouseEnteredCircle().
@@ -960,7 +964,7 @@ public class EuclidController extends View {
         model.setTextToolTip("Добавить окружность");
         //Передать в View для вывода
         model.setBtnToolTip(btnCircle);
-        model.notifyObservers("ToolTip");
+        model.notifyObservers(TOOL_TIP);
     }
 
     /**
@@ -971,7 +975,7 @@ public class EuclidController extends View {
         model.setTextToolTip("Построить параллельную прямую");
         //Передать в View для вывода
         model.setBtnToolTip(btnParallelLines);
-        model.notifyObservers("ToolTip");
+        model.notifyObservers(TOOL_TIP);
     }
 
 
@@ -982,7 +986,7 @@ public class EuclidController extends View {
      */
     public void btnTreangle() {
         model.setStringLeftStatus(STA_5);
-        model.notifyObservers("LeftStatusGo");
+        model.notifyObservers(LEFT_STATUS_GO);
         disableButton(true);//блокировать кнопки
         model.setCreateGeometric(8);//Установить режим добавления треугольника
         model.setCreateShape(true);//Установить режим создания фигуры
@@ -997,7 +1001,7 @@ public class EuclidController extends View {
         model.setTextToolTip("Добавить треугольник");
         //Передать в View для вывода
         model.setBtnToolTip(btnTreangle);
-        model.notifyObservers("ToolTip");
+        model.notifyObservers(TOOL_TIP);
     }
 
     /**
@@ -1006,7 +1010,7 @@ public class EuclidController extends View {
      */
     public void btnMedian() {
         model.setStringLeftStatus(STA_18);
-        model.notifyObservers("LeftStatusGo");
+        model.notifyObservers(LEFT_STATUS_GO);
         disableButton(true);//блокировать кнопки
         model.setCreateGeometric(9);//Установить режим добавления
         model.setCreateShape(true);//Установить режим создания фигуры
@@ -1020,7 +1024,7 @@ public class EuclidController extends View {
         model.setTextToolTip("Добавить медиану");
         //Передать в View для вывода
         model.setBtnToolTip(btnMediana);
-        model.notifyObservers("ToolTip");
+        model.notifyObservers(TOOL_TIP);
     }
 
     /**
@@ -1029,7 +1033,7 @@ public class EuclidController extends View {
      */
     public void btnBisector() {
         model.setStringLeftStatus(STA_22);
-        model.notifyObservers("LeftStatusGo");
+        model.notifyObservers(LEFT_STATUS_GO);
         disableButton(true);//блокировать кнопки
         model.setCreateGeometric(11);//Установить режим добавления
         model.setCreateShape(true);//Установить режим создания фигуры
@@ -1043,7 +1047,7 @@ public class EuclidController extends View {
         model.setTextToolTip("Добавить биссектрису");
         //Передать в View для вывода
         model.setBtnToolTip(btnBisector);
-        model.notifyObservers("ToolTip");
+        model.notifyObservers(TOOL_TIP);
     }
 
     /**
@@ -1052,7 +1056,7 @@ public class EuclidController extends View {
      */
     public void btnHeight() {
         model.setStringLeftStatus(STA_24);
-        model.notifyObservers("LeftStatusGo");
+        model.notifyObservers(LEFT_STATUS_GO);
         disableButton(true);//блокировать кнопки
         model.setCreateGeometric(10);//Установить режим добавления
         model.setCreateShape(true);//Установить режим создания фигуры
@@ -1066,37 +1070,51 @@ public class EuclidController extends View {
         model.setTextToolTip("Добавить высоту");
         //Передать в View для вывода
         model.setBtnToolTip(btnHeight);
-        model.notifyObservers("ToolTip");
+        model.notifyObservers(TOOL_TIP);
     }
 
+    /**
+     * Метод btnCircleInTreangle(). Нажата кнопка "Построить окружность вписанную в треугольник".
+     */
     public void btnCircleInTreangle() {
         model.setStringLeftStatus(STA_38);
-        model.notifyObservers("LeftStatusGo");
+        model.notifyObservers(LEFT_STATUS_GO);
         disableButton(true);//блокировать кнопки
         model.setCreateGeometric(16);//Установить режим добавления
         model.setCreateShape(true);//Установить режим создания фигуры
     }
 
+    /**
+     * Метод onMouseEnteredCircleInTreangle(). Всплывающая подсказка при наведении на кнопку
+     * "Построить окружность вписанную в треугольник".
+     */
     public void onMouseEnteredCircleInTreangle() {
         model.setTextToolTip("Построить окружность вписанную в треугольник");
         //Передать в View для вывода
         model.setBtnToolTip(btnCircleInTreangle);
-        model.notifyObservers("ToolTip");
+        model.notifyObservers(TOOL_TIP);
     }
 
+    /**
+     * Метод btnCircleOutTreangle(). Нажата кнопка "Построить описанную окружность".
+     */
     public void btnCircleOutTreangle() {
         model.setStringLeftStatus(STA_39);
-        model.notifyObservers("LeftStatusGo");
+        model.notifyObservers(LEFT_STATUS_GO);
         disableButton(true);//блокировать кнопки
         model.setCreateGeometric(17);//Установить режим добавления
         model.setCreateShape(true);//Установить режим создания фигуры
     }
 
+    /**
+     * Метод onMouseEnteredCircleOutTreangle(). Всплывающая подсказка при наведении на кнопку
+     * "Построить описанную окружность".
+     */
     public void onMouseEnteredCircleOutTreangle() {
         model.setTextToolTip("Построить описанную окружность");
         //Передать в View для вывода
         model.setBtnToolTip(btnCircleOutTreangle);
-        model.notifyObservers("ToolTip");
+        model.notifyObservers(TOOL_TIP);
     }
 
     /**
@@ -1141,7 +1159,7 @@ public class EuclidController extends View {
         model.setTextToolTip("Удалить с доски все геометрические фигуры");
         //Передать в View для вывода
         model.setBtnToolTip(btnDelete);
-        model.notifyObservers("ToolTip");
+        model.notifyObservers(TOOL_TIP);
     }
 
     /**
@@ -1151,7 +1169,7 @@ public class EuclidController extends View {
     public void onMousseEnteredTangent() {
         model.setTextToolTip("Построить касательную к окружности");
         model.setBtnToolTip(btnTangent);
-        model.notifyObservers("ToolTip");
+        model.notifyObservers(TOOL_TIP);
     }
 
     /**
@@ -1175,7 +1193,7 @@ public class EuclidController extends View {
      * Метод TwofxmlLoader().
      * Предназначен для загрузки шаблона для признаков равенства треугольников
      */
-    private void TwofxmlLoader() {
+    private void twofxmlLoader() {
         try {
             Parent root1 = FXMLLoader.load(Objects.requireNonNull(EuclidApp.class.getResource("Equality-view.fxml")));
             Stage stage = new Stage();

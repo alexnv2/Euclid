@@ -47,24 +47,24 @@
             </Menu>
             <MenuItem mnemonicParsing="false" onAction="#menuPerpend" text="Перпендикуляр к прямой" />
             <Menu mnemonicParsing="false" text="Свойства равнобедренного треугольника">
-                <MenuItem mnemonicParsing="false" onAction="#menuIsosceles_1" text="Теорема № 1" />
-                <MenuItem mnemonicParsing="false" onAction="#menuIsosceles_2" text="Теорема № 2" />
+                <MenuItem mnemonicParsing="false" onAction="#menuIsosceles1" text="Теорема № 1" />
+                <MenuItem mnemonicParsing="false" onAction="#menuIsosceles2" text="Теорема № 2" />
             </Menu>
             <SeparatorMenuItem mnemonicParsing="false" />
             <MenuItem mnemonicParsing="false" onAction="#menuPriznak" text="Три признака параллельности двух прямых" />
             <Menu mnemonicParsing="false" text="Теоремы об углах, образованных двумя параллельными прямыми и секущей">
-                <MenuItem mnemonicParsing="false" onAction="#menuPriznak_1" text="Теорема № 1" />
-                <MenuItem mnemonicParsing="false" onAction="#menuPriznak_2" text="Теорема № 2" />
-                <MenuItem mnemonicParsing="false" onAction="#menuPriznak_3" text="Теорема № 3" />
+                <MenuItem mnemonicParsing="false" onAction="#menuPriznak1" text="Теорема № 1" />
+                <MenuItem mnemonicParsing="false" onAction="#menuPriznak2" text="Теорема № 2" />
+                <MenuItem mnemonicParsing="false" onAction="#menuPriznak3" text="Теорема № 3" />
             </Menu>
             <Menu mnemonicParsing="false" text="Теорема об углах с соответственно параллельными прямыми">
                 <MenuItem mnemonicParsing="false" onAction="#menuSecantAngle1" text="Теорема № 1" />
-                <MenuItem mnemonicParsing="false" onAction="#menuSecantAngle_2" text="Теорема № 2" />
+                <MenuItem mnemonicParsing="false" onAction="#menuSecantAngle2" text="Теорема № 2" />
             </Menu>
             <SeparatorMenuItem mnemonicParsing="false" />
             <MenuItem mnemonicParsing="false" onAction="#treangleAngle" text="Теорема о сумме углов треугольника" />
-            <MenuItem mnemonicParsing="false" onAction="#treangleTheorem_2" text="Теорема о соотношениях между сторонами углами треугольника" />
-            <MenuItem mnemonicParsing="false" onAction="#treangleTheorem_3" text="Неравенство треугольника" />
+            <MenuItem mnemonicParsing="false" onAction="#treangleTheorem2" text="Теорема о соотношениях между сторонами углами треугольника" />
+            <MenuItem mnemonicParsing="false" onAction="#treangleTheorem3" text="Неравенство треугольника" />
             <MenuItem mnemonicParsing="false" onAction="#treangleProperty" text="Свойства прямоугольных треугольников" />
             <MenuItem mnemonicParsing="false" onAction="#treangleQuayle" text="Признаки равенства прямоугольных треугольников" />
             <MenuItem mnemonicParsing="false" onAction="#distantPar" text="Расстояние между параллельными прямыми" />
@@ -85,7 +85,7 @@
         </Menu>
         <Menu mnemonicParsing="false" text="Помощь">
             <MenuItem fx:id="menuAbout" mnemonicParsing="false" onAction="#menuAbout" text="О программе" />
-            <MenuItem fx:id="menuHelp_1" mnemonicParsing="false" onAction="#menuHelp_1" text="Работа с программой" />
+            <MenuItem fx:id="menuHelp1" mnemonicParsing="false" onAction="#menuHelp1" text="Работа с программой" />
         </Menu>
     </MenuBar>
     <HBox prefHeight="25.0" prefWidth="900.0">
@@ -199,7 +199,7 @@
                 <Insets />
             </opaqueInsets>
         </AnchorPane>
-        <StackPane fx:id="Cartesian">
+        <StackPane fx:id="cartesian">
             <Pane fx:id="paneGrid" />
             <Pane fx:id="paneShape" accessibleRole="NODE" onMouseDragged="#onMouseDragged" onMouseMoved="#onMouseMoved" onMousePressed="#onMousePressed" onScroll="#onScroll">
                 <Line fx:id="newLine" disable="true" fill="deepskyblue" stroke="DARKSLATEBLUE" />
