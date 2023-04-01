@@ -747,6 +747,16 @@ public class EuclidController extends View {
     }
 
     /**
+     * Метод createShape().
+     * Задает режим создания геометрических фигур.
+     * @param addShape определяет форму геометрических фигур.
+     */
+    public void createShape(int addShape) {
+        disableButton(true);//блокировать кнопки
+        model.setCreateGeometric(addShape);
+        model.setCreateShape(true);//Установить режим создания фигуры
+    }
+   /**
      * Метод btnPoindClick().
      * Cобытие нажатия кнопки "Добавить точку".
      * Устанавливает режим добавления точки.
@@ -755,9 +765,8 @@ public class EuclidController extends View {
         //Установить статус
         model.setStringLeftStatus(STA_1);
         model.notifyObservers(LEFT_STATUS_GO);
-        disableButton(true);//блокировать кнопки
-        model.setCreateGeometric(1);//Установить режим добавления точки
-        model.setCreateShape(true);//Установить режим создания фигуры
+        //Установить режим добавления точки
+        createShape(1);
     }
 
     /**
@@ -780,9 +789,7 @@ public class EuclidController extends View {
         //Установить статус
         model.setStringLeftStatus(STA_2);
         model.notifyObservers(LEFT_STATUS_GO);
-        disableButton(true);//блокировать кнопки
-        model.setCreateGeometric(2);//Установить режим добавления отрезка
-        model.setCreateShape(true);//Установить режим создания фигуры
+        createShape(2);
     }
 
     /**
@@ -804,9 +811,7 @@ public class EuclidController extends View {
     public void btnMiddleSegment() {
         model.setStringLeftStatus(STA_31);
         model.notifyObservers(LEFT_STATUS_GO);
-        disableButton(true);//блокировать кнопки
-        model.setCreateGeometric(12);//Установить режим добавления середины отрезка
-        model.setCreateShape(true);//Установить режим создания фигуры
+        createShape(12);
     }
 
     /**
@@ -828,9 +833,7 @@ public class EuclidController extends View {
     public void btnRay() {
         model.setStringLeftStatus(STA_3);
         model.notifyObservers(LEFT_STATUS_GO);
-        disableButton(true);//блокировать кнопки
-        model.setCreateGeometric(4);//Установить режим добавления точки
-        model.setCreateShape(true);//Установить режим создания фигуры
+        createShape(4);
     }
 
     /**
@@ -852,9 +855,7 @@ public class EuclidController extends View {
     public void btnLine() {
         model.setStringLeftStatus(STA_4);
         model.notifyObservers(LEFT_STATUS_GO);
-        disableButton(true);//блокировать кнопки
-        model.setCreateGeometric(3);//Установить режим добавления прямой
-        model.setCreateShape(true);//Установить режим создания фигуры
+            createShape(3);
     }
 
     /**
@@ -877,10 +878,8 @@ public class EuclidController extends View {
         //Установить статус
         model.setStringLeftStatus(STA_14);
         model.notifyObservers(LEFT_STATUS_GO);
-        disableButton(true);//блокировать кнопки
-        model.setCreateGeometric(5);//Установить режим добавления угла
         model.setColVertex(3);//Количество вершин для угла
-        model.setCreateShape(true);//Установить режим создания фигуры
+        createShape(5);
     }
 
     /**
@@ -902,9 +901,7 @@ public class EuclidController extends View {
     public void btnVertical() {
         model.setStringLeftStatus(STA_26);
         model.notifyObservers(LEFT_STATUS_GO);
-        disableButton(true);//блокировать кнопки
-        model.setCreateGeometric(6);//Установить режим добавления перпендикуляра
-        model.setCreateShape(true);//Установить режим создания фигуры
+        createShape(6);
     }
 
     /**
@@ -915,9 +912,7 @@ public class EuclidController extends View {
     public void btnCircleClick() {
         model.setStringLeftStatus(STA_28);
         model.notifyObservers(LEFT_STATUS_GO);
-        disableButton(true);//блокировать кнопки
-        model.setCreateGeometric(14);//Установить режим добавления
-        model.setCreateShape(true);//Установить режим создания фигуры
+        createShape(14);
     }
 
     /**
@@ -928,9 +923,7 @@ public class EuclidController extends View {
     public void btnTangentClick() {
         model.setStringLeftStatus(STA_33);
         model.notifyObservers(LEFT_STATUS_GO);
-        disableButton(true);//блокировать кнопки
-        model.setCreateGeometric(15);//Установить режим добавления
-        model.setCreateShape(true);//Установить режим создания фигуры
+        createShape(15);
     }
 
     /**
@@ -941,9 +934,7 @@ public class EuclidController extends View {
     public void btnParallelLines() {
         model.setStringLeftStatus(STA_15);
         model.notifyObservers(LEFT_STATUS_GO);
-        disableButton(true);//блокировать кнопки
-        model.setCreateGeometric(7);//Установить режим добавления параллельных прямых
-        model.setCreateShape(true);//Установить режим создания фигуры
+        createShape(7);
     }
 
     /**
@@ -988,10 +979,8 @@ public class EuclidController extends View {
     public void btnTreangle() {
         model.setStringLeftStatus(STA_5);
         model.notifyObservers(LEFT_STATUS_GO);
-        disableButton(true);//блокировать кнопки
-        model.setCreateGeometric(8);//Установить режим добавления треугольника
-        model.setCreateShape(true);//Установить режим создания фигуры
         model.setColVertex(3);//задать количество вершин для треугольника
+        createShape(8);
     }
 
     /**
@@ -1012,9 +1001,7 @@ public class EuclidController extends View {
     public void btnMedian() {
         model.setStringLeftStatus(STA_18);
         model.notifyObservers(LEFT_STATUS_GO);
-        disableButton(true);//блокировать кнопки
-        model.setCreateGeometric(9);//Установить режим добавления
-        model.setCreateShape(true);//Установить режим создания фигуры
+        createShape(9);
     }
 
     /**
@@ -1035,9 +1022,7 @@ public class EuclidController extends View {
     public void btnBisector() {
         model.setStringLeftStatus(STA_22);
         model.notifyObservers(LEFT_STATUS_GO);
-        disableButton(true);//блокировать кнопки
-        model.setCreateGeometric(11);//Установить режим добавления
-        model.setCreateShape(true);//Установить режим создания фигуры
+        createShape(11);
     }
 
     /**
@@ -1058,9 +1043,7 @@ public class EuclidController extends View {
     public void btnHeight() {
         model.setStringLeftStatus(STA_24);
         model.notifyObservers(LEFT_STATUS_GO);
-        disableButton(true);//блокировать кнопки
-        model.setCreateGeometric(10);//Установить режим добавления
-        model.setCreateShape(true);//Установить режим создания фигуры
+        createShape(10);
     }
 
     /**
@@ -1080,9 +1063,7 @@ public class EuclidController extends View {
     public void btnCircleInTreangle() {
         model.setStringLeftStatus(STA_38);
         model.notifyObservers(LEFT_STATUS_GO);
-        disableButton(true);//блокировать кнопки
-        model.setCreateGeometric(16);//Установить режим добавления
-        model.setCreateShape(true);//Установить режим создания фигуры
+        createShape(16);
     }
 
     /**
@@ -1102,9 +1083,7 @@ public class EuclidController extends View {
     public void btnCircleOutTreangle() {
         model.setStringLeftStatus(STA_39);
         model.notifyObservers(LEFT_STATUS_GO);
-        disableButton(true);//блокировать кнопки
-        model.setCreateGeometric(17);//Установить режим добавления
-        model.setCreateShape(true);//Установить режим создания фигуры
+        createShape(17);
     }
 
     /**
