@@ -343,7 +343,7 @@ public class EuclidController extends View {
         if (model.getCreateGeometric() == 0) {
             disableButton(false);//сделать доступными кнопки
             model.setCreateShape(false);//сбросить переменную построения
-            //Добавить в правую часть доски
+            //Построить в правую часть доски
             model.setTxtShape("");
             model.txtAreaOutput();
         }
@@ -758,7 +758,7 @@ public class EuclidController extends View {
     }
    /**
      * Метод btnPoindClick().
-     * Cобытие нажатия кнопки "Добавить точку".
+     * Cобытие нажатия кнопки "Построить точку".
      * Устанавливает режим добавления точки.
      */
     public void btnPoindClick() {
@@ -771,18 +771,15 @@ public class EuclidController extends View {
 
     /**
      * Метод onMouseEnteredPoind().
-     * Всплывающая подсказка при наведении мышки на кнопку "Добавить точку".
+     * Всплывающая подсказка при наведении мышки на кнопку "Построить точку".
      */
     public void onMouseEnteredPoind() {
-        model.setTextToolTip("Добавить точку");
-        //Передать в View для вывода
-        model.setBtnToolTip(btnPoind);
-        model.notifyObservers(TOOL_TIP);
+        mouseToolTip("Построить точку", btnPoind);
     }
 
     /**
      * Метод btnSegmentClick().
-     * Метод для события нажатия кнопки "Добавить отрезок".
+     * Метод для события нажатия кнопки "Построить отрезок".
      * Устанавливает режим добавления отрезка.
      */
     public void btnSegmentClick() {
@@ -794,13 +791,10 @@ public class EuclidController extends View {
 
     /**
      * Метод onMoseEnteredSegment().
-     * Всплывающая подсказка при наведении мышки на кнопку "Добавить отрезок".
+     * Всплывающая подсказка при наведении мышки на кнопку "Построить отрезок".
      */
     public void onMoseEnteredSegment() {
-        model.setTextToolTip("Добавить отрезок");
-        //Передать в View для вывода
-        model.setBtnToolTip(btnMiddleSegment);
-        model.notifyObservers(TOOL_TIP);
+        mouseToolTip("Построить отрезок", btnMiddleSegment);
     }
 
     /**
@@ -819,15 +813,12 @@ public class EuclidController extends View {
      * Всплывающая подсказка при наведении мышки на кнопку "Найти середину отрезка"
      */
     public void onMouseEnteredMiddleSegment() {
-        model.setTextToolTip("Найти середину отрезка");
-        //Передать в View для вывода
-        model.setBtnToolTip(btnSegment);
-        model.notifyObservers(TOOL_TIP);
+        mouseToolTip("Найти середину отрезка", btnSegment);
     }
 
     /**
      * Метод btnRay().
-     * Метод для события нажатия кнопки "Добавить луч".
+     * Метод для события нажатия кнопки "Построить луч".
      * Устанавливает режим добавления луча.
      */
     public void btnRay() {
@@ -838,18 +829,15 @@ public class EuclidController extends View {
 
     /**
      * Метод onMouseEnteredRay().
-     * Всплывающая подсказка при наведении мышки на кнопку "Добавить луч".
+     * Всплывающая подсказка при наведении мышки на кнопку "Построить луч".
      */
     public void onMouseEnteredRay() {
-        model.setTextToolTip("Добавить луч");
-        //Передать в View для вывода
-        model.setBtnToolTip(btnRay);
-        model.notifyObservers(TOOL_TIP);
+        mouseToolTip("Построить луч", btnRay);
     }
 
     /**
      * Метод btLine().
-     * Метод для события нажатия кнопки "Добавить прямую".
+     * Метод для события нажатия кнопки "Построить прямую".
      * Устанавливает режим добавления прямой.
      */
     public void btnLine() {
@@ -860,18 +848,15 @@ public class EuclidController extends View {
 
     /**
      * Метод onMouseEnteredLine().
-     * Всплывающая подсказка при наведении мышки на кнопку "Добавить прямую".
+     * Всплывающая подсказка при наведении мышки на кнопку "Построить прямую".
      */
     public void onMouseEnteredLine() {
-        model.setTextToolTip("Добавить прямую");
-        //Передать в View для вывода
-        model.setBtnToolTip(btnLine);
-        model.notifyObservers(TOOL_TIP);
+        mouseToolTip("Построить прямую", btnLine);
     }
 
     /**
      * Метод btnAngle()
-     * Метод для события нажатия кнопки "Добавить угол".
+     * Метод для события нажатия кнопки "Построить угол".
      * Устанавливает режим добавления угла.
      */
     public void btnAngle() {
@@ -884,12 +869,22 @@ public class EuclidController extends View {
 
     /**
      * Метод onMouseEnteredAngle()
-     * Всплывающая подсказка при наведении мышки на кнопку "Добавить угол"
+     * Всплывающая подсказка при наведении мышки на кнопку "Построить угол"
      */
     public void onMouseEnteredAngle() {
-        model.setTextToolTip("Добавить угол");
+        mouseToolTip("Построить угол", btnAngle);
+    }
+
+    /**
+     * Метод btnCircle(). Предназначен для вывода всплывающих подсказок при наведении мышки
+     * на кнопку.
+     * @param message сообщение подсказки
+     * @param btnAll объект кнопка
+     */
+    private void mouseToolTip(String message, Button btnAll) {
+        model.setTextToolTip(message);
         //Передать в View для вывода
-        model.setBtnToolTip(btnAngle);
+        model.setBtnToolTip(btnAll);
         model.notifyObservers(TOOL_TIP);
     }
 
@@ -939,13 +934,10 @@ public class EuclidController extends View {
 
     /**
      * Метод onMouseEnteredVertical()
-     * Всплывающая подсказка при наведении мышки на кнопку "Добавить перпендикуляр к прямой"
+     * Всплывающая подсказка при наведении мышки на кнопку "Построить перпендикуляр к прямой"
      */
     public void onMouseEnteredVertical() {
-        model.setTextToolTip("Построить перпендикуляр к прямой");
-        //Передать в View для вывода
-        model.setBtnToolTip(btnVertical);
-        model.notifyObservers(TOOL_TIP);
+        mouseToolTip("Построить перпендикуляр к прямой", btnVertical);
     }
 
     /**
@@ -953,10 +945,7 @@ public class EuclidController extends View {
      * Всплывающая подсказка при наведении мышки на кнопку "Построить окружность"
      */
     public void onMouseEnteredCircle() {
-        model.setTextToolTip("Добавить окружность");
-        //Передать в View для вывода
-        model.setBtnToolTip(btnCircle);
-        model.notifyObservers(TOOL_TIP);
+        mouseToolTip("Построить окружность", btnCircle);
     }
 
     /**
@@ -964,16 +953,13 @@ public class EuclidController extends View {
      * Всплывающая подсказка при наведении мышки на кнопку "Построить параллельные прямые"
      */
     public void onMouseEnteredParallelLines() {
-        model.setTextToolTip("Построить параллельную прямую");
-        //Передать в View для вывода
-        model.setBtnToolTip(btnParallelLines);
-        model.notifyObservers(TOOL_TIP);
+        mouseToolTip("Построить параллельные прямые", btnParallelLines);
     }
 
 
     /**
      * Метод btnTreangle().
-     * Метод на события нажатия кнопки "Добавить треугольник".
+     * Метод на события нажатия кнопки "Построить треугольник".
      * Устанавливает режим добавления треугольника.
      */
     public void btnTreangle() {
@@ -985,18 +971,15 @@ public class EuclidController extends View {
 
     /**
      * Метод onMouseEnteredTreangle().
-     * Всплывающая подсказка при наведении мышки на кнопку "Добавить треугольник".
+     * Всплывающая подсказка при наведении мышки на кнопку "Построить треугольник".
      */
     public void onMouseEnteredTreangle() {
-        model.setTextToolTip("Добавить треугольник");
-        //Передать в View для вывода
-        model.setBtnToolTip(btnTreangle);
-        model.notifyObservers(TOOL_TIP);
+        mouseToolTip("Построить треугольник", btnTreangle);
     }
 
     /**
      * Метод btnMedian().
-     * Предназначен для установления режима добавить медиану. Нажата кнопка "Добавить медиану"
+     * Предназначен для установления режима построить медиану. Нажата кнопка "Построить медиану."
      */
     public void btnMedian() {
         model.setStringLeftStatus(STA_18);
@@ -1006,18 +989,15 @@ public class EuclidController extends View {
 
     /**
      * Метод onMouseEnteredMediana().
-     * Всплывающая подсказка при наведении мышки на кнопку "Добавить медиану".
+     * Всплывающая подсказка при наведении мышки на кнопку "Построить медиану".
      */
     public void onMouseEnteredMediana() {
-        model.setTextToolTip("Добавить медиану");
-        //Передать в View для вывода
-        model.setBtnToolTip(btnMediana);
-        model.notifyObservers(TOOL_TIP);
+        mouseToolTip("Построить медиану", btnMediana);
     }
 
     /**
      * Метод btnBisector()
-     * Предназначен для установления режима добавить биссектрису. Нажата кнопка "Добавить биссектрису".
+     * Предназначен для установления режима построить биссектрису. Нажата кнопка "Построить биссектрису".
      */
     public void btnBisector() {
         model.setStringLeftStatus(STA_22);
@@ -1027,18 +1007,15 @@ public class EuclidController extends View {
 
     /**
      * Метод onMouseEnteredBisector().
-     * Всплывающая подсказка при наведении мышки на кнопку "Добавить биссектрису".
+     * Всплывающая подсказка при наведении мышки на кнопку "Построить биссектрису".
      */
     public void onMouseEnteredBisector() {
-        model.setTextToolTip("Добавить биссектрису");
-        //Передать в View для вывода
-        model.setBtnToolTip(btnBisector);
-        model.notifyObservers(TOOL_TIP);
+        mouseToolTip("Построить биссектрису", btnBisector);
     }
 
     /**
      * Метод btnHeight()
-     * Нажата кнопка добавить высоту.
+     * Нажата кнопка Построить высоту.
      */
     public void btnHeight() {
         model.setStringLeftStatus(STA_24);
@@ -1048,13 +1025,10 @@ public class EuclidController extends View {
 
     /**
      * Метод onMouseEnteredHeight().
-     * Всплывающая подсказка при наведении на кнопку "Добавить высоту"
+     * Всплывающая подсказка при наведении на кнопку "Построить высоту"
      */
     public void onMouseEnteredHeight() {
-        model.setTextToolTip("Добавить высоту");
-        //Передать в View для вывода
-        model.setBtnToolTip(btnHeight);
-        model.notifyObservers(TOOL_TIP);
+        mouseToolTip("Построить высоту", btnHeight);
     }
 
     /**
@@ -1071,10 +1045,7 @@ public class EuclidController extends View {
      * "Построить окружность вписанную в треугольник".
      */
     public void onMouseEnteredCircleInTreangle() {
-        model.setTextToolTip("Построить окружность вписанную в треугольник");
-        //Передать в View для вывода
-        model.setBtnToolTip(btnCircleInTreangle);
-        model.notifyObservers(TOOL_TIP);
+        mouseToolTip("Построить окружность вписанную в треугольник", btnCircleInTreangle);
     }
 
     /**
@@ -1091,10 +1062,7 @@ public class EuclidController extends View {
      * "Построить описанную окружность".
      */
     public void onMouseEnteredCircleOutTreangle() {
-        model.setTextToolTip("Построить описанную окружность");
-        //Передать в View для вывода
-        model.setBtnToolTip(btnCircleOutTreangle);
-        model.notifyObservers(TOOL_TIP);
+        mouseToolTip("Построить описанную окружность", btnCircleOutTreangle);
     }
 
     /**
@@ -1136,20 +1104,15 @@ public class EuclidController extends View {
      * Всплывающая подсказка при наведении на кнопку "Удалить"
      */
     public void onMouseEnteredDelete() {
-        model.setTextToolTip("Удалить с доски все геометрические фигуры");
-        //Передать в View для вывода
-        model.setBtnToolTip(btnDelete);
-        model.notifyObservers(TOOL_TIP);
+        mouseToolTip("Удалить с доски все геометрические фигуры", btnDelete);
     }
 
     /**
      * Метод onMousseEnteredTangent().
-     * Всплывающая подсказка при наведении на кнопку "Добавить касательную к окружности"
+     * Всплывающая подсказка при наведении на кнопку "Построить касательную к окружности"
      */
     public void onMousseEnteredTangent() {
-        model.setTextToolTip("Построить касательную к окружности");
-        model.setBtnToolTip(btnTangent);
-        model.notifyObservers(TOOL_TIP);
+        mouseToolTip("Построить касательную к окружности", btnTangent);
     }
 
     /**
