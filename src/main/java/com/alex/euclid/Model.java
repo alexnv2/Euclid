@@ -172,7 +172,7 @@ class Model implements Observable {
     private LinkedList<NamePoindLine> namePoindLines = new LinkedList<>();//коллекция для имен
     private LinkedList<TreangleName> treangleNames = new LinkedList<>();//коллекция треугольников
     private LinkedList<CircleLine> circleLines = new LinkedList<>();//коллекция окружностей
-    private final ThreadLocal<Stack<Circle>> circleStack = new ThreadLocal<Stack<Circle>>();//стек для точек при построении треугольников и углов
+    private final ThreadLocal<Stack<Circle>> circleStack = new ThreadLocal<>();//стек для точек при построении треугольников и углов
 
     //Определяем связанный список для регистрации классов слушателей
     private LinkedList<Observer> observers = new LinkedList<>();
@@ -2296,14 +2296,14 @@ class Model implements Observable {
      * @return - объект окружность
      */
     Circle createCircleAdd(Circle name) {
-        Circle circle = createCircle();
-        circleLines.add(new CircleLine(circle, gridViews.revAccessX(circle.getCenterX()), gridViews.revAccessY(circle.getCenterY()), circle.getId(), circle.getRadius(), name.getId()));
-        paneBoards.getChildren().add(circle);//добавить окружность на доску
-        circle.toBack();
-        bindPoindCircle(name, circle);
+        Circle circleN = createCircle();
+        circleLines.add(new CircleLine(circleN, gridViews.revAccessX(circleN.getCenterX()), gridViews.revAccessY(circleN.getCenterY()), circleN.getId(), circleN.getRadius(), name.getId()));
+        paneBoards.getChildren().add(circleN);//добавить окружность на доску
+        circleN.toBack();
+        bindPoindCircle(name, circleN);
         setTxtShape("");
         txtAreaOutput();
-        return circle;
+        return circleN;
     }
 
     /**
@@ -3389,54 +3389,53 @@ class Model implements Observable {
      * @return - объект медиана, биссектриса или высота.
      */
     public Line mbhLineAdd(Circle c, int nl) {
-        Line newHeight = null;
-        Point2D mc;
+        Point2D mc = null;
+        Circle c1 = null;
+        Circle c2 = null;
         for (TreangleName tn : treangleNames) {
             if (tn != null) {
-                String[] vertex = tn.getID().split("_");
-                if (c.getId().equals(vertex[0])) {
-                    Circle c1 = findCircle(vertex[1]);
-                    Circle c2 = findCircle(vertex[2]);
-                    Point2D p1 = new Point2D(c1.getCenterX(), c1.getCenterY());
-                    Point2D p2 = new Point2D(c2.getCenterX(), c2.getCenterY());
-                    Point2D p3 = new Point2D(c.getCenterX(), c.getCenterY());
-                    switch (nl) {
-                        case 4 -> mc = p1.midpoint(p2);
-                        case 5 -> mc = bisectorPoind(p1, p3, p2);
-                        case 6 -> mc = heightPoind(p3, p2, p1);
-                        default -> throw new IllegalStateException("Неопределенно значение: " + nl);
-                    }
-                    newHeight = createMedianaBisectorHeight(c, c1, c2, mc, nl);
-                } else if (c.getId().equals(vertex[1])) {
-                    Circle c1 = findCircle(vertex[0]);
-                    Circle c2 = findCircle(vertex[2]);
-                    Point2D p1 = new Point2D(c1.getCenterX(), c1.getCenterY());
-                    Point2D p2 = new Point2D(c2.getCenterX(), c2.getCenterY());
-                    Point2D p3 = new Point2D(c.getCenterX(), c.getCenterY());
-                    switch (nl) {
-                        case 4 -> mc = p1.midpoint(p2);
-                        case 5 -> mc = bisectorPoind(p1, p3, p2);
-                        case 6 -> mc = heightPoind(p3, p2, p1);
-                        default -> throw new IllegalStateException("Неопределенно значение: " + nl);
-                    }
-                    newHeight = createMedianaBisectorHeight(c, c1, c2, mc, nl);
-                } else if (c.getId().equals(vertex[2])) {
-                    Circle c1 = findCircle(vertex[0]);
-                    Circle c2 = findCircle(vertex[1]);
-                    Point2D p1 = new Point2D(c1.getCenterX(), c1.getCenterY());
-                    Point2D p2 = new Point2D(c2.getCenterX(), c2.getCenterY());
-                    Point2D p3 = new Point2D(c.getCenterX(), c.getCenterY());
-                    switch (nl) {
-                        case 4 -> mc = p1.midpoint(p2);
-                        case 5 -> mc = bisectorPoind(p1, p3, p2);
-                        case 6 -> mc = heightPoind(p3, p2, p1);
-                        default -> throw new IllegalStateException("Неопределенно значение: " + nl);
-                    }
-                    newHeight = createMedianaBisectorHeight(c, c1, c2, mc, nl);
+                String[] verSplit = tn.getID().split("_");
+                if (c.getId().equals(verSplit[0])) {
+                    c1 = findCircle(verSplit[1]);
+                    c2 = findCircle(verSplit[2]);
+                    mc=intersection(c1, c2, c, nl);
+                } else if (c.getId().equals(verSplit[1])) {
+                    c1 = findCircle(verSplit[0]);
+                    c2 = findCircle(verSplit[2]);
+                    mc=intersection(c1, c2, c, nl);
+                } else if (c.getId().equals(verSplit[2])) {
+                    c1 = findCircle(verSplit[0]);
+                    c2 = findCircle(verSplit[1]);
+                    mc=intersection(c1, c2, c, nl);
                 }
             }
         }
-        return newHeight;
+        assert mc != null;
+        return createMedianaBisectorHeight(c, c1, c2, mc, nl);
+    }
+
+    /**
+     * Метод intersection(Circle c1, Circle c2, Circle c, int nl).
+     * Предназначен для расчета точки пересечения.
+     * @param c1 - первая точка
+     * @param c2 - вторая точка
+     * @param c - третья точка
+     * @param nl - код линии: 4-медиана 5-биссектриса 6- высота
+     * @return - точка пересечения Point2D.
+     */
+
+    private Point2D intersection(Circle c1, Circle c2, Circle c, int nl) {
+        Point2D mc1;
+        Point2D p1 = new Point2D(c1.getCenterX(), c1.getCenterY());
+        Point2D p2 = new Point2D(c2.getCenterX(), c2.getCenterY());
+        Point2D p3 = new Point2D(c.getCenterX(), c.getCenterY());
+        switch (nl) {
+            case 4 -> mc1 = p1.midpoint(p2);
+            case 5 -> mc1 = bisectorPoind(p1, p3, p2);
+            case 6 -> mc1 = heightPoind(p3, p2, p1);
+            default -> throw new IllegalStateException("Неопределенно значение: " + nl);
+        }
+        return mc1;
     }
 
     /**
@@ -3491,43 +3490,7 @@ class Model implements Observable {
         });
     }
 
-    /**
-     * Предназначен для отладки, выводит информации из коллекций.
-     */
-    //Тестовый метод для вывода информации по коллекциям
-    public void colTest() {
-        //Взято из книги Кэн Коузен "Современный Java. Рецепты программирования".
-        //Глава 2. Пакет java.util.function
-        // стр.40 Пример 2.3
-        out.println("Начало вывода");
-        out.println("Коллекция PoindCircle");
-        //ссылка на метод
-        for (PoindCircle poindCircle : poindCircles) {
-            out.println(poindCircle);
-        }
-
-        out.println("Коллекция PoindLine");
-        poindLines.forEach(out::println);//лямбда выражение
-
-        out.println("Коллекция дуг");
-        vertexArcs.forEach(out::println);
-
-        out.println("Коллекция имен");
-        namePoindLines.forEach(out::println);
-
-        out.println("Коллекция треугольников");
-        treangleNames.forEach(out::println);
-
-        out.println("Коллекция окружностей");
-        circleLines.forEach(out::println);
-
-        out.println("Коллекция объектов");
-        paneBoards.getChildren().forEach(out::println);
-        out.println("Конец вывода");
-
-    }
-
-    /**
+     /**
      * Метод middleBindSegment(Circle newCircle, Line l).
      * Предназначен для связывания середины отрезка с линией
      *
@@ -3636,5 +3599,39 @@ class Model implements Observable {
         double syBC = v2.getY() - v3.getY();
         double sBC = smA.getX() * sxBC + smA.getY() * syBC;
         return new Point2D((sAB * syBC - sBC * syAB) / (sxAB * syBC - sxBC * syAB), (sxAB * sBC - sxBC * sAB) / (sxAB * syBC - sxBC * syAB));
+    }
+
+    /**
+     * Предназначен для отладки, выводит информации из коллекций.
+     * Вызов быстрыми клавишами Alt+t
+     */
+     public void colTest() {
+        //Взято из книги Кэн Коузен "Современный Java. Рецепты программирования".
+        //Глава 2. Пакет java.util.function
+        // стр.40 Пример 2.3
+        out.println("Начало вывода");
+
+        out.println("Коллекция PoindCircle (точек)");
+        poindCircles.forEach(out::println);
+
+        out.println("Коллекция PoindLine (линий)");
+        poindLines.forEach(out::println);
+
+        out.println("Коллекция VertexArc (дуг) ");
+        vertexArcs.forEach(out::println);
+
+        out.println("Коллекция NamePoindLine (имен)");
+        namePoindLines.forEach(out::println);
+
+        out.println("Коллекция TreangleName (треугольников)");
+        treangleNames.forEach(out::println);
+
+        out.println("Коллекция CircleLine (окружностей)");
+        circleLines.forEach(out::println);
+
+        out.println("Коллекция всех объектов");
+        paneBoards.getChildren().forEach(out::println);
+        out.println("Конец вывода");
+
     }
 }

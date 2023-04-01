@@ -41,9 +41,10 @@ import static contstantString.StringStatus.*;
  */
 
 public class EuclidController extends View {
-    public Font x3;
-    public Line newLine;
-    public Circle circleFill;
+    @FXML
+    private Line newLine;
+    @FXML
+    private Circle circleFill;
 
 
     //Связать переменные с шаблоном FXML
@@ -749,6 +750,7 @@ public class EuclidController extends View {
     /**
      * Метод createShape().
      * Задает режим создания геометрических фигур.
+     *
      * @param addShape определяет форму геометрических фигур.
      */
     public void createShape(int addShape) {
@@ -756,7 +758,8 @@ public class EuclidController extends View {
         model.setCreateGeometric(addShape);
         model.setCreateShape(true);//Установить режим создания фигуры
     }
-   /**
+
+    /**
      * Метод btnPoindClick().
      * Cобытие нажатия кнопки "Построить точку".
      * Устанавливает режим добавления точки.
@@ -843,7 +846,7 @@ public class EuclidController extends View {
     public void btnLine() {
         model.setStringLeftStatus(STA_4);
         model.notifyObservers(LEFT_STATUS_GO);
-            createShape(3);
+        createShape(3);
     }
 
     /**
@@ -859,7 +862,8 @@ public class EuclidController extends View {
      * Метод для события нажатия кнопки "Построить угол".
      * Устанавливает режим добавления угла.
      */
-    public void btnAngle() {
+    @FXML
+    private void btnAngle() {
         //Установить статус
         model.setStringLeftStatus(STA_14);
         model.notifyObservers(LEFT_STATUS_GO);
@@ -878,8 +882,9 @@ public class EuclidController extends View {
     /**
      * Метод btnCircle(). Предназначен для вывода всплывающих подсказок при наведении мышки
      * на кнопку.
+     *
      * @param message сообщение подсказки
-     * @param btnAll объект кнопка
+     * @param btnAll  объект кнопка
      */
     private void mouseToolTip(String message, Button btnAll) {
         model.setTextToolTip(message);
