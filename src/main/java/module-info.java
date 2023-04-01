@@ -7,6 +7,7 @@ module com.alex.euclid {
     requires javafx.web;
     requires lombok;
     requires org.controlsfx.controls;
+    requires org.jetbrains.annotations;
 
     opens com.alex.euclid to javafx.fxml;
     exports com.alex.euclid;

@@ -18,6 +18,7 @@ import javafx.scene.text.Text;
 import javafx.scene.web.WebView;
 import lombok.Data;
 import org.controlsfx.control.textfield.TextFields;
+import org.jetbrains.annotations.Nullable;
 
 import java.text.MessageFormat;
 import java.util.*;
@@ -29,8 +30,7 @@ import static contstantString.StringStatus.*;
 import static java.lang.Math.abs;
 import static java.lang.StrictMath.pow;
 import static java.lang.StrictMath.sqrt;
-import static java.lang.System.*;
-
+import static java.lang.System.out;
 
 /**
  * Класс Model расширение интерфейса Observable
@@ -828,7 +828,6 @@ class Model implements Observable {
                 txtAreaOutput();
                 createGeometric = 0;
             }
-
         }
     }
 
@@ -1028,7 +1027,6 @@ class Model implements Observable {
      * Предназначен для окончания построения отрезка, луча, прямой.
      */
     private void newPoindShapeEnd() {
-        //закончить построение
         newSegment.delete(0, newSegment.length());//очистить строку
         createGeometric = 0;
         setPoindOne(false);
@@ -1116,12 +1114,13 @@ class Model implements Observable {
     }
 
     /**
+     * Метод findCircle(String nameLine).
      * Предназначен для поиска линии по её имени
      *
      * @param nameLine - имя линии
      * @return - объект линия
      */
-    private Line findNameLine(String nameLine) {
+    private @Nullable Line findNameLine(String nameLine) {
         for (PoindLine p : poindLines) {
             if (p != null) {
                 if (p.getLine().getId().equals(nameLine)) {
@@ -3255,109 +3254,47 @@ class Model implements Observable {
         c.centerYProperty().bindBidirectional(lm.startYProperty());
 
         c.centerXProperty().addListener((obj, oldValue, newValue) -> {
-            Point2D p1 = new Point2D(c1.getCenterX(), c1.getCenterY());
-            Point2D p2 = new Point2D(c2.getCenterX(), c2.getCenterY());
-            Point2D p3 = new Point2D(c.getCenterX(), c.getCenterY());
-            Point2D mc;
-            switch (nl) {
-                case 4 -> mc = p1.midpoint(p2);
-                case 5 -> mc = bisectorPoind(p1, p3, p2);
-                case 6 -> mc = heightPoind(p3, p2, p1);
-                default -> throw new IllegalStateException("Неопределенно значение: " + nl);
-            }
-            md.setCenterX(mc.getX());
-            lm.setEndX(mc.getX());
-            md.setCenterY(mc.getY());
-            lm.setEndY(mc.getY());
-            findMedianaUpdateXY(md, lm);
+            bindingAccount(c1, c2, c, md, lm, nl);
         });
         c.centerXProperty().addListener((obj, oldValue, newValue) -> {
-            Point2D p1 = new Point2D(c1.getCenterX(), c1.getCenterY());
-            Point2D p2 = new Point2D(c2.getCenterX(), c2.getCenterY());
-            Point2D p3 = new Point2D(c.getCenterX(), c.getCenterY());
-            Point2D mc;
-            switch (nl) {
-                case 4 -> mc = p1.midpoint(p2);
-                case 5 -> mc = bisectorPoind(p1, p3, p2);
-                case 6 -> mc = heightPoind(p3, p2, p1);
-                default -> throw new IllegalStateException("Неопределенно значение: " + nl);
-            }
-            md.setCenterX(mc.getX());
-            lm.setEndX(mc.getX());
-            md.setCenterY(mc.getY());
-            lm.setEndY(mc.getY());
-            findMedianaUpdateXY(md, lm);
+            bindingAccount(c1, c2, c, md, lm, nl);
         });
 
         c1.centerXProperty().addListener((obj, oldValue, newValue) -> {
-            Point2D p1 = new Point2D(c1.getCenterX(), c1.getCenterY());
-            Point2D p2 = new Point2D(c2.getCenterX(), c2.getCenterY());
-            Point2D p3 = new Point2D(c.getCenterX(), c.getCenterY());
-            Point2D mc;
-            switch (nl) {
-                case 4 -> mc = p1.midpoint(p2);
-                case 5 -> mc = bisectorPoind(p1, p3, p2);
-                case 6 -> mc = heightPoind(p3, p2, p1);
-                default -> throw new IllegalStateException("Неопределенно значение: " + nl);
-            }
-            md.setCenterX(mc.getX());
-            lm.setEndX(mc.getX());
-            md.setCenterY(mc.getY());
-            lm.setEndY(mc.getY());
-            findMedianaUpdateXY(md, lm);
+            bindingAccount(c1, c2, c, md, lm, nl);
         });
         c1.centerYProperty().addListener((obj, oldValue, newValue) -> {
-            Point2D p1 = new Point2D(c1.getCenterX(), c1.getCenterY());
-            Point2D p2 = new Point2D(c2.getCenterX(), c2.getCenterY());
-            Point2D p3 = new Point2D(c.getCenterX(), c.getCenterY());
-            Point2D mc;
-            switch (nl) {
-                case 4 -> mc = p1.midpoint(p2);
-                case 5 -> mc = bisectorPoind(p1, p3, p2);
-                case 6 -> mc = heightPoind(p3, p2, p1);
-                default -> throw new IllegalStateException("Неопределенно значение: " + nl);
-            }
-            md.setCenterX(mc.getX());
-            lm.setEndX(mc.getX());
-            md.setCenterY(mc.getY());
-            lm.setEndY(mc.getY());
-            findMedianaUpdateXY(md, lm);
+            bindingAccount(c1, c2, c, md, lm, nl);
         });
         c2.centerXProperty().addListener((obj, oldValue, newValue) -> {
-            Point2D p1 = new Point2D(c1.getCenterX(), c1.getCenterY());
-            Point2D p2 = new Point2D(c2.getCenterX(), c2.getCenterY());
-            Point2D p3 = new Point2D(c.getCenterX(), c.getCenterY());
-            Point2D mc;
-            switch (nl) {
-                case 4 -> mc = p1.midpoint(p2);
-                case 5 -> mc = bisectorPoind(p1, p3, p2);
-                case 6 -> mc = heightPoind(p3, p2, p1);
-                default -> throw new IllegalStateException("Неопределенно значение: " + nl);
-            }
-            md.setCenterX(mc.getX());
-            lm.setEndX(mc.getX());
-            md.setCenterY(mc.getY());
-            lm.setEndY(mc.getY());
-            findMedianaUpdateXY(md, lm);
+            bindingAccount(c1, c2, c, md, lm, nl);
         });
         c2.centerYProperty().addListener((obj, oldValue, newValue) -> {
-            Point2D p1 = new Point2D(c1.getCenterX(), c1.getCenterY());
-            Point2D p2 = new Point2D(c2.getCenterX(), c2.getCenterY());
-            Point2D p3 = new Point2D(c.getCenterX(), c.getCenterY());
-            Point2D mc;
-            switch (nl) {
-                case 4 -> mc = p1.midpoint(p2);
-                case 5 -> mc = bisectorPoind(p1, p3, p2);
-                case 6 -> mc = heightPoind(p3, p2, p1);
-                default -> throw new IllegalStateException("Неопределенно значение: " + nl);
-            }
-            md.setCenterX(mc.getX());
-            lm.setEndX(mc.getX());
-            md.setCenterY(mc.getY());
-            lm.setEndY(mc.getY());
-            findMedianaUpdateXY(md, lm);
+           bindingAccount(c1, c2, c, md, lm, nl);
         });
     }
+
+    /**
+     * Метод bindingAccount(Circle c1, Circle c2, Circle c, Circle md, Line lm, int nl).
+     * Предназначен для перерасчета координат медианы, биссектрисы и высоты с вершинами треугольника.
+     */
+   private void bindingAccount(Circle c1, Circle c2, Circle c, Circle md, Line lm , int nl) {
+        Point2D p1 = new Point2D(c1.getCenterX(), c1.getCenterY());
+        Point2D p2 = new Point2D(c2.getCenterX(), c2.getCenterY());
+        Point2D p3 = new Point2D(c.getCenterX(), c.getCenterY());
+        Point2D mc;
+        switch (nl) {
+            case 4 -> mc = p1.midpoint(p2);
+            case 5 -> mc = bisectorPoind(p1, p3, p2);
+            case 6 -> mc = heightPoind(p3, p2, p1);
+            default -> throw new IllegalStateException("Неопределенно значение: " + nl);
+        }
+        md.setCenterX(mc.getX());
+        lm.setEndX(mc.getX());
+        md.setCenterY(mc.getY());
+        lm.setEndY(mc.getY());
+        findMedianaUpdateXY(md, lm);
+    };
 
     /**
      * Метод findMedianaUpdateXY(Circle md, Line lm).
@@ -3499,35 +3436,30 @@ class Model implements Observable {
      */
     public void middleBindSegment(Circle c, Line l) {
         l.startXProperty().addListener((old, oldValue, newValue) -> {
-            Point2D p1 = new Point2D(l.startXProperty().get(), l.startYProperty().get());
-            Point2D p2 = new Point2D(l.endXProperty().get(), l.endYProperty().get());
-            c.setCenterX(p1.midpoint(p2).getX());
-            c.setCenterY(p1.midpoint(p2).getY());
-            findCirclesUpdateXY(c.getId(), gridViews.revAccessX(c.getCenterX()), gridViews.revAccessY(c.getCenterY()));
+            middleBindAdd(c, l);
         });
         l.startYProperty().addListener((old, oldValue, newValue) -> {
-            Point2D p1 = new Point2D(l.startXProperty().get(), l.startYProperty().get());
-            Point2D p2 = new Point2D(l.endXProperty().get(), l.endYProperty().get());
-            c.setCenterX(p1.midpoint(p2).getX());
-            c.setCenterY(p1.midpoint(p2).getY());
-            findCirclesUpdateXY(c.getId(), gridViews.revAccessX(c.getCenterX()), gridViews.revAccessY(c.getCenterY()));
+            middleBindAdd(c, l);
         });
         l.endXProperty().addListener((old, oldValue, newValue) -> {
-            Point2D p1 = new Point2D(l.startXProperty().get(), l.startYProperty().get());
-            Point2D p2 = new Point2D(l.endXProperty().get(), l.endYProperty().get());
-            c.setCenterX(p1.midpoint(p2).getX());
-            c.setCenterY(p1.midpoint(p2).getY());
-            findCirclesUpdateXY(c.getId(), gridViews.revAccessX(c.getCenterX()), gridViews.revAccessY(c.getCenterY()));
+            middleBindAdd(c, l);
         });
         l.endYProperty().addListener((old, oldValue, newValue) -> {
-            Point2D p1 = new Point2D(l.startXProperty().get(), l.startYProperty().get());
-            Point2D p2 = new Point2D(l.endXProperty().get(), l.endYProperty().get());
-            c.setCenterX(p1.midpoint(p2).getX());
-            c.setCenterY(p1.midpoint(p2).getY());
-            findCirclesUpdateXY(c.getId(), gridViews.revAccessX(c.getCenterX()), gridViews.revAccessY(c.getCenterY()));
+           middleBindAdd(c, l);
         });
     }
 
+    /**
+     * Метод middleBindAdd(Circle c, Line l).
+     * Предназначен для перерасчета координат середины отрезка.
+     */
+private void middleBindAdd(Circle c, Line l) {
+    Point2D p1 = new Point2D(l.startXProperty().get(), l.startYProperty().get());
+    Point2D p2 = new Point2D(l.endXProperty().get(), l.endYProperty().get());
+    c.setCenterX(p1.midpoint(p2).getX());
+    c.setCenterY(p1.midpoint(p2).getY());
+    findCirclesUpdateXY(c.getId(), gridViews.revAccessX(c.getCenterX()), gridViews.revAccessY(c.getCenterY()));
+}
     /**
      * Метод radiusInCircle(Point2D v1, Point2D v2, Point2D v3).
      * Предназначен для расчета радиуса вписанной окружности.
