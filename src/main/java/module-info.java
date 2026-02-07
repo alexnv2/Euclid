@@ -5,7 +5,7 @@ module com.alex.euclid {
     requires javafx.controls;
     requires javafx.fxml;
     requires javafx.web;
-    requires lombok;
+    requires static lombok;
     requires org.controlsfx.controls;
     requires org.jetbrains.annotations;
 
