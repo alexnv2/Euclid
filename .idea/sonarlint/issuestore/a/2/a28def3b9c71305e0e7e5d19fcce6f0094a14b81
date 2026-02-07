@@ -1,0 +1,67 @@
+
+^
+java:S1192O"HDefine a constant instead of duplicating this literal "TextGo" 14 times.(ñ­ıÛ
+l
+java:S1104"VMake bntCombine a static final constant or non-public and provide accessors if needed.(Óÿïß
+h
+java:S1104"RMake namePr a static final constant or non-public and provide accessors if needed.(ìêÌ‹
+g
+java:S1104"QMake proof a static final constant or non-public and provide accessors if needed.(ìêÌ‹
+i
+java:S1104"SMake theorem a static final constant or non-public and provide accessors if needed.(ìêÌ‹
+o
+java:S1104"YMake proposition_1 a static final constant or non-public and provide accessors if needed.(ìêÌ‹
+o
+java:S1104"YMake proposition_2 a static final constant or non-public and provide accessors if needed.(ìêÌ‹
+f
+java:S1104 "QMake arcA1 a static final constant or non-public and provide accessors if needed.(ú
+f
+java:S1104!"PMake arcA a static final constant or non-public and provide accessors if needed.(ûÌä„
+i
+java:S1104""TMake hatch2_2 a static final constant or non-public and provide accessors if needed.(¥˜¶
+j
+java:S1104#"TMake hatch2_1 a static final constant or non-public and provide accessors if needed.(ŞÌ‡™
+n
+java:S1104$"SMake arcB1_1 a static final constant or non-public and provide accessors if needed.(›×ØÀÿÿÿÿÿ
+i
+java:S1104%"SMake arcB1_2 a static final constant or non-public and provide accessors if needed.(ä…¤
+p
+java:S1104&"UMake treangle1 a static final constant or non-public and provide accessors if needed.(é¶½‘üÿÿÿÿ
+o
+java:S1104'"TMake groupTr2 a static final constant or non-public and provide accessors if needed.(ÑÆ¤ìùÿÿÿÿ
+i
+java:S1104("TMake groupTr3 a static final constant or non-public and provide accessors if needed.(•Ó›e
+m
+java:S1104)"RMake hatchB a static final constant or non-public and provide accessors if needed.(©ÌŸ¸şÿÿÿÿ
+n
+java:S1104)"SMake hatchB1 a static final constant or non-public and provide accessors if needed.(©ÌŸ¸şÿÿÿÿ
+l
+java:S1104*"QMake txtC1 a static final constant or non-public and provide accessors if needed.(Å»Ïªùÿÿÿÿ
+l
+java:S1104+"QMake txtA1 a static final constant or non-public and provide accessors if needed.(ıÚ…»ûÿÿÿÿ
+h
+java:S1104,"RMake poindC a static final constant or non-public and provide accessors if needed.(ÿÓŞœ
+n
+java:S1104-"SMake poindB1 a static final constant or non-public and provide accessors if needed.(†¦®½úÿÿÿÿ
+m
+java:S1104."RMake poindB a static final constant or non-public and provide accessors if needed.(™•Şúÿÿÿÿ
+m	java:S116"XRename this field "proposition_1" to match the regular expression '^[a-z][a-zA-Z0-9]*$'.(ìêÌ‹
+m	java:S116"XRename this field "proposition_2" to match the regular expression '^[a-z][a-zA-Z0-9]*$'.(ìêÌ‹
+g	java:S116""SRename this field "hatch2_2" to match the regular expression '^[a-z][a-zA-Z0-9]*$'.(¥˜¶
+h	java:S116#"SRename this field "hatch2_1" to match the regular expression '^[a-z][a-zA-Z0-9]*$'.(ŞÌ‡™
+l	java:S116$"RRename this field "arcB1_1" to match the regular expression '^[a-z][a-zA-Z0-9]*$'.(›×ØÀÿÿÿÿÿ
+g	java:S116%"RRename this field "arcB1_2" to match the regular expression '^[a-z][a-zA-Z0-9]*$'.(ä…¤
+f	java:S1160"QRename this field "arcB_1" to match the regular expression '^[a-z][a-zA-Z0-9]*$'.(óÇ¥å
+f	java:S1160"QRename this field "arcB_2" to match the regular expression '^[a-z][a-zA-Z0-9]*$'.(óÇ¥å
+g	java:S1162"RRename this field "hatch_1" to match the regular expression '^[a-z][a-zA-Z0-9]*$'.(Œ›ˆ
+g	java:S1162"RRename this field "hatch_2" to match the regular expression '^[a-z][a-zA-Z0-9]*$'.(Œ›ˆ
+X
+java:S1659"BDeclare "proof" and all following declarations on a separate line.(ìêÌ‹
+@
+java:S1659)"%Declare "hatchB1" on a separate line.(©ÌŸ¸şÿÿÿÿ
+:
+java:S16590"$Declare "arcB_2" on a separate line.(óÇ¥å
+;
+java:S16592"%Declare "hatch_2" on a separate line.(Œ›ˆ
+N	java:S106:"9Replace this use of System.out or System.err by a logger.(°Øğ
+W	java:S125Ç"<This block of commented-out lines of code should be removed.(°ıŠ·ùÿÿÿÿ
